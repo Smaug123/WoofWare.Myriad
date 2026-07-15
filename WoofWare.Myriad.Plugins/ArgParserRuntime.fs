@@ -583,3 +583,194 @@ module internal ArgParserRuntime =
             |> List.map (fun leaf -> leaf.Id)
 
         duplicates @ missing @ inactive @ noSink, needsDefault
+
+    /// A structural defect in an ErasedSchema: a violation of an invariant which the scanning
+    /// and selection semantics rely on.
+    ///
+    /// The generator establishes these invariants at generation time where it can see the
+    /// argument forms; it cannot when a form is supplied via e.g. a [<Literal>] constant, which
+    /// the untyped AST does not resolve. Generated code therefore re-checks them at runtime via
+    /// WellFormedSchema.check: a malformed schema must fail loudly up front, not silently route
+    /// colliding tokens to whichever leaf was declared first.
+    [<RequireQualifiedAccess>]
+    type SchemaError =
+        /// Two leaves in the table share an id.
+        | DuplicateLeafId of leafId : int
+        /// The tree refers to this leaf more than once.
+        | LeafRepeatedInTree of leafId : int
+        /// The tree refers to a leaf id which is not in the table.
+        | LeafNotInTable of leafId : int
+        /// A leaf in the table is not reachable in the tree.
+        | LeafNotInTree of leafId : int
+        /// Two Sum nodes in the tree share an id.
+        | DuplicateSumId of sumId : int
+        /// A leaf has no forms at all, so no token could ever address it.
+        | NoForms of leafId : int
+        /// A leaf accepts `--no-` negation but is not boolean-like.
+        | NegationOnNonBool of leafId : int
+        /// Two distinct claimants respond to the same `--token` under the scanner's
+        /// case-insensitive matching (so e.g. forms `foo` and `FOO` collide, as do a literal
+        /// form `no-foo` and the negated variant of a negatable `foo`). The token is reported
+        /// in the first claimant's spelling; the claimant descriptions are human-readable, in
+        /// declaration order.
+        | TokenCollision of token : string * claimants : string list
+
+    [<RequireQualifiedAccess>]
+    module SchemaError =
+        /// Render a schema error for humans. These describe a bug in the parser's *definition*,
+        /// not in the arguments a user supplied.
+        let describe (error : SchemaError) : string =
+            match error with
+            | SchemaError.DuplicateLeafId leafId -> sprintf "two arguments share the id %i" leafId
+            | SchemaError.LeafRepeatedInTree leafId ->
+                sprintf "the schema tree refers to argument id %i more than once" leafId
+            | SchemaError.LeafNotInTable leafId ->
+                sprintf "the schema tree refers to argument id %i, which does not exist" leafId
+            | SchemaError.LeafNotInTree leafId -> sprintf "argument id %i is not reachable in the schema tree" leafId
+            | SchemaError.DuplicateSumId sumId -> sprintf "two alternative-groups share the id %i" sumId
+            | SchemaError.NoForms leafId -> sprintf "argument id %i has no names" leafId
+            | SchemaError.NegationOnNonBool leafId ->
+                sprintf "argument id %i accepts --no- negation but is not boolean-like" leafId
+            | SchemaError.TokenCollision (token, claimants) ->
+                sprintf
+                    "the token '%s' is claimed by: %s (argument names are matched case-insensitively)"
+                    token
+                    (String.concat "; " claimants)
+
+    /// An ErasedSchema which has passed the structural checks in WellFormedSchema.check.
+    ///
+    /// The selection semantics are only correct on schemas of this type: in particular, every
+    /// addressable `--token` (a form, a `--no-` variant of a negatable form, or the positional
+    /// sink's own name) must name at most one claimant under the scanner's case-insensitive
+    /// matching, or matchLeaf would silently route the token to whichever colliding leaf is
+    /// declared first — for a Sum schema, silently selecting the wrong case.
+    type WellFormedSchema = private | WellFormed of ErasedSchema
+
+    [<RequireQualifiedAccess>]
+    module WellFormedSchema =
+        /// All the structural defects of this schema (empty exactly when it is well-formed).
+        let errors (schema : ErasedSchema) : SchemaError list =
+            let duplicateLeafIds =
+                schema.Leaves
+                |> List.countBy (fun leaf -> leaf.Id)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (leafId, _) -> SchemaError.DuplicateLeafId leafId)
+
+            let treeIds = leafIds schema.Tree
+            let tableIds = schema.Leaves |> List.map (fun leaf -> leaf.Id)
+            let treeIdSet = Set.ofList treeIds
+            let tableIdSet = Set.ofList tableIds
+
+            let repeatedInTree =
+                treeIds
+                |> List.countBy (fun leafId -> leafId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (leafId, _) -> SchemaError.LeafRepeatedInTree leafId)
+
+            let notInTable =
+                treeIds
+                |> List.distinct
+                |> List.filter (fun leafId -> not (Set.contains leafId tableIdSet))
+                |> List.map SchemaError.LeafNotInTable
+
+            let notInTree =
+                tableIds
+                |> List.distinct
+                |> List.filter (fun leafId -> not (Set.contains leafId treeIdSet))
+                |> List.map SchemaError.LeafNotInTree
+
+            let duplicateSumIds =
+                let rec sumIds (tree : ErasedTree) : int list =
+                    match tree with
+                    | ErasedTree.Leaf _ -> []
+                    | ErasedTree.Product children -> children |> List.collect sumIds
+                    | ErasedTree.Sum (sumId, cases) -> sumId :: (cases |> List.collect (fun (_, case) -> sumIds case))
+
+                sumIds schema.Tree
+                |> List.countBy (fun sumId -> sumId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (sumId, _) -> SchemaError.DuplicateSumId sumId)
+
+            let noForms =
+                schema.Leaves
+                |> List.filter (fun leaf -> List.isEmpty leaf.Forms)
+                |> List.map (fun leaf -> SchemaError.NoForms leaf.Id)
+
+            let negationOnNonBool =
+                schema.Leaves
+                |> List.filter (fun leaf ->
+                    leaf.AcceptsNegation
+                    && (
+                        match leaf.Arity with
+                        | ErasedArity.BoolLike -> false
+                        | ErasedArity.One -> true
+                    )
+                )
+                |> List.map (fun leaf -> SchemaError.NegationOnNonBool leaf.Id)
+
+            // Every `--token` the scanner would recognise in key position, with a description
+            // of its claimant, in declaration order. matchLeaf, the positional-sink match and
+            // the `--help` match are all case-insensitive, so claims are grouped under a
+            // case-normalised key (ToUpperInvariant, the equality OrdinalIgnoreCase uses).
+            let claims =
+                (schema.Leaves
+                 |> List.collect (fun leaf ->
+                     let plain =
+                         leaf.Forms |> List.map (fun form -> "--" + form, sprintf "argument '--%s'" form)
+
+                     let negated =
+                         if leaf.AcceptsNegation then
+                             leaf.Forms
+                             |> List.map (fun form -> "--no-" + form, sprintf "the --no- form of argument '--%s'" form)
+                         else
+                             []
+
+                     plain @ negated
+                 ))
+                @ (
+                    match schema.Positional with
+                    | None -> []
+                    | Some positional ->
+                        positional.Forms
+                        |> List.map (fun form -> "--" + form, sprintf "the positional-args sink '--%s'" form)
+                )
+                @ [ "--help", "the built-in help flag" ]
+
+            let collisions =
+                claims
+                |> List.groupBy (fun (token, _) -> token.ToUpperInvariant ())
+                |> List.choose (fun (_, group) ->
+                    match group with
+                    | []
+                    | [ _ ] -> None
+                    | (token, _) :: _ -> Some (SchemaError.TokenCollision (token, group |> List.map snd))
+                )
+
+            duplicateLeafIds
+            @ repeatedInTree
+            @ notInTable
+            @ notInTree
+            @ duplicateSumIds
+            @ noForms
+            @ negationOnNonBool
+            @ collisions
+
+        /// Check the invariants which the scanning and selection semantics rely on.
+        let check (schema : ErasedSchema) : Result<WellFormedSchema, SchemaError list> =
+            match errors schema with
+            | [] -> Ok (WellFormed schema)
+            | errors -> Error errors
+
+        /// Check, throwing on failure. For generated code: a malformed schema is a bug in the
+        /// parser's definition, which must fail fast rather than misparse.
+        let checkOrFail (schema : ErasedSchema) : WellFormedSchema =
+            match check schema with
+            | Ok wellFormed -> wellFormed
+            | Error errors ->
+                let messages = errors |> List.map SchemaError.describe |> String.concat "\n"
+                failwith ("Invalid argument parser definition:\n" + messages)
+
+        /// Extract the underlying schema.
+        let schema (wellFormed : WellFormedSchema) : ErasedSchema =
+            match wellFormed with
+            | WellFormed schema -> schema

@@ -1085,3 +1085,243 @@ module TestArgParserRuntime =
         // The tricky regime is the bare boolean flag; make sure we are actually exercising it.
         bareBoolCount |> shouldBeGreaterThan 100
         totalUnits |> shouldBeGreaterThan 1000
+
+    // ----------------------------------------------------------------------------------------
+    // Well-formedness: the checked constructor which generated code must pass its schema
+    // through before parsing. The selection semantics assume that every addressable `--token`
+    // names at most one leaf *under the scanner's case-insensitive matching*; without that,
+    // matchLeaf silently routes colliding tokens to whichever leaf is declared first, and for a
+    // Sum schema that silently selects the wrong case.
+
+    [<Test>]
+    let ``A well-formed schema passes the checked constructor`` () =
+        match WellFormedSchema.check motivating with
+        | Ok wellFormed -> WellFormedSchema.schema wellFormed |> shouldEqual motivating
+        | Error errors -> failwithf "unexpected schema errors: %O" errors
+
+    [<Test>]
+    let ``Forms which differ only by case collide, even across sum cases`` () =
+        // The empirical counterexample from review: `foo` in one case and `FOO` in the other
+        // passes a case-sensitive uniqueness check, but the scanner matches case-insensitively,
+        // so `--FOO=3` routes to the first-declared leaf and silently selects *its* case.
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "FOO" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree = ErasedTree.Sum (0, [ "CaseA", ErasedTree.Leaf 0 ; "CaseB", ErasedTree.Leaf 1 ])
+                Positional = None
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision ("--foo", [ "argument '--foo'" ; "argument '--FOO'" ])
+            ]
+
+    [<Test>]
+    let ``A form colliding with another leaf's negated form is rejected, whatever the casing`` () =
+        let negatable =
+            { leaf 0 "foo" ErasedArity.BoolLike ErasedRequirement.Required with
+                AcceptsNegation = true
+            }
+
+        let schema =
+            productSchema [ negatable ; leaf 1 "No-Foo" ErasedArity.One ErasedRequirement.Required ] None
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision (
+                    "--no-foo",
+                    [ "the --no- form of argument '--foo'" ; "argument '--No-Foo'" ]
+                )
+            ]
+
+    [<Test>]
+    let ``No argument may claim the reserved help name, in any casing`` () =
+        let schema =
+            productSchema [ leaf 0 "HeLp" ErasedArity.One ErasedRequirement.Required ] None
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision ("--HeLp", [ "argument '--HeLp'" ; "the built-in help flag" ])
+            ]
+
+    [<Test>]
+    let ``The positional sink's forms collide with leaf forms case-insensitively`` () =
+        let sink =
+            {
+                Id = 99
+                Forms = [ "REST" ]
+                FlagLike = ErasedFlagLikeBehaviour.Reject
+                TypeDescription = "string"
+                Help = None
+            }
+
+        let schema =
+            productSchema [ leaf 0 "rest" ErasedArity.One ErasedRequirement.Required ] (Some sink)
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision ("--rest", [ "argument '--rest'" ; "the positional-args sink '--REST'" ])
+            ]
+
+    [<Test>]
+    let ``Every alias of the positional sink participates in collision checking`` () =
+        // Not just the head form: the second alias here collides with a leaf.
+        let sink =
+            {
+                Id = 99
+                Forms = [ "rest" ; "TARGET" ]
+                FlagLike = ErasedFlagLikeBehaviour.Reject
+                TypeDescription = "string"
+                Help = None
+            }
+
+        let schema =
+            productSchema [ leaf 0 "target" ErasedArity.One ErasedRequirement.Required ] (Some sink)
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision (
+                    "--target",
+                    [ "argument '--target'" ; "the positional-args sink '--TARGET'" ]
+                )
+            ]
+
+    [<Test>]
+    let ``A leaf whose own aliases collide is rejected`` () =
+        let doubled =
+            { leaf 0 "foo" ErasedArity.One ErasedRequirement.Required with
+                Forms = [ "foo" ; "FOO" ]
+            }
+
+        WellFormedSchema.errors (productSchema [ doubled ] None)
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision ("--foo", [ "argument '--foo'" ; "argument '--FOO'" ])
+            ]
+
+    [<Test>]
+    let ``Duplicate leaf ids are rejected`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "a" ErasedArity.One ErasedRequirement.Required
+                        leaf 0 "b" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree = ErasedTree.Product [ ErasedTree.Leaf 0 ]
+                Positional = None
+            }
+
+        WellFormedSchema.errors schema |> shouldEqual [ SchemaError.DuplicateLeafId 0 ]
+
+    [<Test>]
+    let ``A leaf repeated in the tree is rejected`` () =
+        let schema =
+            { productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] None with
+                Tree = ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.Leaf 0 ]
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual [ SchemaError.LeafRepeatedInTree 0 ]
+
+    [<Test>]
+    let ``Tree and leaf table must refer to the same leaves`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "a" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "b" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree = ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.Leaf 2 ]
+                Positional = None
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual [ SchemaError.LeafNotInTable 2 ; SchemaError.LeafNotInTree 1 ]
+
+    [<Test>]
+    let ``Duplicate sum ids are rejected`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "a" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "b" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Product
+                        [
+                            ErasedTree.Sum (0, [ "A", ErasedTree.Leaf 0 ])
+                            ErasedTree.Sum (0, [ "B", ErasedTree.Leaf 1 ])
+                        ]
+                Positional = None
+            }
+
+        WellFormedSchema.errors schema |> shouldEqual [ SchemaError.DuplicateSumId 0 ]
+
+    [<Test>]
+    let ``Negation requires a boolean-like leaf`` () =
+        let bad =
+            { leaf 0 "a" ErasedArity.One ErasedRequirement.Required with
+                AcceptsNegation = true
+            }
+
+        WellFormedSchema.errors (productSchema [ bad ] None)
+        |> shouldEqual [ SchemaError.NegationOnNonBool 0 ]
+
+    [<Test>]
+    let ``A leaf with no forms at all is rejected`` () =
+        let bad =
+            { leaf 0 "a" ErasedArity.One ErasedRequirement.Required with
+                Forms = []
+            }
+
+        WellFormedSchema.errors (productSchema [ bad ] None)
+        |> shouldEqual [ SchemaError.NoForms 0 ]
+
+    [<Test>]
+    let ``checkOrFail renders every defect`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "FOO" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree = ErasedTree.Sum (0, [ "CaseA", ErasedTree.Leaf 0 ; "CaseB", ErasedTree.Leaf 1 ])
+                Positional = None
+            }
+
+        let exc =
+            Assert.Throws<exn> (fun () -> WellFormedSchema.checkOrFail schema |> ignore<WellFormedSchema>)
+
+        exc.Message
+        |> shouldEqual
+            "Invalid argument parser definition:\nthe token '--foo' is claimed by: argument '--foo'; argument '--FOO' (argument names are matched case-insensitively)"
+
+    [<Test>]
+    let ``Every generated schema is well-formed`` () =
+        // The property generators build schemas which satisfy the invariants by construction
+        // (forms are "argN"/"altN"); this pins that the checked constructor has no false
+        // positives across that whole family.
+        let cases =
+            gen {
+                let! sumBias = Gen.elements [ 20 ; 50 ; 80 ]
+                return! genSchema sumBias
+            }
+
+        let property (schema : ErasedSchema) : unit =
+            WellFormedSchema.errors schema |> shouldEqual []
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 500
+        Check.One (config, Prop.forAll (Arb.fromGen cases) property)

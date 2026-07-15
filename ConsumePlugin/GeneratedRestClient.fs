@@ -18,43 +18,43 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module PureGymApi =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IPureGymApi =
+    let make (client: System.Net.Http.HttpClient) : IPureGymApi =
         { new IPureGymApi with
-            member _.GetGyms (ct : CancellationToken option) =
+            member _.GetGyms(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (("v1/gyms/"), System.UriKind.Relative)
+                            System.Uri(("v1/gyms/"), System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Gym list"
                                  )
@@ -62,58 +62,57 @@ module PureGymApi =
                          | jsonNode -> jsonNode)
 
                     return
-                        jsonNode.AsArray ()
+                        jsonNode.AsArray()
                         |> Seq.map (fun elt ->
                             (match elt with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          "elt",
                                          "Expected element of array (element type Gym) to be non-null, but found a null element"
                                      )
                                  )
-                             | elt -> Gym.jsonParse elt)
-                        )
+                             | elt -> Gym.jsonParse elt))
                         |> List.ofSeq
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetGymAttendance (gymId : int, ct : CancellationToken option) =
+            member _.GetGymAttendance(gymId: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "v1/gyms/{gym_id}/attendance"
-                                    .Replace ("{gym_id}", gymId.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{gym_id}", gymId.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GymAttendance"
                                  )
@@ -122,44 +121,44 @@ module PureGymApi =
 
                     return GymAttendance.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetGymAttendance' (gymId : int, ct : CancellationToken option) =
+            member _.GetGymAttendance'(gymId: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "v1/gyms/{gym_id}/attendance"
-                                    .Replace ("{gym_id}", gymId.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{gym_id}", gymId.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type GymAttendance"
                                  )
@@ -168,40 +167,40 @@ module PureGymApi =
 
                     return GymAttendance.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetMember (ct : CancellationToken option) =
+            member _.GetMember(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("v1/member", System.UriKind.Relative)
+                            System.Uri("v1/member", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Member"
                                  )
@@ -210,43 +209,43 @@ module PureGymApi =
 
                     return Member.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetGym (gym : int, ct : CancellationToken option) =
+            member _.GetGym(gym: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
-                                "v1/gyms/{gym}".Replace ("{gym}", gym.ToString () |> System.Uri.EscapeDataString),
+                            System.Uri(
+                                "v1/gyms/{gym}".Replace("{gym}", gym.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Gym"
                                  )
@@ -255,40 +254,40 @@ module PureGymApi =
 
                     return Gym.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetMemberActivity (ct : CancellationToken option) =
+            member _.GetMemberActivity(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("v1/member/activity", System.UriKind.Relative)
+                            System.Uri("v1/member/activity", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type MemberActivityDto"
                                  )
@@ -297,40 +296,40 @@ module PureGymApi =
 
                     return MemberActivityDto.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetUrl (ct : CancellationToken option) =
+            member _.GetUrl(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("some/url", System.UriKind.Relative)
+                            System.Uri("some/url", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type UriThing"
                                  )
@@ -339,28 +338,28 @@ module PureGymApi =
 
                     return UriThing.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.PostStringToString (foo : Map<string, string> option, ct : CancellationToken option) =
+            member _.PostStringToString(foo: Map<string, string> option, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("some/url", System.UriKind.Relative)
+                            System.Uri("some/url", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
+                        new System.Net.Http.StringContent(
                             foo
                             |> (fun field ->
                                 match field with
@@ -368,12 +367,12 @@ module PureGymApi =
                                 | Some field ->
                                     (field
                                      |> (fun field ->
-                                         let ret = System.Text.Json.Nodes.JsonObject ()
+                                         let ret = System.Text.Json.Nodes.JsonObject()
 
-                                         for (KeyValue (key, value)) in field do
-                                             let key = key.ToString ()
+                                         for (KeyValue(key, value)) in field do
+                                             let key = key.ToString()
 
-                                             ret.Add (
+                                             ret.Add(
                                                  key,
                                                  (fun field ->
                                                      let field =
@@ -382,40 +381,36 @@ module PureGymApi =
                                                      (match field with
                                                       | null ->
                                                           raise (
-                                                              System.ArgumentNullException (
+                                                              System.ArgumentNullException(
                                                                   "field",
                                                                   "Expected type string to be non-null, but received a null value when serialising"
                                                               )
                                                           )
-                                                      | field -> field)
-                                                 )
+                                                      | field -> field))
                                                      value
                                              )
 
-                                         ret
-                                     ))
+                                         ret))
                                     :> System.Text.Json.Nodes.JsonNode
-                                    |> Some
-                            )
+                                    |> Some)
                             |> (fun node ->
                                 match node with
                                 | None -> "null"
-                                | Some node -> node.ToJsonString ()
-                            )
+                                | Some node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode = jsonNode |> Option.ofObj
@@ -424,7 +419,7 @@ module PureGymApi =
                         match jsonNode with
                         | None -> None
                         | Some v ->
-                            v.AsObject ()
+                            v.AsObject()
                             |> Seq.map (fun kvp ->
                                 let key = (kvp.Key)
                                 let value = kvp.Value
@@ -433,43 +428,38 @@ module PureGymApi =
                                 (match value with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              "value",
                                              "Expected dictionary value of type string to be non-null, but it was null"
                                          )
                                      )
-                                 | value -> value.AsValue().GetValue<System.String> ())
-                            )
+                                 | value -> value.AsValue().GetValue<System.String>()))
                             |> Map.ofSeq
                             |> Some
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetSessions (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
+            member _.GetSessions(fromDate: DateOnly, toDate: DateOnly, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            [
-                                "fromDate=" + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
-                            ]
-                            [ "toDate=" + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ]
-                        ]
+                        [ [ "fromDate=" + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ]
+                          [ "toDate=" + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("/v2/gymSessions/member"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "/v2/gymSessions/member".IndexOf (char 63) >= 0 then
+                                        ((if "/v2/gymSessions/member".IndexOf(char 63) >= 0 then
                                               "&"
                                           else
                                               "?")
@@ -479,25 +469,25 @@ module PureGymApi =
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Sessions"
                                  )
@@ -506,33 +496,29 @@ module PureGymApi =
 
                     return Sessions.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetSessionsWithQuery (fromDate : DateOnly, toDate : DateOnly, ct : CancellationToken option) =
+            member _.GetSessionsWithQuery(fromDate: DateOnly, toDate: DateOnly, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            [
-                                "fromDate=" + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
-                            ]
-                            [ "toDate=" + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ]
-                        ]
+                        [ [ "fromDate=" + ((fromDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ]
+                          [ "toDate=" + ((toDate.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("/v2/gymSessions/member?foo=1"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "/v2/gymSessions/member?foo=1".IndexOf (char 63) >= 0 then
+                                        ((if "/v2/gymSessions/member?foo=1".IndexOf(char 63) >= 0 then
                                               "&"
                                           else
                                               "?")
@@ -542,25 +528,25 @@ module PureGymApi =
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Sessions"
                                  )
@@ -569,200 +555,200 @@ module PureGymApi =
 
                     return Sessions.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserString (user : string, ct : CancellationToken option) =
+            member _.CreateUserString(user: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (user)
+                    let queryParams = new System.Net.Http.StringContent(user)
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserStream (user : System.IO.Stream, ct : CancellationToken option) =
+            member _.CreateUserStream(user: System.IO.Stream, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     let httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StreamContent (user)
+                    let queryParams = new System.Net.Http.StreamContent(user)
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserByteArr (user : byte[], ct : CancellationToken option) =
+            member _.CreateUserByteArr(user: byte[], ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.ByteArrayContent (user)
+                    let queryParams = new System.Net.Http.ByteArrayContent(user)
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserByteArr' (user : array<byte>, ct : CancellationToken option) =
+            member _.CreateUserByteArr'(user: array<byte>, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.ByteArrayContent (user)
+                    let queryParams = new System.Net.Http.ByteArrayContent(user)
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserByteArr'' (user : byte array, ct : CancellationToken option) =
+            member _.CreateUserByteArr''(user: byte array, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.ByteArrayContent (user)
+                    let queryParams = new System.Net.Http.ByteArrayContent(user)
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedBody (user : PureGym.Member, ct : CancellationToken option) =
+            member _.CreateUserSerialisedBody(user: PureGym.Member, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
-                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        new System.Net.Http.StringContent(
+                            user |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedUrlBody (user : Uri, ct : CancellationToken option) =
+            member _.CreateUserSerialisedUrlBody(user: Uri, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
+                        new System.Net.Http.StringContent(
                             user
                             |> (fun field ->
                                 let field = System.Text.Json.Nodes.JsonValue.Create<Uri> field
@@ -770,49 +756,48 @@ module PureGymApi =
                                 (match field with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              "field",
                                              "Expected type URI to be non-null, but received a null value when serialising"
                                          )
                                      )
-                                 | field -> field)
-                            )
-                            |> (fun node -> node.ToJsonString ())
+                                 | field -> field))
+                            |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedIntBody (user : int, ct : CancellationToken option) =
+            member _.CreateUserSerialisedIntBody(user: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
+                        new System.Net.Http.StringContent(
                             user
                             |> (fun field ->
                                 let field = System.Text.Json.Nodes.JsonValue.Create<int> field
@@ -820,367 +805,367 @@ module PureGymApi =
                                 (match field with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              "field",
                                              "Expected type int32 to be non-null, but received a null value when serialising"
                                          )
                                      )
-                                 | field -> field)
-                            )
-                            |> (fun node -> node.ToJsonString ())
+                                 | field -> field))
+                            |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
             member _.CreateUserSerialisedJsonNodeBody
-                (user : System.Text.Json.Nodes.JsonNode, ct : CancellationToken option)
-                =
+                (
+                    user: System.Text.Json.Nodes.JsonNode,
+                    ct: CancellationToken option
+                ) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
-                            user |> (fun node -> (node : System.Text.Json.Nodes.JsonNode).ToJsonString ())
+                        new System.Net.Http.StringContent(
+                            user |> (fun node -> (node: System.Text.Json.Nodes.JsonNode).ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserSerialisedBigIntBody (user : bigint, ct : CancellationToken option) =
+            member _.CreateUserSerialisedBigIntBody(user: bigint, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
+                        new System.Net.Http.StringContent(
                             user
                             |> (fun field ->
-                                let value = field : bigint
-                                value.ToString ("D", System.Globalization.CultureInfo.InvariantCulture)
-                            )
+                                let value = field: bigint
+                                value.ToString("D", System.Globalization.CultureInfo.InvariantCulture))
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.CreateUserHttpContent (user : System.Net.Http.HttpContent, ct : CancellationToken option) =
+            member _.CreateUserHttpContent(user: System.Net.Http.HttpContent, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("users/new", System.UriKind.Relative)
+                            System.Uri("users/new", System.UriKind.Relative)
                         )
 
                     let httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     do httpMessage.Content <- user
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetStream (ct : CancellationToken option) =
+            member _.GetStream(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetStream' (ct : CancellationToken option) =
+            member _.GetStream'(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetStream'' (ct : CancellationToken option) =
+            member _.GetStream''(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
                     return responseStream
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage (ct : CancellationToken option) =
+            member _.GetResponseMessage(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     return response
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage' (ct : CancellationToken option) =
+            member _.GetResponseMessage'(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     return response
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage'' (ct : CancellationToken option) =
+            member _.GetResponseMessage''(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     return response
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponseMessage''' (ct : CancellationToken option) =
+            member _.GetResponseMessage'''(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     return response
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponse (ct : CancellationToken option) =
+            member _.GetResponse(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Response<MemberActivityDto>"
                                  )
@@ -1188,46 +1173,46 @@ module PureGymApi =
                          | jsonNode -> jsonNode)
 
                     return
-                        new RestEase.Response<_> (
+                        new RestEase.Response<_>(
                             responseString,
                             response,
                             (fun () -> (MemberActivityDto.jsonParse jsonNode))
                         )
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponse' (ct : CancellationToken option) =
+            member _.GetResponse'(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type RestEase.Response<MemberActivityDto>"
                                  )
@@ -1235,46 +1220,46 @@ module PureGymApi =
                          | jsonNode -> jsonNode)
 
                     return
-                        new RestEase.Response<_> (
+                        new RestEase.Response<_>(
                             responseString,
                             response,
                             (fun () -> (MemberActivityDto.jsonParse jsonNode))
                         )
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponse'' (ct : CancellationToken option) =
+            member _.GetResponse''(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type Response<MemberActivityDto>"
                                  )
@@ -1282,46 +1267,46 @@ module PureGymApi =
                          | jsonNode -> jsonNode)
 
                     return
-                        new RestEase.Response<_> (
+                        new RestEase.Response<_>(
                             responseString,
                             response,
                             (fun () -> (MemberActivityDto.jsonParse jsonNode))
                         )
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetResponse''' (ct : CancellationToken option) =
+            member _.GetResponse'''(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type RestEase.Response<MemberActivityDto>"
                                  )
@@ -1329,61 +1314,60 @@ module PureGymApi =
                          | jsonNode -> jsonNode)
 
                     return
-                        new RestEase.Response<_> (
+                        new RestEase.Response<_>(
                             responseString,
                             response,
                             (fun () -> (MemberActivityDto.jsonParse jsonNode))
                         )
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithAnyReturnCode (ct : CancellationToken option) =
+            member _.GetWithAnyReturnCode(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
                     return response
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithoutAnyReturnCode (ct : CancellationToken option) =
+            member _.GetWithoutAnyReturnCode(ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri ("endpoint", System.UriKind.Relative)
+                            System.Uri("endpoint", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     return response
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1395,47 +1379,46 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module internal ApiWithoutBaseAddress =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithoutBaseAddress =
+    let make (client: System.Net.Http.HttpClient) : IApiWithoutBaseAddress =
         { new IApiWithoutBaseAddress with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1447,50 +1430,49 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithBasePath =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithBasePath =
+    let make (client: System.Net.Http.HttpClient) : IApiWithBasePath =
         { new IApiWithBasePath with
-            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+            member _.GetPathParam(parameter: string, cancellationToken: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              nameof (client.BaseAddress),
                                              "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                          )
                                      )
                                  | v -> v),
-                                System.Uri ("foo/", System.UriKind.Relative)
+                                System.Uri("foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = cancellationToken)) }
 namespace PureGym
 
 open System
@@ -1502,44 +1484,43 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithBasePathAndAddress =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAddress =
+    let make (client: System.Net.Http.HttpClient) : IApiWithBasePathAndAddress =
         { new IApiWithBasePathAndAddress with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null -> System.Uri "https://whatnot.com/thing/"
                                  | v -> v),
-                                System.Uri ("foo/", System.UriKind.Relative)
+                                System.Uri("foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1551,50 +1532,49 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithAbsoluteBasePath =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePath =
+    let make (client: System.Net.Http.HttpClient) : IApiWithAbsoluteBasePath =
         { new IApiWithAbsoluteBasePath with
-            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+            member _.GetPathParam(parameter: string, cancellationToken: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              nameof (client.BaseAddress),
                                              "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                          )
                                      )
                                  | v -> v),
-                                System.Uri ("/foo/", System.UriKind.Relative)
+                                System.Uri("/foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = cancellationToken)) }
 namespace PureGym
 
 open System
@@ -1606,44 +1586,43 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithAbsoluteBasePathAndAddress =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAddress =
+    let make (client: System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAddress =
         { new IApiWithAbsoluteBasePathAndAddress with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null -> System.Uri "https://whatnot.com/thing/"
                                  | v -> v),
-                                System.Uri ("/foo/", System.UriKind.Relative)
+                                System.Uri("/foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1655,50 +1634,49 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithBasePathAndAbsoluteEndpoint =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAbsoluteEndpoint =
+    let make (client: System.Net.Http.HttpClient) : IApiWithBasePathAndAbsoluteEndpoint =
         { new IApiWithBasePathAndAbsoluteEndpoint with
-            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+            member _.GetPathParam(parameter: string, cancellationToken: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              nameof (client.BaseAddress),
                                              "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                          )
                                      )
                                  | v -> v),
-                                System.Uri ("foo/", System.UriKind.Relative)
+                                System.Uri("foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = cancellationToken)) }
 namespace PureGym
 
 open System
@@ -1710,44 +1688,43 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithBasePathAndAddressAndAbsoluteEndpoint =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithBasePathAndAddressAndAbsoluteEndpoint =
+    let make (client: System.Net.Http.HttpClient) : IApiWithBasePathAndAddressAndAbsoluteEndpoint =
         { new IApiWithBasePathAndAddressAndAbsoluteEndpoint with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null -> System.Uri "https://whatnot.com/thing/"
                                  | v -> v),
-                                System.Uri ("foo/", System.UriKind.Relative)
+                                System.Uri("foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1759,50 +1736,49 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithAbsoluteBasePathAndAbsoluteEndpoint =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAbsoluteEndpoint =
+    let make (client: System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAbsoluteEndpoint =
         { new IApiWithAbsoluteBasePathAndAbsoluteEndpoint with
-            member _.GetPathParam (parameter : string, cancellationToken : CancellationToken option) =
+            member _.GetPathParam(parameter: string, cancellationToken: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              nameof (client.BaseAddress),
                                              "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                          )
                                      )
                                  | v -> v),
-                                System.Uri ("/foo/", System.UriKind.Relative)
+                                System.Uri("/foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = cancellationToken))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = cancellationToken)) }
 namespace PureGym
 
 open System
@@ -1814,44 +1790,43 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
+    let make (client: System.Net.Http.HttpClient) : IApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint =
         { new IApiWithAbsoluteBasePathAndAddressAndAbsoluteEndpoint with
-            member _.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
-                            System.Uri (
+                        System.Uri(
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null -> System.Uri "https://whatnot.com/thing/"
                                  | v -> v),
-                                System.Uri ("/foo/", System.UriKind.Relative)
+                                System.Uri("/foo/", System.UriKind.Relative)
                             ),
-                            System.Uri (
+                            System.Uri(
                                 "/endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1863,59 +1838,57 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithHeaders =
     /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
     let make
-        (someHeader : unit -> string)
-        (someOtherHeader : unit -> int)
-        (client : System.Net.Http.HttpClient)
-        : IApiWithHeaders
-        =
+        (someHeader: unit -> string)
+        (someOtherHeader: unit -> int)
+        (client: System.Net.Http.HttpClient)
+        : IApiWithHeaders =
         { new IApiWithHeaders with
-            member _.SomeHeader : string = someHeader ()
-            member _.SomeOtherHeader : int = someOtherHeader ()
+            member _.SomeHeader: string = someHeader ()
+            member _.SomeOtherHeader: int = someOtherHeader ()
 
-            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    do httpMessage.Headers.Add ("X-Foo", this.SomeHeader.ToString ())
-                    do httpMessage.Headers.Add ("Authorization", this.SomeOtherHeader.ToString ())
-                    do httpMessage.Headers.Add ("Header-Name", "Header-Value")
-                    do httpMessage.Headers.Add ("Something-Else", "val")
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    do httpMessage.Headers.Add("X-Foo", this.SomeHeader.ToString())
+                    do httpMessage.Headers.Add("Authorization", this.SomeOtherHeader.ToString())
+                    do httpMessage.Headers.Add("Header-Name", "Header-Value")
+                    do httpMessage.Headers.Add("Something-Else", "val")
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1927,58 +1900,56 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithHeaders2 =
     /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
     let make
-        (someHeader : unit -> string)
-        (someOtherHeader : unit -> int)
-        (client : System.Net.Http.HttpClient)
-        : IApiWithHeaders2
-        =
+        (someHeader: unit -> string)
+        (someOtherHeader: unit -> int)
+        (client: System.Net.Http.HttpClient)
+        : IApiWithHeaders2 =
         { new IApiWithHeaders2 with
-            member _.SomeHeader : string = someHeader ()
-            member _.SomeOtherHeader : int = someOtherHeader ()
+            member _.SomeHeader: string = someHeader ()
+            member _.SomeOtherHeader: int = someOtherHeader ()
 
-            member this.GetPathParam (parameter : string, ct : CancellationToken option) =
+            member this.GetPathParam(parameter: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    do httpMessage.Headers.Add ("X-Foo", this.SomeHeader.ToString ())
-                    do httpMessage.Headers.Add ("Authorization", this.SomeOtherHeader.ToString ())
-                    do httpMessage.Headers.Add ("Header-Name", "Header-Value")
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    do httpMessage.Headers.Add("X-Foo", this.SomeHeader.ToString())
+                    do httpMessage.Headers.Add("Authorization", this.SomeOtherHeader.ToString())
+                    do httpMessage.Headers.Add("Header-Name", "Header-Value")
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -1990,57 +1961,56 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ClientWithJsonBody =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IClientWithJsonBody =
+    let make (client: System.Net.Http.HttpClient) : IClientWithJsonBody =
         { new IClientWithJsonBody with
-            member _.GetPathParam (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, mem: PureGym.Member, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
-                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        new System.Net.Http.StringContent(
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2052,57 +2022,56 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ClientWithJsonBodyOverridden =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IClientWithJsonBodyOverridden =
+    let make (client: System.Net.Http.HttpClient) : IClientWithJsonBodyOverridden =
         { new IClientWithJsonBodyOverridden with
-            member _.GetPathParam (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, mem: PureGym.Member, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
-                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        new System.Net.Http.StringContent(
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/ecmascript; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/ecmascript; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2114,142 +2083,132 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithListQuery =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithListQuery =
+    let make (client: System.Net.Http.HttpClient) : IApiWithListQuery =
         { new IApiWithListQuery with
-            member _.GetWithListQuery (tags : string list, limit : int, ct : CancellationToken option) =
+            member _.GetWithListQuery(tags: string list, limit: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            tags
-                            |> List.map (fun queryParam ->
-                                "tag=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                            )
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                        ]
+                        [ tags
+                          |> List.map (fun queryParam ->
+                              "tag=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString))
+                          [ "limit=" + ((limit.ToString()) |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithSoleListQuery (tags : string list, ct : CancellationToken option) =
+            member _.GetWithSoleListQuery(tags: string list, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            tags
-                            |> List.map (fun queryParam ->
-                                "tag=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                            )
-                        ]
+                        [ tags
+                          |> List.map (fun queryParam ->
+                              "tag=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString)) ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithArrayQuery (ids : int[], ct : CancellationToken option) =
+            member _.GetWithArrayQuery(ids: int[], ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            ids
-                            |> Seq.map (fun queryParam ->
-                                "id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                            )
-                            |> List.ofSeq
-                        ]
+                        [ ids
+                          |> Seq.map (fun queryParam ->
+                              "id=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString))
+                          |> List.ofSeq ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2261,32 +2220,32 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiShadowingGeneratedNames =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiShadowingGeneratedNames =
+    let make (client: System.Net.Http.HttpClient) : IApiShadowingGeneratedNames =
         { new IApiShadowingGeneratedNames with
-            member _.GetWithPathNamedQueryString (queryString : string, limit : int, ct : CancellationToken option) =
+            member _.GetWithPathNamedQueryString(queryString: string, limit: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString1 =
-                        [ [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ] ]
+                        [ [ "limit=" + ((limit.ToString()) |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint/{queryString}"
-                                    .Replace ("{queryString}", queryString.ToString () |> System.Uri.EscapeDataString)
+                                    .Replace("{queryString}", queryString.ToString() |> System.Uri.EscapeDataString)
                                  + (if queryString1 = "" then
                                         ""
                                     else
-                                        ((if "endpoint/{queryString}".IndexOf (char 63) >= 0 then
+                                        ((if "endpoint/{queryString}".IndexOf(char 63) >= 0 then
                                               "&"
                                           else
                                               "?")
@@ -2296,60 +2255,57 @@ module ApiShadowingGeneratedNames =
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithQueryNamedQueryString (queryString : string, limit : int, ct : CancellationToken option) =
+            member _.GetWithQueryNamedQueryString(queryString: string, limit: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString1 =
-                        [
-                            [ "queryString=" + ((queryString.ToString ()) |> System.Uri.EscapeDataString) ]
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                        ]
+                        [ [ "queryString=" + ((queryString.ToString()) |> System.Uri.EscapeDataString) ]
+                          [ "limit=" + ((limit.ToString()) |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString1 = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString1))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString1))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2361,207 +2317,195 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ApiWithOptionalQuery =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IApiWithOptionalQuery =
+    let make (client: System.Net.Http.HttpClient) : IApiWithOptionalQuery =
         { new IApiWithOptionalQuery with
             member _.GetWithMixedQuery
-                (page : int option, limit : int, search : string option, ct : CancellationToken option)
-                =
+                (
+                    page: int option,
+                    limit: int,
+                    search: string option,
+                    ct: CancellationToken option
+                ) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            page
-                            |> Option.map (fun queryParam ->
-                                "page=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                            )
-                            |> Option.toList
+                        [ page
+                          |> Option.map (fun queryParam ->
+                              "page=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString))
+                          |> Option.toList
 
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                            search
-                            |> Option.map (fun queryParam ->
-                                "search=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                            )
-                            |> Option.toList
-                        ]
+                          [ "limit=" + ((limit.ToString()) |> System.Uri.EscapeDataString) ]
+                          search
+                          |> Option.map (fun queryParam ->
+                              "search=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString))
+                          |> Option.toList ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithAllOptionalQuery (since : DateOnly option, ct : CancellationToken option) =
+            member _.GetWithAllOptionalQuery(since: DateOnly option, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            since
-                            |> Option.map (fun queryParam ->
-                                "since=" + ((queryParam.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString)
-                            )
-                            |> Option.toList
-                        ]
+                        [ since
+                          |> Option.map (fun queryParam ->
+                              "since=" + ((queryParam.ToString "yyyy-MM-dd") |> System.Uri.EscapeDataString))
+                          |> Option.toList ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithOptionalListQuery (tags : string list option, limit : int, ct : CancellationToken option) =
+            member _.GetWithOptionalListQuery(tags: string list option, limit: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            tags
-                            |> Option.map (fun queryParam ->
-                                queryParam
-                                |> List.map (fun queryParam ->
-                                    "tag=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                                )
-                            )
-                            |> Option.toList
-                            |> List.concat
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                        ]
+                        [ tags
+                          |> Option.map (fun queryParam ->
+                              queryParam
+                              |> List.map (fun queryParam ->
+                                  "tag=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString)))
+                          |> Option.toList
+                          |> List.concat
+                          [ "limit=" + ((limit.ToString()) |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetWithOptionalArrayQuery (ids : int array option, limit : int, ct : CancellationToken option) =
+            member _.GetWithOptionalArrayQuery(ids: int array option, limit: int, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let queryString =
-                        [
-                            ids
-                            |> Option.map (fun queryParam ->
-                                queryParam
-                                |> Seq.map (fun queryParam ->
-                                    "id=" + ((queryParam.ToString ()) |> System.Uri.EscapeDataString)
-                                )
-                                |> List.ofSeq
-                            )
-                            |> Option.toList
-                            |> List.concat
-                            [ "limit=" + ((limit.ToString ()) |> System.Uri.EscapeDataString) ]
-                        ]
+                        [ ids
+                          |> Option.map (fun queryParam ->
+                              queryParam
+                              |> Seq.map (fun queryParam ->
+                                  "id=" + ((queryParam.ToString()) |> System.Uri.EscapeDataString))
+                              |> List.ofSeq)
+                          |> Option.toList
+                          |> List.concat
+                          [ "limit=" + ((limit.ToString()) |> System.Uri.EscapeDataString) ] ]
                         |> List.concat
                         |> String.concat "&"
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null -> System.Uri "https://whatnot.com/"
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 ("endpoint"
                                  + (if queryString = "" then
                                         ""
                                     else
-                                        ((if "endpoint".IndexOf (char 63) >= 0 then "&" else "?") + queryString))),
+                                        ((if "endpoint".IndexOf(char 63) >= 0 then "&" else "?") + queryString))),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2573,49 +2517,48 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ClientWithStringBody =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IClientWithStringBody =
+    let make (client: System.Net.Http.HttpClient) : IClientWithStringBody =
         { new IClientWithStringBody with
-            member _.GetPathParam (parameter : string, mem : string, ct : CancellationToken option) =
+            member _.GetPathParam(parameter: string, mem: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StringContent (mem)
+                    let queryParams = new System.Net.Http.StringContent(mem)
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2627,105 +2570,104 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ClientWithParameterisedContentType =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IClientWithParameterisedContentType =
+    let make (client: System.Net.Http.HttpClient) : IClientWithParameterisedContentType =
         { new IClientWithParameterisedContentType with
-            member _.WithCharset (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+            member _.WithCharset(parameter: string, mem: PureGym.Member, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
-                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        new System.Net.Http.StringContent(
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.WithOtherParameter (parameter : string, mem : PureGym.Member, ct : CancellationToken option) =
+            member _.WithOtherParameter(parameter: string, mem: PureGym.Member, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
                     let queryParams =
-                        new System.Net.Http.StringContent (
-                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString ())
+                        new System.Net.Http.StringContent(
+                            mem |> PureGym.Member.toJsonNode |> (fun node -> node.ToJsonString())
                         )
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse (
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse(
                                 "application/merge-patch+json; profile=custom; charset=utf-8"
                             )
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace PureGym
 
 open System
@@ -2737,51 +2679,54 @@ open System.Net.Http
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module ClientWithStreamBody =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IClientWithStreamBody =
+    let make (client: System.Net.Http.HttpClient) : IClientWithStreamBody =
         { new IClientWithStreamBody with
-            member _.UploadFile (parameter : string, file : Stream, ct : CancellationToken option) =
+            member _.UploadFile(parameter: string, file: Stream, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "endpoint/{param}"
-                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{param}", parameter.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     let httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Post,
                             RequestUri = uri
                         )
 
-                    let queryParams = new System.Net.Http.StreamContent (file)
+                    let queryParams = new System.Net.Http.StreamContent(file)
 
                     do
                         queryParams.Headers.ContentType <-
-                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/octet-stream")
+                            System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/octet-stream")
 
                     do httpMessage.Content <- queryParams
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
                     return responseString
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
+
+
+
+

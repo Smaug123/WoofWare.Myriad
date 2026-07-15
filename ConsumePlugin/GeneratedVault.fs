@@ -9,184 +9,179 @@
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtVaultAuthResponse type
-[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JwtVaultAuthResponse =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultAuthResponse =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : JwtVaultAuthResponse =
         let arg_10 =
             match node.["num_uses"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("num_uses")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Int32> ()
+            | Some node -> node.AsValue().GetValue<System.Int32>()
 
         let arg_9 =
             match node.["orphan"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("orphan")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Boolean> ()
+            | Some node -> node.AsValue().GetValue<System.Boolean>()
 
         let arg_8 =
             match node.["entity_id"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("entity_id")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
         let arg_7 =
             match node.["token_type"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("token_type")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
         let arg_6 =
             match node.["renewable"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("renewable")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Boolean> ()
+            | Some node -> node.AsValue().GetValue<System.Boolean>()
 
         let arg_5 =
             match node.["lease_duration"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("lease_duration")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Int32> ()
+            | Some node -> node.AsValue().GetValue<System.Int32>()
 
         let arg_4 =
             match node.["identity_policies"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("identity_policies")
                     )
                 )
             | Some node ->
-                node.AsArray ()
+                node.AsArray()
                 |> Seq.map (fun elt ->
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
                              )
                          )
-                     | elt -> elt.AsValue().GetValue<System.String> ())
-                )
+                     | elt -> elt.AsValue().GetValue<System.String>()))
                 |> List.ofSeq
 
         let arg_3 =
             match node.["token_policies"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("token_policies")
                     )
                 )
             | Some node ->
-                node.AsArray ()
+                node.AsArray()
                 |> Seq.map (fun elt ->
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
                              )
                          )
-                     | elt -> elt.AsValue().GetValue<System.String> ())
-                )
+                     | elt -> elt.AsValue().GetValue<System.String>()))
                 |> List.ofSeq
 
         let arg_2 =
             match node.["policies"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("policies")
                     )
                 )
             | Some node ->
-                node.AsArray ()
+                node.AsArray()
                 |> Seq.map (fun elt ->
                     (match elt with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "elt",
                                  "Expected element of array (element type string) to be non-null, but found a null element"
                              )
                          )
-                     | elt -> elt.AsValue().GetValue<System.String> ())
-                )
+                     | elt -> elt.AsValue().GetValue<System.String>()))
                 |> List.ofSeq
 
         let arg_1 =
             match node.["accessor"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("accessor")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
         let arg_0 =
             match node.["client_token"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("client_token")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
-        {
-            ClientToken = arg_0
-            Accessor = arg_1
-            Policies = arg_2
-            TokenPolicies = arg_3
-            IdentityPolicies = arg_4
-            LeaseDuration = arg_5
-            Renewable = arg_6
-            TokenType = arg_7
-            EntityId = arg_8
-            Orphan = arg_9
-            NumUses = arg_10
-        }
+        { ClientToken = arg_0
+          Accessor = arg_1
+          Policies = arg_2
+          TokenPolicies = arg_3
+          IdentityPolicies = arg_4
+          LeaseDuration = arg_5
+          Renewable = arg_6
+          TokenType = arg_7
+          EntityId = arg_8
+          Orphan = arg_9
+          NumUses = arg_10 }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtVaultResponse type
-[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JwtVaultResponse =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtVaultResponse =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : JwtVaultResponse =
         let arg_4 =
             match node.["auth"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("auth")
                     )
                 )
@@ -196,66 +191,64 @@ module JwtVaultResponse =
             match node.["lease_duration"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("lease_duration")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Int32> ()
+            | Some node -> node.AsValue().GetValue<System.Int32>()
 
         let arg_2 =
             match node.["renewable"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("renewable")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Boolean> ()
+            | Some node -> node.AsValue().GetValue<System.Boolean>()
 
         let arg_1 =
             match node.["lease_id"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("lease_id")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
         let arg_0 =
             match node.["request_id"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("request_id")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
-        {
-            RequestId = arg_0
-            LeaseId = arg_1
-            Renewable = arg_2
-            LeaseDuration = arg_3
-            Auth = arg_4
-        }
+        { RequestId = arg_0
+          LeaseId = arg_1
+          Renewable = arg_2
+          LeaseDuration = arg_3
+          Auth = arg_4 }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing methods for the JwtSecretResponse type
-[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JwtSecretResponse =
     /// Parse from a JSON node.
-    let jsonParse (node : System.Text.Json.Nodes.JsonNode) : JwtSecretResponse =
+    let jsonParse (node: System.Text.Json.Nodes.JsonNode) : JwtSecretResponse =
         let arg_11 =
             match node.["data8"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data8")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = kvp.Value
@@ -264,13 +257,12 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type URI to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<string> () |> System.Uri)
-                )
+                     | value -> value.AsValue().GetValue<string>() |> System.Uri))
                 |> Seq.map System.Collections.Generic.KeyValuePair
                 |> System.Collections.Generic.Dictionary
 
@@ -278,12 +270,12 @@ module JwtSecretResponse =
             match node.["data7"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data7")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = kvp.Value
@@ -292,25 +284,24 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type int32 to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.Int32> ())
-                )
+                     | value -> value.AsValue().GetValue<System.Int32>()))
                 |> Map.ofSeq
 
         let arg_9 =
             match node.["data6"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data6")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key) |> System.Uri
                     let value = kvp.Value
@@ -319,25 +310,24 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.String> ())
-                )
+                     | value -> value.AsValue().GetValue<System.String>()))
                 |> dict
 
         let arg_8 =
             match node.["data5"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data5")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key) |> System.Uri
                     let value = kvp.Value
@@ -346,25 +336,24 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.String> ())
-                )
+                     | value -> value.AsValue().GetValue<System.String>()))
                 |> readOnlyDict
 
         let arg_7 =
             match node.["data4"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data4")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = kvp.Value
@@ -373,25 +362,24 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.String> ())
-                )
+                     | value -> value.AsValue().GetValue<System.String>()))
                 |> Map.ofSeq
 
         let arg_6 =
             match node.["data3"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data3")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = kvp.Value
@@ -400,13 +388,12 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.String> ())
-                )
+                     | value -> value.AsValue().GetValue<System.String>()))
                 |> Seq.map System.Collections.Generic.KeyValuePair
                 |> System.Collections.Generic.Dictionary
 
@@ -414,12 +401,12 @@ module JwtSecretResponse =
             match node.["data2"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data2")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = kvp.Value
@@ -428,25 +415,24 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.String> ())
-                )
+                     | value -> value.AsValue().GetValue<System.String>()))
                 |> dict
 
         let arg_4 =
             match node.["data"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("data")
                     )
                 )
             | Some node ->
-                node.AsObject ()
+                node.AsObject()
                 |> Seq.map (fun kvp ->
                     let key = (kvp.Key)
                     let value = kvp.Value
@@ -455,69 +441,66 @@ module JwtSecretResponse =
                     (match value with
                      | null ->
                          raise (
-                             System.ArgumentNullException (
+                             System.ArgumentNullException(
                                  "value",
                                  "Expected dictionary value of type string to be non-null, but it was null"
                              )
                          )
-                     | value -> value.AsValue().GetValue<System.String> ())
-                )
+                     | value -> value.AsValue().GetValue<System.String>()))
                 |> readOnlyDict
 
         let arg_3 =
             match node.["lease_duration"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("lease_duration")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Int32> ()
+            | Some node -> node.AsValue().GetValue<System.Int32>()
 
         let arg_2 =
             match node.["renewable"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("renewable")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.Boolean> ()
+            | Some node -> node.AsValue().GetValue<System.Boolean>()
 
         let arg_1 =
             match node.["lease_id"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("lease_id")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
         let arg_0 =
             match node.["request_id"] |> Option.ofObj with
             | None ->
                 raise (
-                    System.Collections.Generic.KeyNotFoundException (
+                    System.Collections.Generic.KeyNotFoundException(
                         sprintf "Required key '%s' not found on JSON object" ("request_id")
                     )
                 )
-            | Some node -> node.AsValue().GetValue<System.String> ()
+            | Some node -> node.AsValue().GetValue<System.String>()
 
-        {
-            RequestId = arg_0
-            LeaseId = arg_1
-            Renewable = arg_2
-            LeaseDuration = arg_3
-            Data = arg_4
-            Data2 = arg_5
-            Data3 = arg_6
-            Data4 = arg_7
-            Data5 = arg_8
-            Data6 = arg_9
-            Data7 = arg_10
-            Data8 = arg_11
-        }
+        { RequestId = arg_0
+          LeaseId = arg_1
+          Renewable = arg_2
+          LeaseDuration = arg_3
+          Data = arg_4
+          Data2 = arg_5
+          Data3 = arg_6
+          Data4 = arg_7
+          Data5 = arg_8
+          Data6 = arg_9
+          Data7 = arg_10
+          Data8 = arg_11 }
 
 namespace ConsumePlugin
 
@@ -529,56 +512,54 @@ open System.Threading.Tasks
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module VaultClient =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IVaultClient =
+    let make (client: System.Net.Http.HttpClient) : IVaultClient =
         { new IVaultClient with
-            member _.GetSecret
-                (jwt : JwtVaultResponse, path : string, mountPoint : string, ct : CancellationToken option)
-                =
+            member _.GetSecret(jwt: JwtVaultResponse, path: string, mountPoint: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "v1/{mountPoint}/{path}"
-                                    .Replace("{path}", path.ToString () |> System.Uri.EscapeDataString)
-                                    .Replace ("{mountPoint}", mountPoint.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{path}", path.ToString() |> System.Uri.EscapeDataString)
+                                    .Replace("{mountPoint}", mountPoint.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
                                  )
@@ -587,46 +568,46 @@ module VaultClient =
 
                     return JwtSecretResponse.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetJwt (role : string, jwt : string, ct : CancellationToken option) =
+            member _.GetJwt(role: string, jwt: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri ("v1/auth/jwt/login", System.UriKind.Relative)
+                            System.Uri("v1/auth/jwt/login", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
                                  )
@@ -635,8 +616,7 @@ module VaultClient =
 
                     return JwtVaultResponse.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace ConsumePlugin
 
 open System
@@ -647,56 +627,54 @@ open System.Threading.Tasks
 open RestEase
 
 /// Module for constructing a REST client.
-[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix); RequireQualifiedAccess>]
 module VaultClientNonExtensionMethod =
     /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IVaultClientNonExtensionMethod =
+    let make (client: System.Net.Http.HttpClient) : IVaultClientNonExtensionMethod =
         { new IVaultClientNonExtensionMethod with
-            member _.GetSecret
-                (jwt : JwtVaultResponse, path : string, mountPoint : string, ct : CancellationToken option)
-                =
+            member _.GetSecret(jwt: JwtVaultResponse, path: string, mountPoint: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri (
+                            System.Uri(
                                 "v1/{mountPoint}/{path}"
-                                    .Replace("{path}", path.ToString () |> System.Uri.EscapeDataString)
-                                    .Replace ("{mountPoint}", mountPoint.ToString () |> System.Uri.EscapeDataString),
+                                    .Replace("{path}", path.ToString() |> System.Uri.EscapeDataString)
+                                    .Replace("{mountPoint}", mountPoint.ToString() |> System.Uri.EscapeDataString),
                                 System.UriKind.Relative
                             )
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
                                  )
@@ -705,46 +683,46 @@ module VaultClientNonExtensionMethod =
 
                     return JwtSecretResponse.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-            member _.GetJwt (role : string, jwt : string, ct : CancellationToken option) =
+            member _.GetJwt(role: string, jwt: string, ct: CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
                     let uri =
-                        System.Uri (
+                        System.Uri(
                             (match client.BaseAddress with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          nameof (client.BaseAddress),
                                          "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                      )
                                  )
                              | v -> v),
-                            System.Uri ("v1/auth/jwt/login", System.UriKind.Relative)
+                            System.Uri("v1/auth/jwt/login", System.UriKind.Relative)
                         )
 
                     use httpMessage =
-                        new System.Net.Http.HttpRequestMessage (
+                        new System.Net.Http.HttpRequestMessage(
                             Method = System.Net.Http.HttpMethod.Get,
                             RequestUri = uri
                         )
 
-                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                    let response = response.EnsureSuccessStatusCode ()
+                    let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode()
                     use response = response
                     let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                     let! jsonNode =
-                        System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                        System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                         |> Async.AwaitTask
 
                     let jsonNode =
                         (match jsonNode with
                          | null ->
                              raise (
-                                 System.ArgumentNullException (
+                                 System.ArgumentNullException(
                                      "jsonNode",
                                      "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
                                  )
@@ -753,8 +731,7 @@ module VaultClientNonExtensionMethod =
 
                     return JwtVaultResponse.jsonParse jsonNode
                 }
-                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-        }
+                |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
 namespace ConsumePlugin
 
 open System
@@ -771,53 +748,57 @@ module VaultClientExtensionMethodHttpClientExtension =
     type VaultClientExtensionMethod with
 
         /// Create a REST client.
-        static member make (client : System.Net.Http.HttpClient) : IVaultClientExtensionMethod =
+        static member make(client: System.Net.Http.HttpClient) : IVaultClientExtensionMethod =
             { new IVaultClientExtensionMethod with
                 member _.GetSecret
-                    (jwt : JwtVaultResponse, path : string, mountPoint : string, ct : CancellationToken option)
-                    =
+                    (
+                        jwt: JwtVaultResponse,
+                        path: string,
+                        mountPoint: string,
+                        ct: CancellationToken option
+                    ) =
                     async {
                         let! ct = Async.CancellationToken
 
                         let uri =
-                            System.Uri (
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              nameof (client.BaseAddress),
                                              "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                          )
                                      )
                                  | v -> v),
-                                System.Uri (
+                                System.Uri(
                                     "v1/{mountPoint}/{path}"
-                                        .Replace("{path}", path.ToString () |> System.Uri.EscapeDataString)
-                                        .Replace ("{mountPoint}", mountPoint.ToString () |> System.Uri.EscapeDataString),
+                                        .Replace("{path}", path.ToString() |> System.Uri.EscapeDataString)
+                                        .Replace("{mountPoint}", mountPoint.ToString() |> System.Uri.EscapeDataString),
                                     System.UriKind.Relative
                                 )
                             )
 
                         use httpMessage =
-                            new System.Net.Http.HttpRequestMessage (
+                            new System.Net.Http.HttpRequestMessage(
                                 Method = System.Net.Http.HttpMethod.Get,
                                 RequestUri = uri
                             )
 
-                        let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                        let response = response.EnsureSuccessStatusCode ()
+                        let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                        let response = response.EnsureSuccessStatusCode()
                         use response = response
                         let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                         let! jsonNode =
-                            System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                            System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                             |> Async.AwaitTask
 
                         let jsonNode =
                             (match jsonNode with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          "jsonNode",
                                          "Response from server was the JSON null object; expected a non-nullable type JwtSecretResponse"
                                      )
@@ -826,46 +807,46 @@ module VaultClientExtensionMethodHttpClientExtension =
 
                         return JwtSecretResponse.jsonParse jsonNode
                     }
-                    |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+                    |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct))
 
-                member _.GetJwt (role : string, jwt : string, ct : CancellationToken option) =
+                member _.GetJwt(role: string, jwt: string, ct: CancellationToken option) =
                     async {
                         let! ct = Async.CancellationToken
 
                         let uri =
-                            System.Uri (
+                            System.Uri(
                                 (match client.BaseAddress with
                                  | null ->
                                      raise (
-                                         System.ArgumentNullException (
+                                         System.ArgumentNullException(
                                              nameof (client.BaseAddress),
                                              "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
                                          )
                                      )
                                  | v -> v),
-                                System.Uri ("v1/auth/jwt/login", System.UriKind.Relative)
+                                System.Uri("v1/auth/jwt/login", System.UriKind.Relative)
                             )
 
                         use httpMessage =
-                            new System.Net.Http.HttpRequestMessage (
+                            new System.Net.Http.HttpRequestMessage(
                                 Method = System.Net.Http.HttpMethod.Get,
                                 RequestUri = uri
                             )
 
-                        let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
-                        let response = response.EnsureSuccessStatusCode ()
+                        let! response = client.SendAsync(httpMessage, ct) |> Async.AwaitTask
+                        let response = response.EnsureSuccessStatusCode()
                         use response = response
                         let! responseStream = response.Content.ReadAsStreamAsync ct |> Async.AwaitTask
 
                         let! jsonNode =
-                            System.Text.Json.Nodes.JsonNode.ParseAsync (responseStream, cancellationToken = ct)
+                            System.Text.Json.Nodes.JsonNode.ParseAsync(responseStream, cancellationToken = ct)
                             |> Async.AwaitTask
 
                         let jsonNode =
                             (match jsonNode with
                              | null ->
                                  raise (
-                                     System.ArgumentNullException (
+                                     System.ArgumentNullException(
                                          "jsonNode",
                                          "Response from server was the JSON null object; expected a non-nullable type JwtVaultResponse"
                                      )
@@ -874,5 +855,8 @@ module VaultClientExtensionMethodHttpClientExtension =
 
                         return JwtVaultResponse.jsonParse jsonNode
                     }
-                    |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
-            }
+                    |> (fun a -> Async.StartAsTask(a, ?cancellationToken = ct)) }
+
+
+
+

@@ -14,37 +14,32 @@ namespace AnonymousTypes
 
 open WoofWare.Myriad.Plugins
 
-[<JsonParse true ; JsonSerialize true>]
+[<JsonParse true; JsonSerialize true>]
 type Type1 =
-    {
-        [<System.Text.Json.Serialization.JsonExtensionData>]
-        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
-        [<System.Text.Json.Serialization.JsonPropertyName "name">]
-        Name : string option
-    }
+    { [<System.Text.Json.Serialization.JsonExtensionData>]
+      AdditionalProperties: System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+      [<System.Text.Json.Serialization.JsonPropertyName "name">]
+      Name: string option }
 
-[<JsonParse true ; JsonSerialize true>]
+[<JsonParse true; JsonSerialize true>]
 type Type2147483647 =
-    {
-        [<System.Text.Json.Serialization.JsonExtensionData>]
-        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
-        [<System.Text.Json.Serialization.JsonPropertyName "wouldOverflowASeededCounter">]
-        WouldOverflowASeededCounter : string option
-    }
+    { [<System.Text.Json.Serialization.JsonExtensionData>]
+      AdditionalProperties: System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+      [<System.Text.Json.Serialization.JsonPropertyName "wouldOverflowASeededCounter">]
+      WouldOverflowASeededCounter: string option }
 
-[<JsonParse true ; JsonSerialize true>]
+[<JsonParse true; JsonSerialize true>]
 type Type2 =
-    {
-        [<System.Text.Json.Serialization.JsonExtensionData>]
-        AdditionalProperties : System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
-        [<System.Text.Json.Serialization.JsonPropertyName "data">]
-        Data : string option
-    }
+    { [<System.Text.Json.Serialization.JsonExtensionData>]
+      AdditionalProperties: System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>
+      [<System.Text.Json.Serialization.JsonPropertyName "data">]
+      Data: string option }
 
 /// An API whose spec explicitly defines a type called "Type1", the first name WoofWare.Myriad would otherwise invent for the anonymous inline response schema below.
-[<HttpClient false ; RestEase.BasePath "/v1">]
+[<HttpClient false; RestEase.BasePath "/v1">]
 type IAnonymousTypes =
     /// Gets a foo
     [<RestEase.Get "foo">]
     [<RestEase.Header("Accept", "application/json")>]
-    abstract GetFoo : ?ct : System.Threading.CancellationToken -> Type2 System.Threading.Tasks.Task
+    abstract GetFoo: ?ct: System.Threading.CancellationToken -> Type2 System.Threading.Tasks.Task
+
