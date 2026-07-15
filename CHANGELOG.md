@@ -1,5 +1,11 @@
 Notable changes are recorded here.
 
+# Unreleased
+
+The `swagger-client` generator now accepts OpenAPI 3.0 JSON documents as well as Swagger 2.0 documents.
+It generates DTO records and a chained `HttpClient` interface from component schemas, paths, parameters, request bodies, responses, and root server definitions.
+Unsupported or structurally ambiguous OpenAPI constructs fail with structured, JSON-pointer-located diagnostics; unconstrained JSON values preserve `null`, and unbounded integers use `BigInteger`.
+
 # WoofWare.Myriad.Plugins 10.0.1
 
 The `JsonSerializeGenerator` now requires `System.Text.Json` at version at least 8, to accommodate `JsonNode.DeepClone`.

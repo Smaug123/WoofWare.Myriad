@@ -51,7 +51,8 @@
     <Compile Include="TestSwagger\TestSwaggerTypeRender.fs" />
     <Compile Include="TestSwagger\TestGiteaClient.fs" />
     <Compile Include="TestSwagger\TestSwaggerMimeType.fs" />
-    <Compile Include="TestSwagger\TestOpenApi3Parse.fs" />
+    <Compile Include="TestSwagger\TestOpenApi3Generator.fs" />
+    <Compile Include="TestSwagger\TestOpenApi3Client.fs" />
     <EmbeddedResource Include="TestSwagger\api-with-examples.json" />
     <EmbeddedResource Include="TestSwagger\callback-example.json" />
     <EmbeddedResource Include="TestSwagger\link-example.json" />
