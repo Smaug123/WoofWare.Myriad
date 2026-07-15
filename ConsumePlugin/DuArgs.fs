@@ -43,3 +43,25 @@ type WithModeArgs =
         Verbose : bool
         Mode : Mode
     }
+
+type DefaultedArgs =
+    {
+        [<ArgumentDefaultFunction>]
+        Retries : Choice<int, int>
+    }
+
+    /// The default-function convention resolves against the record which declares the field
+    /// (this case's payload record), not against the [<ArgParser>]-tagged union.
+    static member DefaultRetries () = 3
+
+type PlainArgs =
+    {
+        Value : int
+    }
+
+/// A union case whose payload record carries a default function. The default makes the case
+/// satisfiable with no arguments, but must not influence which case is selected.
+[<ArgParser>]
+type DuWithDefaultArgs =
+    | Defaulted of DefaultedArgs
+    | Plain of PlainArgs

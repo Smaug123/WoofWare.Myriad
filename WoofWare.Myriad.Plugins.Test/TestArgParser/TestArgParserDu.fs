@@ -120,3 +120,67 @@ No arguments were supplied to select one of: FooCase, BarCase"""
         |> shouldEqual
             """Errors during parse!
 Arguments select more than one alternative: Auto (via --quiet=true), Manual (via --level=1)"""
+
+    [<Test>]
+    let ``A case payload's default function resolves against the payload record`` () =
+        // DefaultRetries lives on DefaultedArgs, the case's payload record; the generated code
+        // must call it there (defaults used to be emitted against the tagged root type, which
+        // for a union does not even compile).
+        DuWithDefaultArgs.parse' noEnv [ "--retries=5" ]
+        |> shouldEqual (
+            Defaulted
+                {
+                    Retries = Choice1Of2 5
+                }
+        )
+
+        // The defaulted case is the unique case satisfiable with no arguments, so the empty
+        // command line selects it and then fills the default in.
+        DuWithDefaultArgs.parse' noEnv []
+        |> shouldEqual (
+            Defaulted
+                {
+                    Retries = Choice2Of2 3
+                }
+        )
+
+        // The default does not influence selection: another case's argument wins.
+        DuWithDefaultArgs.parse' noEnv [ "--value=1" ]
+        |> shouldEqual (
+            Plain
+                {
+                    Value = 1
+                }
+        )
+
+    [<Test>]
+    let ``Help text shows the alternatives, not a flat list`` () =
+        // The grammar is `--foo XOR (--bar AND --baz)`; help must communicate that structure,
+        // or users cannot discover a correct invocation.
+        let exc =
+            Assert.Throws<exn> (fun () -> DuArgs.parse' noEnv [ "--help" ] |> ignore<DuArgs>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+exactly one of the following sets of arguments:
+FooCase:
+  --foo  int32 : The foo argument
+BarCase:
+  --bar  int32
+  --baz  int32"""
+
+    [<Test>]
+    let ``Help text for a union nested in a record groups only the union's arguments`` () =
+        let exc =
+            Assert.Throws<exn> (fun () -> WithModeArgs.parse' noEnv [ "--help" ] |> ignore<WithModeArgs>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--verbose  bool
+exactly one of the following sets of arguments:
+Auto:
+  --quiet  bool (optional)
+Manual:
+  --level  int32"""

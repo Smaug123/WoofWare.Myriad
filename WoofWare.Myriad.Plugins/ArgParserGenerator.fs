@@ -1119,12 +1119,7 @@ module internal ArgParserGenerator =
 
         ParseTree.Sum (sumId, cases, assemble, Teq.refl) |> ParseTreeCrate.make, counter
 
-    let private helpText
-        (typeHelp : SynExpr option)
-        (positional : ParseFunctionPositional option)
-        (args : ParseFunctionNonPositional list)
-        : SynBinding
-        =
+    let private helpText<'hasPositional> (typeHelp : SynExpr option) (tree : ParseTree<'hasPositional>) : SynBinding =
         let describeNonPositional
             (acc : Accumulation<ArgumentDefaultSpec>)
             (flagCases : Choice<FlagDu, unit> option)
@@ -1179,7 +1174,13 @@ module internal ArgParserGenerator =
 
         /// We may sometimes lie about the type name, if e.g. this is a flag DU which we're pretending is a boolean.
         /// So the `renderTypeName` takes the Accumulation which tells us whether we're lying.
-        let toPrintable (describe : 'a -> Choice<FlagDu, unit> option -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
+        /// `depth` is the nesting depth in union alternatives; each level indents by two spaces.
+        let toPrintable
+            (depth : int)
+            (describe : 'a -> Choice<FlagDu, unit> option -> SynExpr)
+            (arg : ParseFunction<'a>)
+            : SynExpr
+            =
             let ty =
                 match arg.BoolCases with
                 | None -> SynType.toHumanReadableString arg.TargetType
@@ -1195,19 +1196,60 @@ module internal ArgParserGenerator =
 
             let descriptor = describe arg.Accumulation arg.BoolCases
 
-            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%%s  %s{ty}%%s%%s")
+            let indent = String.replicate depth "  "
+
+            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%s{indent}%%s  %s{ty}%%s%%s")
             |> SynExpr.applyTo arg.HumanReadableArgForm
             |> SynExpr.applyTo descriptor
             |> SynExpr.applyTo helpText
             |> SynExpr.paren
 
+        // Walk the tree so that a union's alternatives are *grouped* in the help, not flattened
+        // into one undifferentiated list: the user must be able to see which arguments go
+        // together. Non-positional lines appear in declaration order; the positional-args line,
+        // if any, comes last, as it always has. (Positionals cannot coexist with unions, so the
+        // two features never interleave.)
+        let rec fieldHelpNonPos (depth : int) (tree : ParseTree<HasNoPositional>) : SynExpr list =
+            match tree with
+            | ParseTree.NonPositionalLeaf (pf, _) -> [ toPrintable depth describeNonPositional pf ]
+            | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
+            | ParseTree.Branch (fields, _, _) -> fields |> List.collect (fun (_, child) -> fieldHelpNonPos depth child)
+            | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
+            | ParseTree.Sum (_, cases, _, _) -> sumHelp depth cases
+
+        and sumHelp (depth : int) (cases : (Ident * ParseTree<HasNoPositional>) list) : SynExpr list =
+            let indent = String.replicate depth "  "
+
+            SynExpr.CreateConst (indent + "exactly one of the following sets of arguments:")
+            :: (cases
+                |> List.collect (fun (caseName, case) ->
+                    SynExpr.CreateConst (indent + caseName.idText + ":")
+                    :: fieldHelpNonPos (depth + 1) case
+                ))
+
+        let rec fieldHelpPos (tree : ParseTree<HasPositional>) : SynExpr list * SynExpr =
+            match tree with
+            | ParseTree.PositionalLeaf (pf, _) -> [], toPrintable 0 describePositional pf
+            | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
+            | ParseTree.Branch (_, _, teq) -> exFalso' teq
+            | ParseTree.BranchPos (_, posTree, fields, _, _) ->
+                let nonPos = fields |> List.collect (fun (_, child) -> fieldHelpNonPos 0 child)
+
+                let nonPos2, pos = fieldHelpPos posTree
+                nonPos @ nonPos2, pos
+            | ParseTree.Sum (_, _, _, teq) -> exFalso' teq
+
         let fieldHelp =
-            args
-            |> List.map (toPrintable describeNonPositional)
-            |> fun l ->
-                match positional with
-                | None -> l
-                | Some pos -> l @ [ toPrintable describePositional pos ]
+            match tree with
+            | ParseTree.NonPositionalLeaf (pf, _) -> [ toPrintable 0 describeNonPositional pf ]
+            | ParseTree.PositionalLeaf (pf, _) -> [ toPrintable 0 describePositional pf ]
+            | ParseTree.Branch (fields, _, _) -> fields |> List.collect (fun (_, child) -> fieldHelpNonPos 0 child)
+            | ParseTree.BranchPos (_, posTree, fields, _, _) ->
+                let nonPos = fields |> List.collect (fun (_, child) -> fieldHelpNonPos 0 child)
+
+                let nonPos2, pos = fieldHelpPos posTree
+                nonPos @ nonPos2 @ [ pos ]
+            | ParseTree.Sum (_, cases, _, _) -> sumHelp 0 cases
 
         let allHelp =
             match typeHelp with
@@ -1335,7 +1377,11 @@ module internal ArgParserGenerator =
 
             bindings, bindingName, leftoverArgsParser
 
-        let helpText = helpText typeHelpText pos nonPos
+        let helpText =
+            { new ParseTreeEval<_> with
+                member _.Eval tree = helpText typeHelpText tree
+            }
+            |> spec.Apply
 
         let bindings = helpText :: bindings
 
