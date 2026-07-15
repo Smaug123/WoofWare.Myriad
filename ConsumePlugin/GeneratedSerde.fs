@@ -18,11 +18,11 @@ module InnerTypeWithBothJsonSerializeExtension =
     type InnerTypeWithBoth with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: InnerTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : InnerTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add(
+                node.Add (
                     ("it's-a-me"),
                     (input.Thing
                      |> (fun field ->
@@ -31,24 +31,25 @@ module InnerTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type GUID to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "map",
                     (input.Map
                      |> (fun field ->
-                         let ret = System.Text.Json.Nodes.JsonObject()
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                         for (KeyValue(key, value)) in field do
-                             let key = key.ToString()
+                         for (KeyValue (key, value)) in field do
+                             let key = key.ToString ()
 
-                             ret.Add(
+                             ret.Add (
                                  key,
                                  (fun field ->
                                      let field = System.Text.Json.Nodes.JsonValue.Create<Uri> field
@@ -56,66 +57,71 @@ module InnerTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException(
+                                              System.ArgumentNullException (
                                                   "field",
                                                   "Expected type URI to be non-null, but received a null value when serialising"
                                               )
                                           )
-                                      | field -> field))
+                                      | field -> field)
+                                 )
                                      value
                              )
 
-                         ret))
+                         ret
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "readOnlyDict",
                     (input.ReadOnlyDict
                      |> (fun field ->
-                         let ret = System.Text.Json.Nodes.JsonObject()
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                         for (KeyValue(key, value)) in field do
-                             let key = key.ToString()
+                         for (KeyValue (key, value)) in field do
+                             let key = key.ToString ()
 
-                             ret.Add(
+                             ret.Add (
                                  key,
                                  (fun field ->
-                                     let arr = System.Text.Json.Nodes.JsonArray()
+                                     let arr = System.Text.Json.Nodes.JsonArray ()
 
                                      for mem in field do
-                                         arr.Add(
+                                         arr.Add (
                                              (fun field ->
                                                  let field = System.Text.Json.Nodes.JsonValue.Create<char> field
 
                                                  (match field with
                                                   | null ->
                                                       raise (
-                                                          System.ArgumentNullException(
+                                                          System.ArgumentNullException (
                                                               "field",
                                                               "Expected type char to be non-null, but received a null value when serialising"
                                                           )
                                                       )
-                                                  | field -> field))
+                                                  | field -> field)
+                                             )
                                                  mem
                                          )
 
-                                     arr)
+                                     arr
+                                 )
                                      value
                              )
 
-                         ret))
+                         ret
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "dict",
                     (input.Dict
                      |> (fun field ->
-                         let ret = System.Text.Json.Nodes.JsonObject()
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                         for (KeyValue(key, value)) in field do
-                             let key = key.ToString()
+                         for (KeyValue (key, value)) in field do
+                             let key = key.ToString ()
 
-                             ret.Add(
+                             ret.Add (
                                  key,
                                  (fun field ->
                                      let field = System.Text.Json.Nodes.JsonValue.Create<bool> field
@@ -123,29 +129,32 @@ module InnerTypeWithBothJsonSerializeExtension =
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException(
+                                              System.ArgumentNullException (
                                                   "field",
                                                   "Expected type bool to be non-null, but received a null value when serialising"
                                               )
                                           )
-                                      | field -> field))
+                                      | field -> field)
+                                 )
                                      value
                              )
 
-                         ret))
+                         ret
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "concreteDict",
                     (input.ConcreteDict
                      |> (fun field ->
-                         let ret = System.Text.Json.Nodes.JsonObject()
+                         let ret = System.Text.Json.Nodes.JsonObject ()
 
-                         for (KeyValue(key, value)) in field do
-                             let key = key.ToString()
-                             ret.Add(key, InnerTypeWithBoth.toJsonNode value)
+                         for (KeyValue (key, value)) in field do
+                             let key = key.ToString ()
+                             ret.Add (key, InnerTypeWithBoth.toJsonNode value)
 
-                         ret))
+                         ret
+                     ))
                 )
 
             node :> _
@@ -162,7 +171,7 @@ module SomeEnumJsonSerializeExtension =
     type SomeEnum with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: SomeEnum) : System.Text.Json.Nodes.JsonNode =
+        static member toJsonNode (input : SomeEnum) : System.Text.Json.Nodes.JsonNode =
             match input with
             | SomeEnum.Blah -> System.Text.Json.Nodes.JsonValue.Create 1
             | SomeEnum.Thing -> System.Text.Json.Nodes.JsonValue.Create 0
@@ -180,11 +189,11 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
     type JsonRecordTypeWithBoth with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: JsonRecordTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : JsonRecordTypeWithBoth) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add(
+                node.Add (
                     "a",
                     (input.A
                      |> (fun field ->
@@ -193,15 +202,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type int32 to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "b",
                     (input.B
                      |> (fun field ->
@@ -210,95 +220,102 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "c",
                     (input.C
                      |> (fun field ->
-                         let arr = System.Text.Json.Nodes.JsonArray()
+                         let arr = System.Text.Json.Nodes.JsonArray ()
 
                          for mem in field do
-                             arr.Add(
+                             arr.Add (
                                  (fun field ->
                                      let field = System.Text.Json.Nodes.JsonValue.Create<int> field
 
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException(
+                                              System.ArgumentNullException (
                                                   "field",
                                                   "Expected type int32 to be non-null, but received a null value when serialising"
                                               )
                                           )
-                                      | field -> field))
+                                      | field -> field)
+                                 )
                                      mem
                              )
 
-                         arr))
+                         arr
+                     ))
                 )
 
-                node.Add("d", (input.D |> InnerTypeWithBoth.toJsonNode))
+                node.Add ("d", (input.D |> InnerTypeWithBoth.toJsonNode))
 
-                node.Add(
+                node.Add (
                     "e",
                     (input.E
                      |> (fun field ->
-                         let arr = System.Text.Json.Nodes.JsonArray()
+                         let arr = System.Text.Json.Nodes.JsonArray ()
 
                          for mem in field do
-                             arr.Add(
+                             arr.Add (
                                  (fun field ->
                                      let field = System.Text.Json.Nodes.JsonValue.Create<string> field
 
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException(
+                                              System.ArgumentNullException (
                                                   "field",
                                                   "Expected type string to be non-null, but received a null value when serialising"
                                               )
                                           )
-                                      | field -> field))
+                                      | field -> field)
+                                 )
                                      mem
                              )
 
-                         arr))
+                         arr
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "arr",
                     (input.Arr
                      |> (fun field ->
-                         let arr = System.Text.Json.Nodes.JsonArray()
+                         let arr = System.Text.Json.Nodes.JsonArray ()
 
                          for mem in field do
-                             arr.Add(
+                             arr.Add (
                                  (fun field ->
                                      let field = System.Text.Json.Nodes.JsonValue.Create<int> field
 
                                      (match field with
                                       | null ->
                                           raise (
-                                              System.ArgumentNullException(
+                                              System.ArgumentNullException (
                                                   "field",
                                                   "Expected type int32 to be non-null, but received a null value when serialising"
                                               )
                                           )
-                                      | field -> field))
+                                      | field -> field)
+                                 )
                                      mem
                              )
 
-                         arr))
+                         arr
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "byte",
                     (input.Byte
                      |> (fun field ->
@@ -307,15 +324,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type byte<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "sbyte",
                     (input.Sbyte
                      |> (fun field ->
@@ -324,15 +342,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type signed byte<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "i",
                     (input.I
                      |> (fun field ->
@@ -341,15 +360,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type int32<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "i32",
                     (input.I32
                      |> (fun field ->
@@ -358,15 +378,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type int32<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "i64",
                     (input.I64
                      |> (fun field ->
@@ -375,15 +396,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type int64<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "u",
                     (input.U
                      |> (fun field ->
@@ -392,15 +414,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type uint32<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "u32",
                     (input.U32
                      |> (fun field ->
@@ -409,15 +432,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type uint32<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "u64",
                     (input.U64
                      |> (fun field ->
@@ -426,15 +450,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type uint64<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "f",
                     (input.F
                      |> (fun field ->
@@ -443,15 +468,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type double<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "f32",
                     (input.F32
                      |> (fun field ->
@@ -460,15 +486,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type single<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "single",
                     (input.Single
                      |> (fun field ->
@@ -477,15 +504,16 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type single<measure> to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "intMeasureOption",
                     (input.IntMeasureOption
                      |> (fun field ->
@@ -499,18 +527,20 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                   (match field with
                                    | null ->
                                        raise (
-                                           System.ArgumentNullException(
+                                           System.ArgumentNullException (
                                                "field",
                                                "Expected type int32<measure> to be non-null, but received a null value when serialising"
                                            )
                                        )
-                                   | field -> field)))
+                                   | field -> field)
+                              ))
                              :> System.Text.Json.Nodes.JsonNode
-                             |> Some)
-                        |> Option.toObj)
+                             |> Some
+                     )
+                     |> Option.toObj)
                 )
 
-                node.Add(
+                node.Add (
                     "intMeasureNullable",
                     (input.IntMeasureNullable
                      |> (fun field ->
@@ -521,29 +551,31 @@ module JsonRecordTypeWithBothJsonSerializeExtension =
                                  (match field with
                                   | null ->
                                       raise (
-                                          System.ArgumentNullException(
+                                          System.ArgumentNullException (
                                               "field",
                                               "Expected type int32<measure> to be non-null, but received a null value when serialising"
                                           )
                                       )
-                                  | field -> field))
+                                  | field -> field)
+                             )
                                  field.Value
                              :> System.Text.Json.Nodes.JsonNode
                              |> Some
                          else
-                             None)
-                        |> Option.toObj)
+                             None
+                     )
+                     |> Option.toObj)
                 )
 
-                node.Add("enum", (input.Enum |> SomeEnum.toJsonNode))
+                node.Add ("enum", (input.Enum |> SomeEnum.toJsonNode))
 
-                node.Add(
+                node.Add (
                     "timestamp",
                     (input.Timestamp
                      |> (fun field -> field.ToString "o" |> System.Text.Json.Nodes.JsonValue.Create<string>))
                 )
 
-                node.Add("unit", (input.Unit |> (fun value -> System.Text.Json.Nodes.JsonObject())))
+                node.Add ("unit", (input.Unit |> (fun value -> System.Text.Json.Nodes.JsonObject ())))
 
             node :> _
 namespace ConsumePlugin
@@ -559,16 +591,16 @@ module FirstDuJsonSerializeExtension =
     type FirstDu with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: FirstDu) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : FirstDu) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             match input with
-            | FirstDu.EmptyCase -> node.Add("type", System.Text.Json.Nodes.JsonValue.Create "emptyCase")
+            | FirstDu.EmptyCase -> node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "emptyCase")
             | FirstDu.Case1 arg0 ->
-                node.Add("type", System.Text.Json.Nodes.JsonValue.Create "case1")
-                let dataNode = System.Text.Json.Nodes.JsonObject()
+                node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "case1")
+                let dataNode = System.Text.Json.Nodes.JsonObject ()
 
-                dataNode.Add(
+                dataNode.Add (
                     "data",
                     (fun field ->
                         let field = System.Text.Json.Nodes.JsonValue.Create<string> field
@@ -576,22 +608,23 @@ module FirstDuJsonSerializeExtension =
                         (match field with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "field",
                                      "Expected type string to be non-null, but received a null value when serialising"
                                  )
                              )
-                         | field -> field))
+                         | field -> field)
+                    )
                         arg0
                 )
 
-                node.Add("data", dataNode)
-            | FirstDu.Case2(arg0, arg1) ->
-                node.Add("type", System.Text.Json.Nodes.JsonValue.Create "case2")
-                let dataNode = System.Text.Json.Nodes.JsonObject()
-                dataNode.Add("record", JsonRecordTypeWithBoth.toJsonNode arg0)
+                node.Add ("data", dataNode)
+            | FirstDu.Case2 (arg0, arg1) ->
+                node.Add ("type", System.Text.Json.Nodes.JsonValue.Create "case2")
+                let dataNode = System.Text.Json.Nodes.JsonObject ()
+                dataNode.Add ("record", JsonRecordTypeWithBoth.toJsonNode arg0)
 
-                dataNode.Add(
+                dataNode.Add (
                     "i",
                     (fun field ->
                         let field = System.Text.Json.Nodes.JsonValue.Create<int> field
@@ -599,16 +632,17 @@ module FirstDuJsonSerializeExtension =
                         (match field with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "field",
                                      "Expected type int32 to be non-null, but received a null value when serialising"
                                  )
                              )
-                         | field -> field))
+                         | field -> field)
+                    )
                         arg1
                 )
 
-                node.Add("data", dataNode)
+                node.Add ("data", dataNode)
 
             node :> _
 namespace ConsumePlugin
@@ -624,11 +658,11 @@ module HeaderAndValueJsonSerializeExtension =
     type HeaderAndValue with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: HeaderAndValue) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : HeaderAndValue) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add(
+                node.Add (
                     "header",
                     (input.Header
                      |> (fun field ->
@@ -637,15 +671,16 @@ module HeaderAndValueJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
-                node.Add(
+                node.Add (
                     "value",
                     (input.Value
                      |> (fun field ->
@@ -654,12 +689,13 @@ module HeaderAndValueJsonSerializeExtension =
                          (match field with
                           | null ->
                               raise (
-                                  System.ArgumentNullException(
+                                  System.ArgumentNullException (
                                       "field",
                                       "Expected type string to be non-null, but received a null value when serialising"
                                   )
                               )
-                          | field -> field)))
+                          | field -> field)
+                     ))
                 )
 
             node :> _
@@ -676,18 +712,19 @@ module FooJsonSerializeExtension =
     type Foo with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: Foo) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : Foo) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add(
+                node.Add (
                     "message",
                     (input.Message
                      |> (fun field ->
                          match field with
                          | None -> None
-                         | Some field -> field |> HeaderAndValue.toJsonNode |> Some)
-                        |> Option.toObj)
+                         | Some field -> field |> HeaderAndValue.toJsonNode |> Some
+                     )
+                     |> Option.toObj)
                 )
 
             node :> _
@@ -704,30 +741,31 @@ module CollectRemainingJsonSerializeExtension =
     type CollectRemaining with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: CollectRemaining) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : CollectRemaining) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                node.Add(
+                node.Add (
                     "message",
                     (input.Message
                      |> (fun field ->
                          match field with
                          | None -> None
-                         | Some field -> field |> HeaderAndValue.toJsonNode |> Some)
-                        |> Option.toObj)
+                         | Some field -> field |> HeaderAndValue.toJsonNode |> Some
+                     )
+                     |> Option.toObj)
                 )
 
-                for KeyValue(key, value) in input.Rest do
-                    node
-                        .Add(
-                            key,
-                            (fun node ->
-                                match node |> box with
-                                | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
-                                | _ -> (node: System.Text.Json.Nodes.JsonNode).DeepClone())
-                                value
+                for KeyValue (key, value) in input.Rest do
+                    node.Add (
+                        key,
+                        (fun node ->
+                            match node |> box with
+                            | null -> Unchecked.defaultof<System.Text.Json.Nodes.JsonNode>
+                            | _ -> (node : System.Text.Json.Nodes.JsonNode).DeepClone ()
                         )
+                            value
+                    )
 
             node :> _
 namespace ConsumePlugin
@@ -743,30 +781,30 @@ module OuterCollectRemainingJsonSerializeExtension =
     type OuterCollectRemaining with
 
         /// Serialize to a JSON node
-        static member toJsonNode(input: OuterCollectRemaining) : System.Text.Json.Nodes.JsonNode =
-            let node = System.Text.Json.Nodes.JsonObject()
+        static member toJsonNode (input : OuterCollectRemaining) : System.Text.Json.Nodes.JsonNode =
+            let node = System.Text.Json.Nodes.JsonObject ()
 
             do
-                for KeyValue(key, value) in input.Others do
-                    node
-                        .Add(
-                            key,
-                            (fun field ->
-                                let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+                for KeyValue (key, value) in input.Others do
+                    node.Add (
+                        key,
+                        (fun field ->
+                            let field = System.Text.Json.Nodes.JsonValue.Create<int> field
 
-                                (match field with
-                                 | null ->
-                                     raise (
-                                         System.ArgumentNullException(
-                                             "field",
-                                             "Expected type int32 to be non-null, but received a null value when serialising"
-                                         )
+                            (match field with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         "field",
+                                         "Expected type int32 to be non-null, but received a null value when serialising"
                                      )
-                                 | field -> field))
-                                value
+                                 )
+                             | field -> field)
                         )
+                            value
+                    )
 
-                node.Add("remaining", (input.Remaining |> CollectRemaining.toJsonNode))
+                node.Add ("remaining", (input.Remaining |> CollectRemaining.toJsonNode))
 
             node :> _
 namespace ConsumePlugin
@@ -776,39 +814,40 @@ open System.Collections.Generic
 open System.Text.Json.Serialization
 
 /// Module containing JSON serializing methods for the CollectRemainingNullable type
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module CollectRemainingNullable =
     /// Serialize to a JSON node
-    let toJsonNode (input: CollectRemainingNullable) : System.Text.Json.Nodes.JsonNode =
-        let node = System.Text.Json.Nodes.JsonObject()
+    let toJsonNode (input : CollectRemainingNullable) : System.Text.Json.Nodes.JsonNode =
+        let node = System.Text.Json.Nodes.JsonObject ()
 
         do
-            for KeyValue(key, value) in input.Rest do
-                node
-                    .Add(
-                        key,
-                        (fun field ->
-                            match field with
-                            | None -> None
-                            | Some field ->
-                                (field
-                                 |> (fun field ->
-                                     let field = System.Text.Json.Nodes.JsonValue.Create<int> field
+            for KeyValue (key, value) in input.Rest do
+                node.Add (
+                    key,
+                    (fun field ->
+                        match field with
+                        | None -> None
+                        | Some field ->
+                            (field
+                             |> (fun field ->
+                                 let field = System.Text.Json.Nodes.JsonValue.Create<int> field
 
-                                     (match field with
-                                      | null ->
-                                          raise (
-                                              System.ArgumentNullException(
-                                                  "field",
-                                                  "Expected type int32 to be non-null, but received a null value when serialising"
-                                              )
+                                 (match field with
+                                  | null ->
+                                      raise (
+                                          System.ArgumentNullException (
+                                              "field",
+                                              "Expected type int32 to be non-null, but received a null value when serialising"
                                           )
-                                      | field -> field)))
-                                :> System.Text.Json.Nodes.JsonNode
-                                |> Some)
-                            value
-                        |> Option.toObj
+                                      )
+                                  | field -> field)
+                             ))
+                            :> System.Text.Json.Nodes.JsonNode
+                            |> Some
                     )
+                        value
+                    |> Option.toObj
+                )
 
         node :> _
 
@@ -821,17 +860,17 @@ module InnerTypeWithBothJsonParseExtension =
     type InnerTypeWithBoth with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : InnerTypeWithBoth =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : InnerTypeWithBoth =
             let arg_4 =
                 match node.["concreteDict"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("concreteDict")
                         )
                     )
                 | Some node ->
-                    node.AsObject()
+                    node.AsObject ()
                     |> Seq.map (fun kvp ->
                         let key = (kvp.Key)
                         let value = kvp.Value
@@ -840,12 +879,13 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "value",
                                      "Expected dictionary value of type InnerTypeWithBoth to be non-null, but it was null"
                                  )
                              )
-                         | value -> InnerTypeWithBoth.jsonParse value))
+                         | value -> InnerTypeWithBoth.jsonParse value)
+                    )
                     |> Seq.map System.Collections.Generic.KeyValuePair
                     |> System.Collections.Generic.Dictionary
 
@@ -853,12 +893,12 @@ module InnerTypeWithBothJsonParseExtension =
                 match node.["dict"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("dict")
                         )
                     )
                 | Some node ->
-                    node.AsObject()
+                    node.AsObject ()
                     |> Seq.map (fun kvp ->
                         let key = (kvp.Key) |> System.Uri
                         let value = kvp.Value
@@ -867,24 +907,25 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "value",
                                      "Expected dictionary value of type bool to be non-null, but it was null"
                                  )
                              )
-                         | value -> value.AsValue().GetValue<System.Boolean>()))
+                         | value -> value.AsValue().GetValue<System.Boolean> ())
+                    )
                     |> dict
 
             let arg_2 =
                 match node.["readOnlyDict"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("readOnlyDict")
                         )
                     )
                 | Some node ->
-                    node.AsObject()
+                    node.AsObject ()
                     |> Seq.map (fun kvp ->
                         let key = (kvp.Key)
                         let value = kvp.Value
@@ -893,36 +934,38 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "value",
                                      "Expected dictionary value of type char list to be non-null, but it was null"
                                  )
                              )
                          | value ->
-                             value.AsArray()
+                             value.AsArray ()
                              |> Seq.map (fun elt ->
                                  (match elt with
                                   | null ->
                                       raise (
-                                          System.ArgumentNullException(
+                                          System.ArgumentNullException (
                                               "elt",
                                               "Expected element of array (element type char) to be non-null, but found a null element"
                                           )
                                       )
-                                  | elt -> elt.AsValue().GetValue<System.Char>()))
-                             |> List.ofSeq))
+                                  | elt -> elt.AsValue().GetValue<System.Char> ())
+                             )
+                             |> List.ofSeq)
+                    )
                     |> readOnlyDict
 
             let arg_1 =
                 match node.["map"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("map")
                         )
                     )
                 | Some node ->
-                    node.AsObject()
+                    node.AsObject ()
                     |> Seq.map (fun kvp ->
                         let key = (kvp.Key)
                         let value = kvp.Value
@@ -931,29 +974,32 @@ module InnerTypeWithBothJsonParseExtension =
                         (match value with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "value",
                                      "Expected dictionary value of type URI to be non-null, but it was null"
                                  )
                              )
-                         | value -> value.AsValue().GetValue<string>() |> System.Uri))
+                         | value -> value.AsValue().GetValue<string> () |> System.Uri)
+                    )
                     |> Map.ofSeq
 
             let arg_0 =
                 match node.[("it's-a-me")] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" (("it's-a-me"))
                         )
                     )
-                | Some node -> node.AsValue().GetValue<string>() |> System.Guid.Parse
+                | Some node -> node.AsValue().GetValue<string> () |> System.Guid.Parse
 
-            { Thing = arg_0
-              Map = arg_1
-              ReadOnlyDict = arg_2
-              Dict = arg_3
-              ConcreteDict = arg_4 }
+            {
+                Thing = arg_0
+                Map = arg_1
+                ReadOnlyDict = arg_2
+                Dict = arg_3
+                ConcreteDict = arg_4
+            }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the SomeEnum type
@@ -963,11 +1009,11 @@ module SomeEnumJsonParseExtension =
     type SomeEnum with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : SomeEnum =
-            match node.GetValueKind() with
-            | System.Text.Json.JsonValueKind.Number -> node.AsValue().GetValue<int>() |> enum<SomeEnum>
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : SomeEnum =
+            match node.GetValueKind () with
+            | System.Text.Json.JsonValueKind.Number -> node.AsValue().GetValue<int> () |> enum<SomeEnum>
             | System.Text.Json.JsonValueKind.String ->
-                match node.AsValue().GetValue<string>().ToLowerInvariant() with
+                match node.AsValue().GetValue<string>().ToLowerInvariant () with
                 | "blah" -> SomeEnum.Blah
                 | "thing" -> SomeEnum.Thing
                 | v -> failwith ("Unrecognised value for enum: %i" + v)
@@ -981,12 +1027,12 @@ module JsonRecordTypeWithBothJsonParseExtension =
     type JsonRecordTypeWithBoth with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : JsonRecordTypeWithBoth =
             let arg_21 =
                 match node.["unit"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("unit")
                         )
                     )
@@ -996,17 +1042,17 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 match node.["timestamp"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("timestamp")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<string>() |> System.DateTimeOffset.Parse
+                | Some node -> node.AsValue().GetValue<string> () |> System.DateTimeOffset.Parse
 
             let arg_19 =
                 match node.["enum"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("enum")
                         )
                     )
@@ -1014,9 +1060,9 @@ module JsonRecordTypeWithBothJsonParseExtension =
 
             let arg_18 =
                 match node.["intMeasureNullable"] |> Option.ofObj with
-                | None -> System.Nullable()
+                | None -> System.Nullable ()
                 | Some v ->
-                    v.AsValue().GetValue<System.Int32>()
+                    v.AsValue().GetValue<System.Int32> ()
                     |> LanguagePrimitives.Int32WithMeasure
                     |> System.Nullable
 
@@ -1024,7 +1070,7 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 match node.["intMeasureOption"] |> Option.ofObj with
                 | None -> None
                 | Some v ->
-                    v.AsValue().GetValue<System.Int32>()
+                    v.AsValue().GetValue<System.Int32> ()
                     |> LanguagePrimitives.Int32WithMeasure
                     |> Some
 
@@ -1032,165 +1078,173 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 match node.["single"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("single")
                         )
                     )
                 | Some node ->
-                    node.AsValue().GetValue<System.Single>()
+                    node.AsValue().GetValue<System.Single> ()
                     |> LanguagePrimitives.Float32WithMeasure
 
             let arg_15 =
                 match node.["f32"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("f32")
                         )
                     )
                 | Some node ->
-                    node.AsValue().GetValue<System.Single>()
+                    node.AsValue().GetValue<System.Single> ()
                     |> LanguagePrimitives.Float32WithMeasure
 
             let arg_14 =
                 match node.["f"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("f")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Double>() |> LanguagePrimitives.FloatWithMeasure
+                | Some node -> node.AsValue().GetValue<System.Double> () |> LanguagePrimitives.FloatWithMeasure
 
             let arg_13 =
                 match node.["u64"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("u64")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.UInt64>() |> LanguagePrimitives.UInt64WithMeasure
+                | Some node ->
+                    node.AsValue().GetValue<System.UInt64> ()
+                    |> LanguagePrimitives.UInt64WithMeasure
 
             let arg_12 =
                 match node.["u32"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("u32")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.UInt32>() |> LanguagePrimitives.UInt32WithMeasure
+                | Some node ->
+                    node.AsValue().GetValue<System.UInt32> ()
+                    |> LanguagePrimitives.UInt32WithMeasure
 
             let arg_11 =
                 match node.["u"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("u")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.UInt32>() |> LanguagePrimitives.UInt32WithMeasure
+                | Some node ->
+                    node.AsValue().GetValue<System.UInt32> ()
+                    |> LanguagePrimitives.UInt32WithMeasure
 
             let arg_10 =
                 match node.["i64"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("i64")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int64>() |> LanguagePrimitives.Int64WithMeasure
+                | Some node -> node.AsValue().GetValue<System.Int64> () |> LanguagePrimitives.Int64WithMeasure
 
             let arg_9 =
                 match node.["i32"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("i32")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32>() |> LanguagePrimitives.Int32WithMeasure
+                | Some node -> node.AsValue().GetValue<System.Int32> () |> LanguagePrimitives.Int32WithMeasure
 
             let arg_8 =
                 match node.["i"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("i")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32>() |> LanguagePrimitives.Int32WithMeasure
+                | Some node -> node.AsValue().GetValue<System.Int32> () |> LanguagePrimitives.Int32WithMeasure
 
             let arg_7 =
                 match node.["sbyte"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("sbyte")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.SByte>() |> LanguagePrimitives.SByteWithMeasure
+                | Some node -> node.AsValue().GetValue<System.SByte> () |> LanguagePrimitives.SByteWithMeasure
 
             let arg_6 =
                 match node.["byte"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("byte")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Byte>() |> LanguagePrimitives.ByteWithMeasure
+                | Some node -> node.AsValue().GetValue<System.Byte> () |> LanguagePrimitives.ByteWithMeasure
 
             let arg_5 =
                 match node.["arr"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("arr")
                         )
                     )
                 | Some node ->
-                    node.AsArray()
+                    node.AsArray ()
                     |> Seq.map (fun elt ->
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "elt",
                                      "Expected element of array (element type int32) to be non-null, but found a null element"
                                  )
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32>()))
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> Array.ofSeq
 
             let arg_4 =
                 match node.["e"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("e")
                         )
                     )
                 | Some node ->
-                    node.AsArray()
+                    node.AsArray ()
                     |> Seq.map (fun elt ->
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "elt",
                                      "Expected element of array (element type string) to be non-null, but found a null element"
                                  )
                              )
-                         | elt -> elt.AsValue().GetValue<System.String>()))
+                         | elt -> elt.AsValue().GetValue<System.String> ())
+                    )
                     |> Array.ofSeq
 
             let arg_3 =
                 match node.["d"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("d")
                         )
                     )
@@ -1200,66 +1254,69 @@ module JsonRecordTypeWithBothJsonParseExtension =
                 match node.["c"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("c")
                         )
                     )
                 | Some node ->
-                    node.AsArray()
+                    node.AsArray ()
                     |> Seq.map (fun elt ->
                         (match elt with
                          | null ->
                              raise (
-                                 System.ArgumentNullException(
+                                 System.ArgumentNullException (
                                      "elt",
                                      "Expected element of array (element type int32) to be non-null, but found a null element"
                                  )
                              )
-                         | elt -> elt.AsValue().GetValue<System.Int32>()))
+                         | elt -> elt.AsValue().GetValue<System.Int32> ())
+                    )
                     |> List.ofSeq
 
             let arg_1 =
                 match node.["b"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("b")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.String>()
+                | Some node -> node.AsValue().GetValue<System.String> ()
 
             let arg_0 =
                 match node.["a"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("a")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.Int32>()
+                | Some node -> node.AsValue().GetValue<System.Int32> ()
 
-            { A = arg_0
-              B = arg_1
-              C = arg_2
-              D = arg_3
-              E = arg_4
-              Arr = arg_5
-              Byte = arg_6
-              Sbyte = arg_7
-              I = arg_8
-              I32 = arg_9
-              I64 = arg_10
-              U = arg_11
-              U32 = arg_12
-              U64 = arg_13
-              F = arg_14
-              F32 = arg_15
-              Single = arg_16
-              IntMeasureOption = arg_17
-              IntMeasureNullable = arg_18
-              Enum = arg_19
-              Timestamp = arg_20
-              Unit = arg_21 }
+            {
+                A = arg_0
+                B = arg_1
+                C = arg_2
+                D = arg_3
+                E = arg_4
+                Arr = arg_5
+                Byte = arg_6
+                Sbyte = arg_7
+                I = arg_8
+                I32 = arg_9
+                I64 = arg_10
+                U = arg_11
+                U32 = arg_12
+                U64 = arg_13
+                F = arg_14
+                F32 = arg_15
+                Single = arg_16
+                IntMeasureOption = arg_17
+                IntMeasureNullable = arg_18
+                Enum = arg_19
+                Timestamp = arg_20
+                Unit = arg_21
+            }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the FirstDu type
@@ -1269,17 +1326,17 @@ module FirstDuJsonParseExtension =
     type FirstDu with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : FirstDu =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : FirstDu =
             let ty =
                 (match node.["type"] |> Option.ofObj with
                  | None ->
                      raise (
-                         System.Collections.Generic.KeyNotFoundException(
+                         System.Collections.Generic.KeyNotFoundException (
                              sprintf "Required key '%s' not found on JSON object" ("type")
                          )
                      )
                  | Some v -> v)
-                |> (fun v -> v.GetValue<string>())
+                |> (fun v -> v.GetValue<string> ())
 
             match ty with
             | "emptyCase" -> FirstDu.EmptyCase
@@ -1288,38 +1345,38 @@ module FirstDuJsonParseExtension =
                     (match node.["data"] |> Option.ofObj with
                      | None ->
                          raise (
-                             System.Collections.Generic.KeyNotFoundException(
+                             System.Collections.Generic.KeyNotFoundException (
                                  sprintf "Required key '%s' not found on JSON object" ("data")
                              )
                          )
                      | Some v -> v)
 
-                FirstDu.Case1(
+                FirstDu.Case1 (
                     match node.["data"] |> Option.ofObj with
                     | None ->
                         raise (
-                            System.Collections.Generic.KeyNotFoundException(
+                            System.Collections.Generic.KeyNotFoundException (
                                 sprintf "Required key '%s' not found on JSON object" ("data")
                             )
                         )
-                    | Some node -> node.AsValue().GetValue<System.String>()
+                    | Some node -> node.AsValue().GetValue<System.String> ()
                 )
             | "case2" ->
                 let node =
                     (match node.["data"] |> Option.ofObj with
                      | None ->
                          raise (
-                             System.Collections.Generic.KeyNotFoundException(
+                             System.Collections.Generic.KeyNotFoundException (
                                  sprintf "Required key '%s' not found on JSON object" ("data")
                              )
                          )
                      | Some v -> v)
 
-                FirstDu.Case2(
+                FirstDu.Case2 (
                     match node.["record"] |> Option.ofObj with
                     | None ->
                         raise (
-                            System.Collections.Generic.KeyNotFoundException(
+                            System.Collections.Generic.KeyNotFoundException (
                                 sprintf "Required key '%s' not found on JSON object" ("record")
                             )
                         )
@@ -1327,11 +1384,11 @@ module FirstDuJsonParseExtension =
                     , match node.["i"] |> Option.ofObj with
                       | None ->
                           raise (
-                              System.Collections.Generic.KeyNotFoundException(
+                              System.Collections.Generic.KeyNotFoundException (
                                   sprintf "Required key '%s' not found on JSON object" ("i")
                               )
                           )
-                      | Some node -> node.AsValue().GetValue<System.Int32>()
+                      | Some node -> node.AsValue().GetValue<System.Int32> ()
                 )
             | v -> failwith ("Unrecognised 'type' field value: " + v)
 namespace ConsumePlugin
@@ -1343,28 +1400,31 @@ module HeaderAndValueJsonParseExtension =
     type HeaderAndValue with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : HeaderAndValue =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : HeaderAndValue =
             let arg_1 =
                 match node.["value"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("value")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.String>()
+                | Some node -> node.AsValue().GetValue<System.String> ()
 
             let arg_0 =
                 match node.["header"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("header")
                         )
                     )
-                | Some node -> node.AsValue().GetValue<System.String>()
+                | Some node -> node.AsValue().GetValue<System.String> ()
 
-            { Header = arg_0; Value = arg_1 }
+            {
+                Header = arg_0
+                Value = arg_1
+            }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the Foo type
@@ -1374,13 +1434,15 @@ module FooJsonParseExtension =
     type Foo with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : Foo =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : Foo =
             let arg_0 =
                 match node.["message"] |> Option.ofObj with
                 | None -> None
                 | Some v -> HeaderAndValue.jsonParse v |> Some
 
-            { Message = arg_0 }
+            {
+                Message = arg_0
+            }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the CollectRemaining type
@@ -1390,29 +1452,28 @@ module CollectRemainingJsonParseExtension =
     type CollectRemaining with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : CollectRemaining =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : CollectRemaining =
             let arg_1 =
                 let result =
-                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode>()
+                    System.Collections.Generic.Dictionary<string, System.Text.Json.Nodes.JsonNode> ()
 
-                let node = node.AsObject()
+                let node = node.AsObject ()
 
-                for KeyValue(key, value) in node do
+                for KeyValue (key, value) in node do
                     if key = "message" then
                         ()
                     else
-                        result
-                            .Add(
-                                key,
-                                match node.[key] |> Option.ofObj with
-                                | None ->
-                                    raise (
-                                        System.Collections.Generic.KeyNotFoundException(
-                                            sprintf "Required key '%s' not found on JSON object" (key)
-                                        )
+                        result.Add (
+                            key,
+                            match node.[key] |> Option.ofObj with
+                            | None ->
+                                raise (
+                                    System.Collections.Generic.KeyNotFoundException (
+                                        sprintf "Required key '%s' not found on JSON object" (key)
                                     )
-                                | Some node -> node
-                            )
+                                )
+                            | Some node -> node
+                        )
 
                 result
 
@@ -1421,7 +1482,10 @@ module CollectRemainingJsonParseExtension =
                 | None -> None
                 | Some v -> HeaderAndValue.jsonParse v |> Some
 
-            { Message = arg_0; Rest = arg_1 }
+            {
+                Message = arg_0
+                Rest = arg_1
+            }
 namespace ConsumePlugin
 
 /// Module containing JSON parsing extension members for the OuterCollectRemaining type
@@ -1431,43 +1495,40 @@ module OuterCollectRemainingJsonParseExtension =
     type OuterCollectRemaining with
 
         /// Parse from a JSON node.
-        static member jsonParse(node: System.Text.Json.Nodes.JsonNode) : OuterCollectRemaining =
+        static member jsonParse (node : System.Text.Json.Nodes.JsonNode) : OuterCollectRemaining =
             let arg_1 =
                 match node.["remaining"] |> Option.ofObj with
                 | None ->
                     raise (
-                        System.Collections.Generic.KeyNotFoundException(
+                        System.Collections.Generic.KeyNotFoundException (
                             sprintf "Required key '%s' not found on JSON object" ("remaining")
                         )
                     )
                 | Some node -> CollectRemaining.jsonParse node
 
             let arg_0 =
-                let result = System.Collections.Generic.Dictionary<string, int>()
-                let node = node.AsObject()
+                let result = System.Collections.Generic.Dictionary<string, int> ()
+                let node = node.AsObject ()
 
-                for KeyValue(key, value) in node do
+                for KeyValue (key, value) in node do
                     if key = "remaining" then
                         ()
                     else
-                        result
-                            .Add(
-                                key,
-                                match node.[key] |> Option.ofObj with
-                                | None ->
-                                    raise (
-                                        System.Collections.Generic.KeyNotFoundException(
-                                            sprintf "Required key '%s' not found on JSON object" (key)
-                                        )
+                        result.Add (
+                            key,
+                            match node.[key] |> Option.ofObj with
+                            | None ->
+                                raise (
+                                    System.Collections.Generic.KeyNotFoundException (
+                                        sprintf "Required key '%s' not found on JSON object" (key)
                                     )
-                                | Some node -> node.AsValue().GetValue<System.Int32>()
-                            )
+                                )
+                            | Some node -> node.AsValue().GetValue<System.Int32> ()
+                        )
 
                 result
 
-            { Others = arg_0; Remaining = arg_1 }
-
-
-
-
-
+            {
+                Others = arg_0
+                Remaining = arg_1
+            }

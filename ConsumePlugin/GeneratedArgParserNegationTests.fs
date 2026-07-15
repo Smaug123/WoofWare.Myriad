@@ -20,27 +20,29 @@ module BoolNegationArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type BoolNegation with
 
-        static member parse' (getEnvironmentVariable: string -> string option) (args: string list) : BoolNegation =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : BoolNegation =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  bool%s%s" (sprintf "--%s / --no-%s" "enable-feature" "enable-feature") "" "") ]
+                [
+                    (sprintf "%s  bool%s%s" (sprintf "--%s / --no-%s" "enable-feature" "enable-feature") "" "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: bool option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--no-%s" "enable-feature",
                         System.StringComparison.OrdinalIgnoreCase
@@ -51,19 +53,19 @@ module BoolNegationArgParse =
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "enable-feature" "enable-feature")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> not (System.Boolean.Parse x)) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "enable-feature",
                         System.StringComparison.OrdinalIgnoreCase
@@ -74,24 +76,24 @@ module BoolNegationArgParse =
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "enable-feature" "enable-feature")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
+            let setFlagValue (key : string) : bool =
                 if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--no-%s" "enable-feature",
                         System.StringComparison.OrdinalIgnoreCase
@@ -109,7 +111,7 @@ module BoolNegationArgParse =
                         arg_0 <- false |> Some
                         true
                 else if
-                    System.String.Equals(
+                    System.String.Equals (
                         key,
                         sprintf "--%s" "enable-feature",
                         System.StringComparison.OrdinalIgnoreCase
@@ -129,7 +131,7 @@ module BoolNegationArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_BoolNegation) (args: string list) =
+            let rec go (state : ParseState_BoolNegation) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -154,15 +156,15 @@ module BoolNegationArgParse =
                                 key
                             |> ArgParser_errors.Add
 
-                    parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_BoolNegation.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_BoolNegation.AwaitingValue arg)
@@ -226,11 +228,13 @@ module BoolNegationArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { EnableFeature = arg_0 }
+                {
+                    EnableFeature = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : BoolNegation =
+        static member parse (args : string list) : BoolNegation =
             BoolNegation.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
@@ -243,38 +247,40 @@ module FlagNegationArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type FlagNegation with
 
-        static member parse' (getEnvironmentVariable: string -> string option) (args: string list) : FlagNegation =
-            let ArgParser_errors = ResizeArray()
+        static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : FlagNegation =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  bool%s%s" (sprintf "--%s / --no-%s" "dry-run" "dry-run") "" "") ]
+                [
+                    (sprintf "%s  bool%s%s" (sprintf "--%s / --no-%s" "dry-run" "dry-run") "" "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: TestDryRunMode option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : TestDryRunMode option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if
-                    System.String.Equals(key, sprintf "--no-%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "dry-run" "dry-run")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <-
@@ -283,25 +289,26 @@ module FlagNegationArgParse =
                                     if not (System.Boolean.Parse x) = false then
                                         TestDryRunMode.Wet
                                     else
-                                        TestDryRunMode.Dry)
+                                        TestDryRunMode.Dry
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "dry-run" "dry-run")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <-
@@ -310,19 +317,20 @@ module FlagNegationArgParse =
                                     if System.Boolean.Parse x = false then
                                         TestDryRunMode.Wet
                                     else
-                                        TestDryRunMode.Dry)
+                                        TestDryRunMode.Dry
+                                )
                                 |> Some
 
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
+            let setFlagValue (key : string) : bool =
                 if
-                    System.String.Equals(key, sprintf "--no-%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
@@ -334,7 +342,7 @@ module FlagNegationArgParse =
                         arg_0 <- TestDryRunMode.Wet |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
@@ -354,7 +362,7 @@ module FlagNegationArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_FlagNegation) (args: string list) =
+            let rec go (state : ParseState_FlagNegation) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -379,15 +387,15 @@ module FlagNegationArgParse =
                                 key
                             |> ArgParser_errors.Add
 
-                    parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_FlagNegation.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_FlagNegation.AwaitingValue arg)
@@ -449,11 +457,13 @@ module FlagNegationArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { DryRun = arg_0 }
+                {
+                    DryRun = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : FlagNegation =
+        static member parse (args : string list) : FlagNegation =
             FlagNegation.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
@@ -466,106 +476,113 @@ module MultipleFormsNegationArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type MultipleFormsNegation with
 
         static member parse'
-            (getEnvironmentVariable: string -> string option)
-            (args: string list)
-            : MultipleFormsNegation =
-            let ArgParser_errors = ResizeArray()
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : MultipleFormsNegation
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf "%s  bool%s%s" (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v") "" "") ]
+                [
+                    (sprintf
+                        "%s  bool%s%s"
+                        (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v")
+                        ""
+                        "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: bool option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-                if System.String.Equals(key, sprintf "--no-%s" "v", System.StringComparison.OrdinalIgnoreCase) then
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+                if System.String.Equals (key, sprintf "--no-%s" "v", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> not (System.Boolean.Parse x)) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
-                else if System.String.Equals(key, sprintf "--%s" "v", System.StringComparison.OrdinalIgnoreCase) then
+                else if System.String.Equals (key, sprintf "--%s" "v", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> not (System.Boolean.Parse x)) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
-                if System.String.Equals(key, sprintf "--no-%s" "v", System.StringComparison.OrdinalIgnoreCase) then
+            let setFlagValue (key : string) : bool =
+                if System.String.Equals (key, sprintf "--no-%s" "v", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
@@ -577,7 +594,7 @@ module MultipleFormsNegationArgParse =
                     | None ->
                         arg_0 <- false |> Some
                         true
-                else if System.String.Equals(key, sprintf "--%s" "v", System.StringComparison.OrdinalIgnoreCase) then
+                else if System.String.Equals (key, sprintf "--%s" "v", System.StringComparison.OrdinalIgnoreCase) then
                     match arg_0 with
                     | Some x ->
                         sprintf
@@ -590,7 +607,7 @@ module MultipleFormsNegationArgParse =
                         arg_0 <- true |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
@@ -604,7 +621,7 @@ module MultipleFormsNegationArgParse =
                         arg_0 <- false |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
@@ -620,7 +637,7 @@ module MultipleFormsNegationArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_MultipleFormsNegation) (args: string list) =
+            let rec go (state : ParseState_MultipleFormsNegation) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -645,15 +662,15 @@ module MultipleFormsNegationArgParse =
                                 key
                             |> ArgParser_errors.Add
 
-                    parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_MultipleFormsNegation.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_MultipleFormsNegation.AwaitingValue arg)
@@ -717,11 +734,13 @@ module MultipleFormsNegationArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { VerboseMode = arg_0 }
+                {
+                    VerboseMode = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : MultipleFormsNegation =
+        static member parse (args : string list) : MultipleFormsNegation =
             MultipleFormsNegation.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
@@ -734,142 +753,148 @@ module CombinedFeaturesArgParse =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
     /// Extension methods for argument parsing
     type CombinedFeatures with
 
-        static member parse' (getEnvironmentVariable: string -> string option) (args: string list) : CombinedFeatures =
-            let ArgParser_errors = ResizeArray()
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : CombinedFeatures
+            =
+            let ArgParser_errors = ResizeArray ()
 
             let helpText () =
-                [ (sprintf
-                      "%s  bool%s%s"
-                      (sprintf "--%s / --no-%s" "verbose" "verbose")
-                      (CombinedFeatures.DefaultVerbose()
-                       |> (fun x -> x.ToString())
-                       |> sprintf " (default value: %s)")
-                      "")
+                [
+                    (sprintf
+                        "%s  bool%s%s"
+                        (sprintf "--%s / --no-%s" "verbose" "verbose")
+                        (CombinedFeatures.DefaultVerbose ()
+                         |> (fun x -> x.ToString ())
+                         |> sprintf " (default value: %s)")
+                        "")
 
-                  (sprintf
-                      "%s  bool%s%s"
-                      (sprintf "--%s / --no-%s" "debug" "debug")
-                      ""
-                      (sprintf " : %s" ("Enable debug mode")))
-                  (sprintf "%s  bool%s%s" (sprintf "--%s" "normal-bool") "" "") ]
+                    (sprintf
+                        "%s  bool%s%s"
+                        (sprintf "--%s / --no-%s" "debug" "debug")
+                        ""
+                        (sprintf " : %s" ("Enable debug mode")))
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "normal-bool") "" "")
+                ]
                 |> String.concat "\n"
 
-            let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-            let mutable arg_0: bool option = None
-            let mutable arg_1: bool option = None
-            let mutable arg_2: bool option = None
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : bool option = None
+            let mutable arg_1 : bool option = None
+            let mutable arg_2 : bool option = None
 
             /// Processes the key-value pair, returning Error if no key was matched.
             /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
             /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key: string) (value: string) : Result<unit, string option> =
+            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
                 if
-                    System.String.Equals(key, sprintf "--%s" "normal-bool", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "normal-bool", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s" "normal-bool")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--no-%s" "debug", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "debug", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "debug" "debug")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <- value |> (fun x -> not (System.Boolean.Parse x)) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "debug", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "debug", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "debug" "debug")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_1 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "verbose" "verbose")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> not (System.Boolean.Parse x)) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else if
-                    System.String.Equals(key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
                         sprintf
                             "Argument '%s' was supplied multiple times: %s and %s"
                             (sprintf "--%s / --no-%s" "verbose" "verbose")
-                            (x.ToString())
-                            (value.ToString())
+                            (x.ToString ())
+                            (value.ToString ())
                         |> ArgParser_errors.Add
 
-                        Ok()
+                        Ok ()
                     | None ->
                         try
                             arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok()
+                            Ok ()
                         with _ as exc ->
                             exc.Message |> Some |> Error
                 else
                     Error None
 
             /// Returns false if we didn't set a value.
-            let setFlagValue (key: string) : bool =
+            let setFlagValue (key : string) : bool =
                 if
-                    System.String.Equals(key, sprintf "--%s" "normal-bool", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "normal-bool", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_2 with
                     | Some x ->
@@ -881,7 +906,7 @@ module CombinedFeaturesArgParse =
                         arg_2 <- true |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--no-%s" "debug", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "debug", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
@@ -893,7 +918,7 @@ module CombinedFeaturesArgParse =
                         arg_1 <- false |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--%s" "debug", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "debug", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_1 with
                     | Some x ->
@@ -905,7 +930,7 @@ module CombinedFeaturesArgParse =
                         arg_1 <- true |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--no-%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
@@ -917,7 +942,7 @@ module CombinedFeaturesArgParse =
                         arg_0 <- false |> Some
                         true
                 else if
-                    System.String.Equals(key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
+                    System.String.Equals (key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase)
                 then
                     match arg_0 with
                     | Some x ->
@@ -931,7 +956,7 @@ module CombinedFeaturesArgParse =
                 else
                     false
 
-            let rec go (state: ParseState_CombinedFeatures) (args: string list) =
+            let rec go (state : ParseState_CombinedFeatures) (args : string list) =
                 match args with
                 | [] ->
                     match state with
@@ -956,15 +981,15 @@ module CombinedFeaturesArgParse =
                                 key
                             |> ArgParser_errors.Add
 
-                    parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                    parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
                 | arg :: args ->
                     match state with
                     | ParseState_CombinedFeatures.AwaitingKey ->
-                        if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                             if arg = "--help" then
                                 helpText () |> failwithf "Help text requested.\n%s"
                             else
-                                let equals = arg.IndexOf(char 61)
+                                let equals = arg.IndexOf (char 61)
 
                                 if equals < 0 then
                                     args |> go (ParseState_CombinedFeatures.AwaitingValue arg)
@@ -1018,7 +1043,7 @@ module CombinedFeaturesArgParse =
 
             let arg_0 =
                 match arg_0 with
-                | None -> CombinedFeatures.DefaultVerbose() |> Choice2Of2
+                | None -> CombinedFeatures.DefaultVerbose () |> Choice2Of2
                 | Some x -> Choice1Of2 x
 
             let arg_1 =
@@ -1040,13 +1065,13 @@ module CombinedFeaturesArgParse =
                 | Some x -> x
 
             if 0 = ArgParser_errors.Count then
-                { Debug = arg_1
-                  NormalBool = arg_2
-                  Verbose = arg_0 }
+                {
+                    Debug = arg_1
+                    NormalBool = arg_2
+                    Verbose = arg_0
+                }
             else
                 ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-        static member parse(args: string list) : CombinedFeatures =
+        static member parse (args : string list) : CombinedFeatures =
             CombinedFeatures.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
-
-

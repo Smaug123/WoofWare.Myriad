@@ -14,51 +14,51 @@ namespace ConsumePlugin.OpensLeakVictim
 open WoofWare.Myriad.Plugins
 
 /// Methods to parse arguments for the type LeakArgs
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LeakArgs =
     type private ParseState_LeakArgs =
         /// Ready to consume a key or positional arg
         | AwaitingKey
         /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key: string
+        | AwaitingValue of key : string
 
-    let parse' (getEnvironmentVariable: string -> string option) (args: string list) : LeakArgs =
-        let ArgParser_errors = ResizeArray()
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LeakArgs =
+        let ArgParser_errors = ResizeArray ()
 
         let helpText () =
             [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "") ] |> String.concat "\n"
 
-        let parser_LeftoverArgs: string ResizeArray = ResizeArray()
-        let mutable arg_0: int option = None
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_0 : int option = None
 
         /// Processes the key-value pair, returning Error if no key was matched.
         /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
         /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key: string) (value: string) : Result<unit, string option> =
-            if System.String.Equals(key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
+            if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
                 match arg_0 with
                 | Some x ->
                     sprintf
                         "Argument '%s' was supplied multiple times: %s and %s"
                         (sprintf "--%s" "foo")
-                        (x.ToString())
-                        (value.ToString())
+                        (x.ToString ())
+                        (value.ToString ())
                     |> ArgParser_errors.Add
 
-                    Ok()
+                    Ok ()
                 | None ->
                     try
                         arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok()
+                        Ok ()
                     with _ as exc ->
                         exc.Message |> Some |> Error
             else
                 Error None
 
         /// Returns false if we didn't set a value.
-        let setFlagValue (key: string) : bool = false
+        let setFlagValue (key : string) : bool = false
 
-        let rec go (state: ParseState_LeakArgs) (args: string list) =
+        let rec go (state : ParseState_LeakArgs) (args : string list) =
             match args with
             | [] ->
                 match state with
@@ -83,15 +83,15 @@ module LeakArgs =
                             key
                         |> ArgParser_errors.Add
 
-                parser_LeftoverArgs.AddRange(rest |> Seq.map (fun x -> x))
+                parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
             | arg :: args ->
                 match state with
                 | ParseState_LeakArgs.AwaitingKey ->
-                    if arg.StartsWith("--", System.StringComparison.Ordinal) then
+                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
                         if arg = "--help" then
                             helpText () |> failwithf "Help text requested.\n%s"
                         else
-                            let equals = arg.IndexOf(char 61)
+                            let equals = arg.IndexOf (char 61)
 
                             if equals < 0 then
                                 args |> go (ParseState_LeakArgs.AwaitingValue arg)
@@ -146,11 +146,11 @@ module LeakArgs =
             | Some x -> x
 
         if 0 = ArgParser_errors.Count then
-            { Foo = arg_0 }
+            {
+                Foo = arg_0
+            }
         else
             ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args: string list) : LeakArgs =
+    let parse (args : string list) : LeakArgs =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
-
-

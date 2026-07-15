@@ -10,20 +10,24 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type internal PublicTypeMock =
-    { Mem1: string * int -> string list
-      Mem2: string -> int
-      Mem3: int * option<System.Threading.CancellationToken> -> string }
+    {
+        Mem1 : string * int -> string list
+        Mem2 : string -> int
+        Mem3 : int * option<System.Threading.CancellationToken> -> string
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: PublicTypeMock =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-          Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3")) }
+    static member Empty : PublicTypeMock =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+            Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
+        }
 
     interface IPublicType with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2(arg_0_0)
-        member this.Mem3(arg_0_0, arg_0_1) = this.Mem3(arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
 open System
@@ -31,20 +35,24 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type public PublicTypeInternalFalseMock =
-    { Mem1: string * int -> string list
-      Mem2: string -> int
-      Mem3: int * option<System.Threading.CancellationToken> -> string }
+    {
+        Mem1 : string * int -> string list
+        Mem2 : string -> int
+        Mem3 : int * option<System.Threading.CancellationToken> -> string
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: PublicTypeInternalFalseMock =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-          Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3")) }
+    static member Empty : PublicTypeInternalFalseMock =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+            Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
+        }
 
     interface IPublicTypeInternalFalse with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2(arg_0_0)
-        member this.Mem3(arg_0_0, arg_0_1) = this.Mem3(arg_0_0, arg_0_1)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
+        member this.Mem3 (arg_0_0, arg_0_1) = this.Mem3 (arg_0_0, arg_0_1)
 namespace SomeNamespace
 
 open System
@@ -52,17 +60,21 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type internal InternalTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: InternalTypeMock =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2")) }
+    static member Empty : InternalTypeMock =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
 
     interface InternalType with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2(arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -70,17 +82,21 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type private PrivateTypeMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: PrivateTypeMock =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2")) }
+    static member Empty : PrivateTypeMock =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
 
     interface PrivateType with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2(arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -88,17 +104,21 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type private PrivateTypeInternalFalseMock =
-    { Mem1: string * int -> unit
-      Mem2: string -> int }
+    {
+        Mem1 : string * int -> unit
+        Mem2 : string -> int
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: PrivateTypeInternalFalseMock =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2")) }
+    static member Empty : PrivateTypeInternalFalseMock =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
 
     interface PrivateTypeInternalFalse with
-        member this.Mem1(arg_0_0, arg_0_1) = this.Mem1(arg_0_0, arg_0_1)
-        member this.Mem2 arg_0_0 = this.Mem2(arg_0_0)
+        member this.Mem1 (arg_0_0, arg_0_1) = this.Mem1 (arg_0_0, arg_0_1)
+        member this.Mem2 arg_0_0 = this.Mem2 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -106,14 +126,18 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type internal VeryPublicTypeMock<'a, 'b> =
-    { Mem1: 'a -> 'b }
+    {
+        Mem1 : 'a -> 'b
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty() : VeryPublicTypeMock<'a, 'b> =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1")) }
+    static member Empty () : VeryPublicTypeMock<'a, 'b> =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+        }
 
     interface VeryPublicType<'a, 'b> with
-        member this.Mem1 arg_0_0 = this.Mem1(arg_0_0)
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
 namespace SomeNamespace
 
 open System
@@ -121,21 +145,25 @@ open WoofWare.Myriad.Plugins
 
 /// Mock record type for an interface
 type internal CurriedMock<'a> =
-    { Mem1: int -> 'a -> string
-      Mem2: int * string -> 'a -> string
-      Mem3: (int * string) -> 'a -> string
-      Mem4: (int * string) -> ('a * int) -> string
-      Mem5: int * string -> ('a * int) -> string
-      Mem6: int * string -> 'a * int -> string }
+    {
+        Mem1 : int -> 'a -> string
+        Mem2 : int * string -> 'a -> string
+        Mem3 : (int * string) -> 'a -> string
+        Mem4 : (int * string) -> ('a * int) -> string
+        Mem5 : int * string -> ('a * int) -> string
+        Mem6 : int * string -> 'a * int -> string
+    }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty() : CurriedMock<'a> =
-        { Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
-          Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
-          Mem4 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem4"))
-          Mem5 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem5"))
-          Mem6 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem6")) }
+    static member Empty () : CurriedMock<'a> =
+        {
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+            Mem3 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem3"))
+            Mem4 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem4"))
+            Mem5 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem5"))
+            Mem6 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem6"))
+        }
 
     interface Curried<'a> with
         member this.Mem1 arg_0_0 arg_1_0 = this.Mem1 (arg_0_0) (arg_1_0)
@@ -159,23 +187,25 @@ open WoofWare.Myriad.Plugins
 type internal TypeWithInterfaceMock =
     {
         /// Implementation of IDisposable.Dispose
-        Dispose: unit -> unit
-        Mem1: string option -> string[] Async
-        Mem2: unit -> string[] Async
+        Dispose : unit -> unit
+        Mem1 : string option -> string[] Async
+        Mem2 : unit -> string[] Async
     }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: TypeWithInterfaceMock =
-        { Dispose = (fun () -> ())
-          Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2")) }
+    static member Empty : TypeWithInterfaceMock =
+        {
+            Dispose = (fun () -> ())
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
 
     interface TypeWithInterface with
-        member this.Mem1 arg_0_0 = this.Mem1(arg_0_0)
-        member this.Mem2() = this.Mem2(())
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem2 () = this.Mem2 (())
 
     interface System.IDisposable with
-        member this.Dispose() : unit = this.Dispose()
+        member this.Dispose () : unit = this.Dispose ()
 namespace SomeNamespace
 
 open System
@@ -185,26 +215,28 @@ open WoofWare.Myriad.Plugins
 type internal TypeWithPropertiesMock =
     {
         /// Implementation of IDisposable.Dispose
-        Dispose: unit -> unit
-        Prop1: unit -> int
-        Prop2: unit -> unit Async
-        Mem1: string option -> string[] Async
+        Dispose : unit -> unit
+        Prop1 : unit -> int
+        Prop2 : unit -> unit Async
+        Mem1 : string option -> string[] Async
     }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: TypeWithPropertiesMock =
-        { Dispose = (fun () -> ())
-          Prop1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop1"))
-          Prop2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop2"))
-          Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1")) }
+    static member Empty : TypeWithPropertiesMock =
+        {
+            Dispose = (fun () -> ())
+            Prop1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop1"))
+            Prop2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Prop2"))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+        }
 
     interface TypeWithProperties with
-        member this.Mem1 arg_0_0 = this.Mem1(arg_0_0)
-        member this.Prop1 = this.Prop1()
-        member this.Prop2 = this.Prop2()
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Prop1 = this.Prop1 ()
+        member this.Prop2 = this.Prop2 ()
 
     interface System.IDisposable with
-        member this.Dispose() : unit = this.Dispose()
+        member this.Dispose () : unit = this.Dispose ()
 namespace SomeNamespace
 
 open System
@@ -214,23 +246,25 @@ open WoofWare.Myriad.Plugins
 type internal TypeWithAsyncDisposableMock =
     {
         /// Implementation of IAsyncDisposable.DisposeAsync
-        DisposeAsync: unit -> System.Threading.Tasks.ValueTask
-        Mem1: string option -> string[] Async
-        Mem2: unit -> string[] Async
+        DisposeAsync : unit -> System.Threading.Tasks.ValueTask
+        Mem1 : string option -> string[] Async
+        Mem2 : unit -> string[] Async
     }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: TypeWithAsyncDisposableMock =
-        { DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask()))
-          Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
-          Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2")) }
+    static member Empty : TypeWithAsyncDisposableMock =
+        {
+            DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+            Mem2 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem2"))
+        }
 
     interface TypeWithAsyncDisposable with
-        member this.Mem1 arg_0_0 = this.Mem1(arg_0_0)
-        member this.Mem2() = this.Mem2(())
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
+        member this.Mem2 () = this.Mem2 (())
 
     interface System.IAsyncDisposable with
-        member this.DisposeAsync() : System.Threading.Tasks.ValueTask = this.DisposeAsync()
+        member this.DisposeAsync () : System.Threading.Tasks.ValueTask = this.DisposeAsync ()
 namespace SomeNamespace
 
 open System
@@ -240,31 +274,25 @@ open WoofWare.Myriad.Plugins
 type internal TypeWithBothDisposablesMock =
     {
         /// Implementation of IDisposable.Dispose
-        Dispose: unit -> unit
+        Dispose : unit -> unit
         /// Implementation of IAsyncDisposable.DisposeAsync
-        DisposeAsync: unit -> System.Threading.Tasks.ValueTask
-        Mem1: string -> int
+        DisposeAsync : unit -> System.Threading.Tasks.ValueTask
+        Mem1 : string -> int
     }
 
     /// An implementation where every non-disposal method throws.
-    static member Empty: TypeWithBothDisposablesMock =
-        { Dispose = (fun () -> ())
-          DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask()))
-          Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1")) }
+    static member Empty : TypeWithBothDisposablesMock =
+        {
+            Dispose = (fun () -> ())
+            DisposeAsync = (fun () -> (System.Threading.Tasks.ValueTask ()))
+            Mem1 = (fun _ -> raise (System.NotImplementedException "Unimplemented mock function: Mem1"))
+        }
 
     interface TypeWithBothDisposables with
-        member this.Mem1 arg_0_0 = this.Mem1(arg_0_0)
+        member this.Mem1 arg_0_0 = this.Mem1 (arg_0_0)
 
     interface System.IDisposable with
-        member this.Dispose() : unit = this.Dispose()
+        member this.Dispose () : unit = this.Dispose ()
 
     interface System.IAsyncDisposable with
-        member this.DisposeAsync() : System.Threading.Tasks.ValueTask = this.DisposeAsync()
-
-
-
-
-
-
-
-
+        member this.DisposeAsync () : System.Threading.Tasks.ValueTask = this.DisposeAsync ()
