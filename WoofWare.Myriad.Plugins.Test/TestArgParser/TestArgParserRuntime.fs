@@ -1325,3 +1325,57 @@ module TestArgParserRuntime =
 
         let config = Config.QuickThrowOnFailure.WithMaxTest 500
         Check.One (config, Prop.forAll (Arb.fromGen cases) property)
+
+    [<Test>]
+    let ``Collision detection uses exactly the scanner's equality`` () =
+        // "s" and "ſ" (long s) uppercase to the same string, but OrdinalIgnoreCase — the equality
+        // the scanner matches keys with — considers them distinct. A coarser normalisation (e.g.
+        // ToUpperInvariant keying) would falsely reject this schema even though the scanner
+        // routes its tokens unambiguously.
+        let schema =
+            productSchema
+                [
+                    leaf 0 "s" ErasedArity.One ErasedRequirement.Required
+                    leaf 1 "ſ" ErasedArity.One ErasedRequirement.Required
+                ]
+                None
+
+        // The scanner really does distinguish them.
+        scan schema [ "--s=1" ] |> shouldEqual [ occ 0 (Some "1") false "--s=1" ]
+        scan schema [ "--ſ=1" ] |> shouldEqual [ occ 1 (Some "1") false "--ſ=1" ]
+
+        WellFormedSchema.errors schema |> shouldEqual []
+
+    [<Test>]
+    let ``An empty form is rejected: its token would be the separator`` () =
+        let bad =
+            { leaf 0 "a" ErasedArity.One ErasedRequirement.Required with
+                Forms = [ "" ]
+            }
+
+        WellFormedSchema.errors (productSchema [ bad ] None)
+        |> shouldEqual [ SchemaError.EmptyForm "argument id 0" ]
+
+    [<Test>]
+    let ``A form containing an equals sign is rejected: the scanner splits at the first equals`` () =
+        // A required argument under such a form would make its schema (or its union case)
+        // permanently unsatisfiable, while still passing every name-collision check.
+        let bad =
+            { leaf 0 "a" ErasedArity.One ErasedRequirement.Required with
+                Forms = [ "foo=bar" ]
+            }
+
+        WellFormedSchema.errors (productSchema [ bad ] None)
+        |> shouldEqual [ SchemaError.FormContainsEquals ("argument id 0", "foo=bar") ]
+
+        let badSink =
+            {
+                Id = 99
+                Forms = [ "rest=stuff" ]
+                FlagLike = ErasedFlagLikeBehaviour.Reject
+                TypeDescription = "string"
+                Help = None
+            }
+
+        WellFormedSchema.errors (productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] (Some badSink))
+        |> shouldEqual [ SchemaError.FormContainsEquals ("the positional-args sink", "rest=stuff") ]
