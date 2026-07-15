@@ -261,7 +261,30 @@ type ArgParserRuntime_Foo =
     }
 """
         |> shouldRejectWith
-            "Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the [<ArgParser>] type 'ArgParserRuntime_Foo'."
+            "Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the type 'ArgParserRuntime_Foo'."
+
+    [<Test>]
+    let ``Untagged types alongside a parser may not claim the runtime-module prefix either`` () =
+        // The untagged record is visible to the generator (it arrives in the same recursive
+        // group as the tagged type), and the emitted `module private ArgParserRuntime_Foo`
+        // would collide with it at compile time.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Foo =
+    {
+        A : int
+    }
+
+type ArgParserRuntime_Foo =
+    {
+        B : int
+    }
+"""
+        |> shouldRejectWith
+            "Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the type 'ArgParserRuntime_Foo'."
 
     [<Test>]
     let ``The reserved name help cannot be claimed, in any casing`` () =

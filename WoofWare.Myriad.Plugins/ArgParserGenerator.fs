@@ -1855,17 +1855,21 @@ module internal ArgParserGenerator =
                 )
             )
 
-        // The runtime-module prefix is reserved: a tagged type named e.g. ArgParserRuntime_Foo
-        // would generate a parser module colliding with the runtime module emitted for a
-        // namespace whose first tagged type is Foo. Enforce the reservation where it is visible;
-        // collisions with *untagged* user declarations cannot be seen on the untyped AST, so for
-        // those the prefix is documented as reserved.
-        for _, (taggedType, _), _, _ in namespaceAndTypes do
-            let name = SynTypeDefn.getName taggedType |> List.last |> _.idText
+        // The runtime-module prefix is reserved: a type named e.g. ArgParserRuntime_Foo (tagged
+        // or not) would collide with the runtime module emitted for a namespace whose first
+        // tagged type is Foo. Enforce the reservation over every type the generator can see —
+        // the unions and records here are the full recursive group declared alongside each
+        // tagged type. Declarations it cannot see (other input files; user modules, which
+        // Ast.getTypes does not surface) remain covered by documentation only.
+        for _, _, unions, records in namespaceAndTypes do
+            let names =
+                (unions |> List.map (fun u -> u.Name.idText))
+                @ (records |> List.map (fun r -> r.Name.idText))
 
-            if name.StartsWith ("ArgParserRuntime_", StringComparison.Ordinal) then
-                failwith
-                    $"Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the [<ArgParser>] type '%s{name}'."
+            for name in names do
+                if name.StartsWith ("ArgParserRuntime_", StringComparison.Ordinal) then
+                    failwith
+                        $"Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the type '%s{name}'."
 
         // Each namespace containing a generated parser gets one embedded runtime module,
         // named after the first [<ArgParser>] type in that namespace (see
