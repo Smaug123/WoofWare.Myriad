@@ -42,6 +42,7 @@
     <Compile Include="JsonParseGenerator.fs"/>
     <Compile Include="HttpClientGenerator.fs"/>
     <Compile Include="CataGenerator.fs" />
+    <Compile Include="ArgParserRuntime.fs" />
     <Compile Include="ArgParserGenerator.fs" />
     <Compile Include="JsonHelpers.fs" />
     <Compile Include="HttpMethod.fs" />

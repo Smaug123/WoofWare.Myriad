@@ -45,6 +45,7 @@
     <Compile Include="TestArgParser\TestArgParser.fs" />
     <Compile Include="TestArgParser\TestArgParserNegation.fs" />
     <Compile Include="TestArgParser\TestArgParserKnownBugs.fs" />
+    <Compile Include="TestArgParser\TestArgParserRuntime.fs" />
     <Compile Include="TestSwagger\TestSwaggerParse.fs" />
     <Compile Include="TestSwagger\TestSuccessResponse.fs" />
     <Compile Include="TestSwagger\TestSwaggerTypeRender.fs" />
