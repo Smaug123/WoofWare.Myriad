@@ -54,5 +54,7 @@ module internal ArgParserRuntimeEmbed =
     /// parser is being generated there. That type's name is necessarily unique across the
     /// project's input files (two files defining the same type in one namespace would fail to
     /// compile anyway), unlike e.g. the input file's base name, so runtime modules emitted into
-    /// the same namespace from different generated files cannot collide.
+    /// the same namespace from different generated files cannot collide. Nor can the result
+    /// collide with a generated *parser* module (which is named after its tagged type): the
+    /// generator rejects tagged types whose names begin with this prefix.
     let moduleName (taggedTypeName : string) : string = "ArgParserRuntime_" + taggedTypeName

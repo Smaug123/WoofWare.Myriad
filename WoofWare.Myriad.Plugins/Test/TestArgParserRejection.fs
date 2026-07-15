@@ -239,6 +239,31 @@ type Args =
             "Invalid argument name 'foo=bar' for field 'A': a --key=value token splits at its first '=', so this argument could never be addressed."
 
     [<Test>]
+    let ``Tagged type names may not claim the reserved runtime-module prefix`` () =
+        // The generator emits one runtime module per namespace, named
+        // ArgParserRuntime_<firstTaggedType>; a tagged type named ArgParserRuntime_Foo alongside
+        // a tagged type Foo would therefore generate two modules with the same name, which does
+        // not compile. The prefix is documented as reserved; enforce it where we can see it.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Foo =
+    {
+        A : int
+    }
+
+[<ArgParser>]
+type ArgParserRuntime_Foo =
+    {
+        B : int
+    }
+"""
+        |> shouldRejectWith
+            "Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the [<ArgParser>] type 'ArgParserRuntime_Foo'."
+
+    [<Test>]
     let ``The reserved name help cannot be claimed, in any casing`` () =
         """namespace TestMe
 

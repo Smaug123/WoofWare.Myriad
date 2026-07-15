@@ -1855,6 +1855,18 @@ module internal ArgParserGenerator =
                 )
             )
 
+        // The runtime-module prefix is reserved: a tagged type named e.g. ArgParserRuntime_Foo
+        // would generate a parser module colliding with the runtime module emitted for a
+        // namespace whose first tagged type is Foo. Enforce the reservation where it is visible;
+        // collisions with *untagged* user declarations cannot be seen on the untyped AST, so for
+        // those the prefix is documented as reserved.
+        for _, (taggedType, _), _, _ in namespaceAndTypes do
+            let name = SynTypeDefn.getName taggedType |> List.last |> _.idText
+
+            if name.StartsWith ("ArgParserRuntime_", StringComparison.Ordinal) then
+                failwith
+                    $"Type names beginning 'ArgParserRuntime_' are reserved: the ArgParser generator emits its runtime module under that prefix alongside the generated parsers. Rename the [<ArgParser>] type '%s{name}'."
+
         // Each namespace containing a generated parser gets one embedded runtime module,
         // named after the first [<ArgParser>] type in that namespace (see
         // ArgParserRuntimeEmbed.moduleName for why that cannot collide).
