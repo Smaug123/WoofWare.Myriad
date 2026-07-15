@@ -244,65 +244,87 @@ module private ParseTree =
             nonPos @ nonPos2, Some pos
 
         |> fun (nonPos, pos) ->
-            // Extract all arg form strings for validation
-            let allArgForms =
-                Option.toList (pos |> Option.map _.ArgForm) @ (nonPos |> List.map _.ArgForm)
-                |> Seq.concat
-                |> Seq.choose (fun expr ->
+            // Reject argument names which could collide at parse time. The scanner matches names
+            // case-insensitively, so this validation must use the same equality; and a name can
+            // collide with the `--no-` variant of a negatable argument as well as with another
+            // name directly. Only literal forms are checkable here: a form supplied via e.g. a
+            // [<Literal>] constant is invisible to the untyped AST, so the generated code
+            // re-checks the assembled schema at runtime (WellFormedSchema.checkOrFail).
+            let literalForms (exprs : SynExpr list) : string list =
+                exprs
+                |> List.choose (fun expr ->
                     match expr |> SynExpr.stripOptionalParen with
                     | SynExpr.Const (SynConst.String (s, _, _), _) -> Some s
                     | _ -> None
                 )
-                |> List.ofSeq
 
-            // Check for direct duplicates
-            let duplicateArgs =
-                allArgForms
-                |> List.groupBy id
-                |> List.choose (fun (key, v) -> if v.Length > 1 then Some key else None)
+            // `--help` always means help (case-insensitively), so no argument may claim it.
+            let allLiteralForms =
+                (pos |> Option.toList |> List.collect (fun pf -> literalForms pf.ArgForm))
+                @ (nonPos |> List.collect (fun pf -> literalForms pf.ArgForm))
 
-            match duplicateArgs with
-            | dups when not dups.IsEmpty ->
-                let dups = dups |> String.concat " "
-                failwith $"Duplicate args detected! %s{dups}"
-            | _ ->
-
-            // Check for --no- prefix conflicts
-            // Build a map of arg names that have AcceptsNegation=true
-            let negatedForms =
-                nonPos
-                |> List.filter _.AcceptsNegation
-                |> List.collect (fun pf ->
-                    pf.ArgForm
-                    |> List.choose (fun expr ->
-                        match expr |> SynExpr.stripOptionalParen with
-                        | SynExpr.Const (SynConst.String (s, _, _), _) -> Some (pf.FieldName.idText, s)
-                        | _ -> None
-                    )
+            let helpClaims =
+                allLiteralForms
+                |> List.filter (fun form ->
+                    System.String.Equals (form, "help", System.StringComparison.OrdinalIgnoreCase)
                 )
-                |> List.map (fun (fieldName, argForm) -> $"no-%s{argForm}", fieldName)
-                |> Map.ofList
 
-            // Check if any existing arg form conflicts with a --no- variant
+            match helpClaims with
+            | [] -> ()
+            | _ -> failwith "The argument name 'help' is reserved: --help always displays the help text."
+
+            // Every name a `--token` could address, with a description of its claimant, in
+            // declaration order.
+            let claims : (string * string) list =
+                (nonPos
+                 |> List.collect (fun pf ->
+                     let forms = literalForms pf.ArgForm
+
+                     let plain =
+                         forms
+                         |> List.map (fun form -> form, $"'--%s{form}' (field '%s{pf.FieldName.idText}')")
+
+                     let negated =
+                         if pf.AcceptsNegation then
+                             forms
+                             |> List.map (fun form ->
+                                 $"no-%s{form}",
+                                 $"the --no- variant of field '%s{pf.FieldName.idText}' (which has [<ArgumentNegateWithPrefix>])"
+                             )
+                         else
+                             []
+
+                     plain @ negated
+                 ))
+                @ (pos
+                   |> Option.toList
+                   |> List.collect (fun pf ->
+                       literalForms pf.ArgForm
+                       |> List.map (fun form -> form, $"'--%s{form}' (the positional args)")
+                   ))
+
             let conflicts =
-                allArgForms
-                |> List.choose (fun argForm ->
-                    match negatedForms.TryFind argForm with
-                    | Some fieldWithNegation -> Some (argForm, fieldWithNegation)
-                    | None -> None
+                claims
+                |> List.groupBy (fun (form, _) -> form.ToUpperInvariant ())
+                |> List.choose (fun (_, group) ->
+                    match group with
+                    | []
+                    | [ _ ] -> None
+                    | (form, _) :: _ ->
+                        group
+                        |> List.map snd
+                        |> String.concat "; "
+                        |> sprintf "The argument name '--%s' is claimed by: %s" form
+                        |> Some
                 )
 
             match conflicts with
             | [] -> ()
             | conflicts ->
-                let conflictMessages =
-                    conflicts
-                    |> List.map (fun (argForm, fieldWithNegation) ->
-                        $"Argument name conflict: '--%s{argForm}' collides with the --no- variant of field '%s{fieldWithNegation}' (which has [<ArgumentNegateWithPrefix>])"
-                    )
-                    |> String.concat "\n"
+                let conflictMessages = conflicts |> String.concat "\n"
 
-                failwith $"Conflicting argument names detected:\n%s{conflictMessages}"
+                failwith
+                    $"Conflicting argument names detected (names are matched case-insensitively):\n%s{conflictMessages}"
 
             nonPos, pos
 
@@ -1503,7 +1525,15 @@ module internal ArgParserGenerator =
         let runOutcome : SynExpr =
             SynExpr.createMatch
                 (rt [ "runParse" ]
-                 |> SynExpr.applyTo (SynExpr.createIdent' schemaVar)
+                 |> SynExpr.applyTo (
+                     // The schema is re-checked at runtime because generation-time validation
+                     // cannot see argument forms supplied via e.g. [<Literal>] constants.
+                     SynExpr.paren (
+                         SynExpr.applyFunction
+                             (rt [ "WellFormedSchema" ; "checkOrFail" ])
+                             (SynExpr.createIdent' schemaVar)
+                     )
+                 )
                  |> SynExpr.applyTo (SynExpr.createIdent "parser_callbacks")
                  |> SynExpr.applyTo (SynExpr.createIdent "args"))
                 [
@@ -1715,6 +1745,98 @@ module internal ArgParserGenerator =
         ]
         |> SynModuleOrNamespace.createNamespace ns
 
+    /// Everything the generator does after parsing: locate the [<ArgParser>] types and build the
+    /// generated namespaces (one embedded-runtime module per namespace containing a tagged type,
+    /// then one module per tagged type). Split out from IMyriadGenerator.Generate so that tests
+    /// can drive the generator over in-memory source.
+    let generate (ast : ParsedInput) : SynModuleOrNamespace list =
+        let types = Ast.getTypes ast
+
+        let namespaceAndTypes =
+            types
+            |> List.collect (fun (ns, types) ->
+                let typeWithAttr =
+                    types
+                    |> List.choose (fun ty ->
+                        match SynTypeDefn.getAttribute typeof<ArgParserAttribute>.Name ty with
+                        | None -> None
+                        | Some attr ->
+                            let arg =
+                                match SynExpr.stripOptionalParen attr.ArgExpr with
+                                | SynExpr.Const (SynConst.Bool value, _) -> value
+                                | SynExpr.Const (SynConst.Unit, _) -> ArgParserAttribute.DefaultIsExtensionMethod
+                                | arg ->
+                                    failwith
+                                        $"Unrecognised argument %+A{arg} to [<%s{nameof ArgParserAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
+
+                            let spec =
+                                {
+                                    ExtensionMethods = arg
+                                }
+
+                            Some (ty, spec)
+                    )
+
+                typeWithAttr
+                |> List.map (fun taggedType ->
+                    let unions, records, others =
+                        (([], [], []), types)
+                        ||> List.fold (fun
+                                           (unions, records, others)
+                                           (SynTypeDefn.SynTypeDefn (sci, repr, smd, _, _, _) as ty) ->
+                            match repr with
+                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _) ->
+                                UnionType.OfUnion sci smd access cases :: unions, records, others
+                            | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _) ->
+                                unions, RecordType.OfRecord sci smd access fields :: records, others
+                            | _ -> unions, records, ty :: others
+                        )
+
+                    if not others.IsEmpty then
+                        failwith
+                            $"Error: all types recursively defined together with an ArgParserGenerator type must be discriminated unions or records. %+A{others}"
+
+                    (ns, taggedType, unions, records)
+                )
+            )
+
+        // Each namespace containing a generated parser gets one embedded runtime module,
+        // named after the first [<ArgParser>] type in that namespace (see
+        // ArgParserRuntimeEmbed.moduleName for why that cannot collide).
+        let runtimeModuleByNs =
+            namespaceAndTypes
+            |> List.groupBy (fun (ns, _, _, _) -> ns |> List.map _.idText)
+            |> List.map (fun (nsName, group) ->
+                let ns, (firstType, _), _, _ = List.head group
+
+                let ident =
+                    SynTypeDefn.getName firstType
+                    |> List.last
+                    |> _.idText
+                    |> ArgParserRuntimeEmbed.moduleName
+                    |> Ident.create
+
+                nsName, (ns, ident)
+            )
+            |> Map.ofList
+
+        let modules =
+            namespaceAndTypes
+            |> List.map (fun (ns, taggedType, unions, records) ->
+                let opens = AstHelper.extractOpensForNamespace ns ast
+                let _, runtimeModule = Map.find (ns |> List.map _.idText) runtimeModuleByNs
+                createModule runtimeModule opens ns taggedType unions records
+            )
+
+        let runtimeModules =
+            runtimeModuleByNs
+            |> Map.toList
+            |> List.map (fun (_, (ns, ident)) ->
+                SynModuleOrNamespace.createNamespace ns [ ArgParserRuntimeEmbed.asModule ident.idText ]
+            )
+
+        runtimeModules @ modules
+
 open Myriad.Core
 
 /// Myriad generator that provides a catamorphism for an algebraic data type.
@@ -1728,91 +1850,4 @@ type ArgParserGenerator () =
             let ast, _ =
                 Ast.fromFilename context.InputFilename |> Async.RunSynchronously |> Array.head
 
-            let types = Ast.getTypes ast
-
-            let opens = AstHelper.extractOpens ast
-
-            let namespaceAndTypes =
-                types
-                |> List.collect (fun (ns, types) ->
-                    let typeWithAttr =
-                        types
-                        |> List.choose (fun ty ->
-                            match SynTypeDefn.getAttribute typeof<ArgParserAttribute>.Name ty with
-                            | None -> None
-                            | Some attr ->
-                                let arg =
-                                    match SynExpr.stripOptionalParen attr.ArgExpr with
-                                    | SynExpr.Const (SynConst.Bool value, _) -> value
-                                    | SynExpr.Const (SynConst.Unit, _) -> ArgParserAttribute.DefaultIsExtensionMethod
-                                    | arg ->
-                                        failwith
-                                            $"Unrecognised argument %+A{arg} to [<%s{nameof ArgParserAttribute}>]. Literals are not supported. Use `true` or `false` (or unit) only."
-
-                                let spec =
-                                    {
-                                        ExtensionMethods = arg
-                                    }
-
-                                Some (ty, spec)
-                        )
-
-                    typeWithAttr
-                    |> List.map (fun taggedType ->
-                        let unions, records, others =
-                            (([], [], []), types)
-                            ||> List.fold (fun
-                                               (unions, records, others)
-                                               (SynTypeDefn.SynTypeDefn (sci, repr, smd, _, _, _) as ty) ->
-                                match repr with
-                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _) ->
-                                    UnionType.OfUnion sci smd access cases :: unions, records, others
-                                | SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _) ->
-                                    unions, RecordType.OfRecord sci smd access fields :: records, others
-                                | _ -> unions, records, ty :: others
-                            )
-
-                        if not others.IsEmpty then
-                            failwith
-                                $"Error: all types recursively defined together with an ArgParserGenerator type must be discriminated unions or records. %+A{others}"
-
-                        (ns, taggedType, unions, records)
-                    )
-                )
-
-            // Each namespace containing a generated parser gets one embedded runtime module,
-            // named after the first [<ArgParser>] type in that namespace (see
-            // ArgParserRuntimeEmbed.moduleName for why that cannot collide).
-            let runtimeModuleByNs =
-                namespaceAndTypes
-                |> List.groupBy (fun (ns, _, _, _) -> ns |> List.map _.idText)
-                |> List.map (fun (nsName, group) ->
-                    let ns, (firstType, _), _, _ = List.head group
-
-                    let ident =
-                        SynTypeDefn.getName firstType
-                        |> List.last
-                        |> _.idText
-                        |> ArgParserRuntimeEmbed.moduleName
-                        |> Ident.create
-
-                    nsName, (ns, ident)
-                )
-                |> Map.ofList
-
-            let modules =
-                namespaceAndTypes
-                |> List.map (fun (ns, taggedType, unions, records) ->
-                    let opens = AstHelper.extractOpensForNamespace ns ast
-                    let _, runtimeModule = Map.find (ns |> List.map _.idText) runtimeModuleByNs
-                    ArgParserGenerator.createModule runtimeModule opens ns taggedType unions records
-                )
-
-            let runtimeModules =
-                runtimeModuleByNs
-                |> Map.toList
-                |> List.map (fun (_, (ns, ident)) ->
-                    SynModuleOrNamespace.createNamespace ns [ ArgParserRuntimeEmbed.asModule ident.idText ]
-                )
-
-            Output.Ast (runtimeModules @ modules)
+            Output.Ast (ArgParserGenerator.generate ast)

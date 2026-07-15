@@ -896,7 +896,8 @@ module internal ArgParserRuntime =
     /// Drive a full parse: scan, route occurrences into the typed layer's slots (in argv order,
     /// so conversion errors interleave faithfully), select union cases, validate, render every
     /// structural error, and apply defaults (only when the parse is otherwise clean).
-    let runParse (schema : ErasedSchema) (callbacks : TypedCallbacks) (args : string list) : ParseOutcome =
+    let runParse (schema : WellFormedSchema) (callbacks : TypedCallbacks) (args : string list) : ParseOutcome =
+        let schema = WellFormedSchema.schema schema
         let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
 
         let events = scan schema args

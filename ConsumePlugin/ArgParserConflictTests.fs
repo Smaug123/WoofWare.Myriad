@@ -5,12 +5,17 @@ open WoofWare.Myriad.Plugins
 // This file contains test cases for conflict detection in the ArgParser generator.
 // These are expected to FAIL at build time with appropriate error messages.
 // Uncomment each section one at a time to test the specific conflict detection.
+//
+// These cases (and case-insensitive variants of them) are asserted automatically in
+// WoofWare.Myriad.Plugins/Test/TestArgParserRejection.fs, which drives the generator over
+// in-memory source; the copies here are kept for manual end-to-end confirmation that a real
+// build fails.
 
 // ============================================================================
 // Test 1: Field named NoFooBar conflicts with FooBar's --no- variant
 // ============================================================================
-// Expected error: Argument name conflict: '--no-foo-bar' collides with the --no- variant
-// of field 'FooBar' (which has [<ArgumentNegateWithPrefix>])
+// Expected error: The argument name '--no-foo-bar' is claimed by: the --no- variant of field
+// 'FooBar' (which has [<ArgumentNegateWithPrefix>]); '--no-foo-bar' (field 'NoFooBar')
 
 (*
 [<ArgParser>]
@@ -25,8 +30,8 @@ type ConflictingFieldNames =
 // ============================================================================
 // Test 2: ArgumentLongForm "no-foo" conflicts with Foo's --no- variant
 // ============================================================================
-// Expected error: Argument name conflict: '--no-foo' collides with the --no- variant
-// of field 'Foo' (which has [<ArgumentNegateWithPrefix>])
+// Expected error: The argument name '--no-foo' is claimed by: the --no- variant of field
+// 'Foo' (which has [<ArgumentNegateWithPrefix>]); '--no-foo' (field 'Bar')
 
 (*
 [<ArgParser>]
@@ -42,7 +47,8 @@ type ConflictingLongForm =
 // ============================================================================
 // Test 3: Multiple ArgumentLongForm, one conflicts
 // ============================================================================
-// Expected error: Argument name conflict: '--no-verbose' collides with...
+// Expected error: The argument name '--no-verbose' is claimed by: the --no- variant of field
+// 'VerboseMode' (which has [<ArgumentNegateWithPrefix>]); '--no-verbose' (field 'Quiet')
 
 (*
 [<ArgParser>]

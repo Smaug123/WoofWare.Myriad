@@ -33,6 +33,11 @@ module TestArgParserRuntime =
             Positional = positional
         }
 
+    /// Shadows the kernel's runParse: every schema in these tests is well-formed, so go through
+    /// the checked constructor which generated code also uses.
+    let private runParse (schema : ErasedSchema) : TypedCallbacks -> string list -> ParseOutcome =
+        ArgParserRuntime.runParse (WellFormedSchema.checkOrFail schema)
+
     let private occ (leafId : int) (value : string option) (negated : bool) (source : string) : ScanEvent =
         ScanEvent.Occurrence
             {
