@@ -710,6 +710,120 @@ type TopArgs =
         |> shouldRejectWith
             "The [<ArgParser>] schema is recursive: TopArgs -> Mode -> ModePayload -> Mode. Argument records and unions may not contain themselves, even indirectly."
 
+    // ------------------------------------------------------------------------------------------
+    // Qualified type references. A type defined alongside the tagged type is referred to by its
+    // bare name; resolving ambient references by *last segment* instead of by the complete
+    // reference would let a local type capture a qualified reference to a foreign type (e.g.
+    // `System.Uri` alongside a local type named `Uri`), silently generating code which does not
+    // compile.
+
+    let private renderOrFail (modules : SynModuleOrNamespace list) : string =
+        match Ast.render modules with
+        | Some rendered -> rendered
+        | None -> failwith "expected the generated modules to render"
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local union with the same last segment`` () =
+        // `Address : System.Uri` names the BCL type. If the structural union `Uri` captured it,
+        // the generated parser would construct `Uri.CaseA ...` where a `System.Uri` is required.
+        let rendered =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type CaseARecord =
+    {
+        Alpha : int
+    }
+
+type Uri =
+    | CaseA of CaseARecord
+
+[<ArgParser>]
+type TopLevel =
+    {
+        Address : System.Uri
+        Count : int
+    }
+"""
+            |> renderOrFail
+
+        rendered.Contains "CaseA" |> shouldEqual false
+        rendered.Contains "System.Uri" |> shouldEqual true
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local record with the same last segment`` () =
+        let rendered =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Uri =
+    {
+        Foo : int
+    }
+
+[<ArgParser>]
+type TopLevel =
+    {
+        Address : System.Uri
+    }
+"""
+            |> renderOrFail
+
+        rendered.Contains "Foo" |> shouldEqual false
+        rendered.Contains "System.Uri" |> shouldEqual true
+
+    [<Test>]
+    let ``A qualified case payload is not captured by a local record with the same last segment`` () =
+        // `System.Uri` is not a record defined alongside the union, so this must be rejected
+        // (rather than lowering the local record `Uri` and constructing `BadDu.Fetch { Foo = ... }`
+        // where a `System.Uri` is required).
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Uri =
+    {
+        Foo : int
+    }
+
+[<ArgParser>]
+type BadDu =
+    | Fetch of System.Uri
+"""
+        |> shouldRejectWith
+            "Case Fetch of [<ArgParser>] union BadDu must have a payload which is a record defined alongside the union."
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local flag DU with the same last segment`` () =
+        // `External.Enabled` is some foreign type the generator cannot parse; treating it as the
+        // local flag DU `Enabled` would emit `Enabled.On`/`Enabled.Off` into an
+        // `External.Enabled` field. Rejection is the correct outcome.
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                generateFromSource
+                    """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Enabled =
+    | [<ArgumentFlag true>] On
+    | [<ArgumentFlag false>] Off
+
+[<ArgParser>]
+type FlagClash =
+    {
+        Mode : External.Enabled
+    }
+"""
+                |> ignore<SynModuleOrNamespace list>
+            )
+
+        exc.Message.Contains "Could not decide how to parse" |> shouldEqual true
+
     [<Test>]
     let ``The motivating union of alternative argument sets generates successfully`` () =
         let modules =

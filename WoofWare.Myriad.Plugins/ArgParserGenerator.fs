@@ -915,18 +915,14 @@ module internal ArgParserGenerator =
                         | l -> List.ofSeq l
 
                 let ambientRecordMatch =
-                    match SynType.stripOptionalParen fieldType with
-                    | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
-                        let target = List.last(id).idText
-                        ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
-                    | _ -> None
+                    match localTypeName fieldType with
+                    | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                    | None -> None
 
                 let ambientUnionMatch =
-                    match SynType.stripOptionalParen fieldType with
-                    | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
-                        let target = List.last(id).idText
-                        ambientUnions |> List.tryFind (fun u -> u.Name.idText = target)
-                    | _ -> None
+                    match localTypeName fieldType with
+                    | Some target -> ambientUnions |> List.tryFind (fun u -> u.Name.idText = target)
+                    | None -> None
 
                 match ambientRecordMatch with
                 | Some ambient ->
@@ -1092,11 +1088,9 @@ module internal ArgParserGenerator =
                     match case.Fields with
                     | [ field ] ->
                         let payload =
-                            match SynType.stripOptionalParen field.Type with
-                            | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
-                                let target = List.last(id).idText
-                                ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
-                            | _ -> None
+                            match localTypeName field.Type with
+                            | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                            | None -> None
 
                         match payload with
                         | Some payload -> payload
