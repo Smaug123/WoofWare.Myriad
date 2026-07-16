@@ -542,6 +542,85 @@ type BadDu =
             "Case FooCase of [<ArgParser>] union BadDu must have exactly one field: a record holding that case's arguments."
 
     [<Test>]
+    let ``Parenthesized type references are accepted wherever bare ones are`` () =
+        // FCS represents `of (FooArgs)` as SynType.Paren; the by-name lookups for a case's
+        // payload record, and for union- or record-typed fields, must see through it.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        Bar : int
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of (FooArgs)
+    | BarCase of BarArgs
+"""
+
+        List.length modules |> shouldEqual 2
+
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type AutoMode =
+    {
+        Quiet : bool option
+    }
+
+type ManualMode =
+    {
+        Level : int
+    }
+
+type Mode =
+    | Auto of AutoMode
+    | Manual of ManualMode
+
+[<ArgParser>]
+type WithModeArgs =
+    {
+        Verbose : bool
+        Mode : (Mode)
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type ChildRecord =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type ParentRecord =
+    {
+        Child : (ChildRecord)
+        AndAnother : bool
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
     let ``The motivating union of alternative argument sets generates successfully`` () =
         let modules =
             generateFromSource

@@ -915,12 +915,14 @@ module internal ArgParserGenerator =
                         | l -> List.ofSeq l
 
                 let ambientRecordMatch =
-                    match localTypeName fieldType with
-                    | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
-                    | None -> None
+                    match SynType.stripOptionalParen fieldType with
+                    | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
+                        let target = List.last(id).idText
+                        ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                    | _ -> None
 
                 let ambientUnionMatch =
-                    match fieldType with
+                    match SynType.stripOptionalParen fieldType with
                     | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
                         let target = List.last(id).idText
                         ambientUnions |> List.tryFind (fun u -> u.Name.idText = target)
@@ -1086,7 +1088,7 @@ module internal ArgParserGenerator =
                     match case.Fields with
                     | [ field ] ->
                         let payload =
-                            match field.Type with
+                            match SynType.stripOptionalParen field.Type with
                             | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
                                 let target = List.last(id).idText
                                 ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
