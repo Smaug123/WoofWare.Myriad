@@ -4,17 +4,13 @@ open NUnit.Framework
 open FsUnitTyped
 open ConsumePlugin
 
-/// These tests pin behaviours which were bugs in the original arg parser and were fixed by the
-/// runtime rewrite. Each test's original (buggy) behaviour is noted in a comment, so that the
-/// deliberate semantic changes remain visible in history.
+/// Edge cases of scanning and error reporting: malformed values, duplicate arguments, default
+/// sources, and awkward token shapes.
 [<TestFixture>]
-module TestArgParserKnownBugs =
+module TestArgParserEdgeCases =
 
     let noEnv (_ : string) : string option = None
 
-    // Previously the scan stopped dead at a malformed `--key value` pair, so `--bar` and `--baz`
-    // were spuriously reported missing. Now the conversion error is recorded (with the offending
-    // arg's name) and scanning continues.
     [<Test>]
     let ``A malformed space-separated value does not abort the remainder of the scan`` () =
         let exc =
@@ -44,9 +40,6 @@ Required argument '--foo' received no value"""
 The input string 'bad' was not in a correct format. (at arg --foo=bad)
 Required argument '--foo' received no value"""
 
-    // Previously the duplicated `--baz` consumed `--foo=3` as its alleged value, so `--foo` was
-    // spuriously reported missing as well. Now the duplicate is reported on its own and every
-    // other argument parses normally.
     [<Test>]
     let ``A duplicated flag does not consume the following option as its value`` () =
         let exc =
@@ -60,9 +53,6 @@ Required argument '--foo' received no value"""
             """Errors during parse!
 Flag '--baz' was supplied multiple times"""
 
-    // Previously a raw FormatException escaped, with no indication of which argument was at
-    // fault and no error aggregation. The same applied to positional conversions (before and
-    // after the `--` separator) and to environment-variable defaults.
     [<Test>]
     let ``A malformed list-element value is a parse error, not a raw FormatException`` () =
         let exc =
@@ -115,9 +105,8 @@ The input string 'notanint' was not in a correct format. (at arg notanint)"""
             """Errors during parse!
 String 'notabool' was not recognized as a valid Boolean. (from environment variable CONSUMEPLUGIN_THINGS)"""
 
-    // Previously the environment was consulted for defaults even after the parse had already
-    // failed, so a throwing `getEnvironmentVariable` masked the real parse error. Defaults now
-    // run only when the parse is otherwise clean.
+    // Defaults run only when the parse is otherwise clean, so a throwing
+    // `getEnvironmentVariable` cannot mask the real parse error.
     [<Test>]
     let ``Environment lookups do not run after the parse has failed`` () =
         let exc =
@@ -131,9 +120,6 @@ String 'notabool' was not recognized as a valid Boolean. (from environment varia
             """Errors during parse!
 String 'notabool' was not recognized as a valid Boolean. (at arg --bool-var=notabool)"""
 
-    // Previously `--FOO=1` matched the field `Foo` but `--HELP` was not help: ordinary argument
-    // matching was case-insensitive while help detection was case-sensitive. Help now uses the
-    // same case-insensitive comparison as everything else.
     [<Test>]
     let ``Help matches case-insensitively, like ordinary arguments`` () =
         BasicNoPositionals.parse' noEnv [ "--FOO=1" ; "--bar=x" ; "--baz=true" ]
@@ -156,9 +142,6 @@ String 'notabool' was not recognized as a valid Boolean. (at arg --bool-var=nota
 --baz  bool
 --rest  int32 (can be repeated)"""
 
-    // The pre-rewrite generator emitted uncompilable code for a non-positional `bool list`
-    // (its accumulator was a ResizeArray, but the flag machinery assumed an option), so the
-    // NonPositionalBoolList type could not previously exist at all.
     [<Test>]
     let ``A non-positional list of booleans parses, in all three syntaxes`` () =
         NonPositionalBoolList.parse' noEnv [ "--flags" ; "true" ; "--flags=false" ; "--flags" ]
