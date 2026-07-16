@@ -814,7 +814,7 @@ module internal ArgParserGenerator =
 
                 parser, Accumulation.Required, ty
 
-    /// An argument schema must be a finite tree: a record which refers to itself, even
+    /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being
     /// lowered, innermost first; re-entry into any of them is a cycle, which we reject rather
     /// than dying with a stack overflow. (Names are the bare idText, matching the by-name lookup
@@ -931,7 +931,8 @@ module internal ArgParserGenerator =
                 match ambientRecordMatch with
                 | Some ambient ->
                     // This field has a type we need to obtain from parsing another record.
-                    let spec, counter = toParseSpec counter flagDus ambientUnions ambientRecords ambient
+                    let spec, counter =
+                        toParseSpec ancestors counter flagDus ambientUnions ambientRecords ambient
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -941,7 +942,7 @@ module internal ArgParserGenerator =
                     // A discriminated union of alternative argument sets: exactly one case's
                     // arguments must be supplied.
                     let spec, counter =
-                        unionToParseSpec counter flagDus ambientUnions ambientRecords union
+                        unionToParseSpec ancestors counter flagDus ambientUnions ambientRecords union
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1071,6 +1072,7 @@ module internal ArgParserGenerator =
     /// is a record defined alongside it, into a Sum parse-tree node: exactly one case's
     /// arguments must be supplied at runtime.
     and private unionToParseSpec
+        (ancestors : string list)
         (counter : int)
         (flagDus : FlagDu list)
         (ambientUnions : UnionType list)
@@ -1078,6 +1080,8 @@ module internal ArgParserGenerator =
         (union : UnionType)
         : ParseTreeCrate * int
         =
+        let ancestors = pushSchemaType ancestors union.Name
+
         let sumId = counter
         let counter = counter + 1
 
@@ -1104,7 +1108,7 @@ module internal ArgParserGenerator =
                             $"Case %s{case.Name.idText} of [<ArgParser>] union %s{union.Name.idText} must have exactly one field: a record holding that case's arguments."
 
                 let spec, counter =
-                    toParseSpec counter flagDus ambientUnions ambientRecords payloadRecord
+                    toParseSpec ancestors counter flagDus ambientUnions ambientRecords payloadRecord
 
                 let tree =
                     ParseTree.assertNoPositional
@@ -2017,7 +2021,7 @@ module internal ArgParserGenerator =
                                        _) ->
                 let record = RecordType.OfRecord sci smd access fields
 
-                let spec, _ = toParseSpec 0 flagDus structuralUnions allRecordTypes record
+                let spec, _ = toParseSpec [] 0 flagDus structuralUnions allRecordTypes record
 
                 record.Name, typeHelp attrs, spec
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
@@ -2028,7 +2032,7 @@ module internal ArgParserGenerator =
                                        _) ->
                 let union = UnionType.OfUnion sci smd access cases
 
-                let spec, _ = unionToParseSpec 0 flagDus structuralUnions allRecordTypes union
+                let spec, _ = unionToParseSpec [] 0 flagDus structuralUnions allRecordTypes union
 
                 union.Name, typeHelp attrs, spec
             | _ ->

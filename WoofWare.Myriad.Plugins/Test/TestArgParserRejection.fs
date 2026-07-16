@@ -620,6 +620,96 @@ type ParentRecord =
 
         List.length modules |> shouldEqual 2
 
+    // ------------------------------------------------------------------------------------------
+    // Recursive schemas. An argument schema must be a finite tree: a record or union which
+    // refers to itself, even indirectly, would expand forever. Without an explicit check the
+    // generator recurses until the process dies with a stack overflow instead of producing a
+    // comprehensible error.
+
+    [<Test>]
+    let ``A record which contains itself is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type SelfRef =
+    {
+        Value : int
+        Nested : SelfRef
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: SelfRef -> SelfRef. Argument records and unions may not contain themselves, even indirectly."
+
+    [<Test>]
+    let ``Mutually recursive records are rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Inner =
+    {
+        A : int
+        Outer : OuterRef
+    }
+
+[<ArgParser>]
+type OuterRef =
+    {
+        B : int
+        Inner : Inner
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: OuterRef -> Inner -> OuterRef. Argument records and unions may not contain themselves, even indirectly."
+
+    [<Test>]
+    let ``A union whose case payload contains the union itself is rejected`` () =
+        // The review counterexample: descending into the payload record re-enters the union,
+        // and the Myriad subprocess used to die with a stack overflow (exit 134).
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type LoopArgs =
+    {
+        Foo : int
+        Again : LoopDu
+    }
+
+[<ArgParser>]
+type LoopDu =
+    | Loop of LoopArgs
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: LoopDu -> LoopArgs -> LoopDu. Argument records and unions may not contain themselves, even indirectly."
+
+    [<Test>]
+    let ``A cycle which does not pass through the tagged type is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type ModePayload =
+    {
+        Level : int
+        Fallback : Mode
+    }
+
+type Mode =
+    | Auto of ModePayload
+
+[<ArgParser>]
+type TopArgs =
+    {
+        Verbose : bool
+        Mode : Mode
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: TopArgs -> Mode -> ModePayload -> Mode. Argument records and unions may not contain themselves, even indirectly."
+
     [<Test>]
     let ``The motivating union of alternative argument sets generates successfully`` () =
         let modules =
