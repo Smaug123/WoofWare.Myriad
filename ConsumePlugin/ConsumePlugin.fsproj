@@ -108,15 +108,6 @@
     <Compile Include="GeneratedOpensLeakRegression.fs">
       <MyriadFile>OpensLeakRegression.fs</MyriadFile>
     </Compile>
-    <!-- Not compiled, because by design they *don't* compile. The automated equivalents live in
-         WoofWare.Myriad.Plugins/Test/TestArgParserRejection.fs, which drives the generator over
-         in-memory source; this copy is kept for manual end-to-end confirmation. -->
-    <None Include="ArgParserConflictTests.fs" />
-    <!-- To run the conflict tests:
-    <Compile Include="GeneratedArgParserConflictTests.fs">
-      <MyriadFile>ArgParserConflictTests.fs</MyriadFile>
-    </Compile>
-    -->
     <None Include="swagger-gitea.json" />
     <Compile Include="GeneratedSwaggerGitea.fs">
       <MyriadFile>swagger-gitea.json</MyriadFile>

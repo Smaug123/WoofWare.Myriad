@@ -8,9 +8,8 @@ open WoofWare.Myriad.Plugins
 
 /// Generation-time rejection tests: sources which the ArgParser generator must refuse to
 /// process, with comprehensible messages. These drive the full generator pipeline over
-/// in-memory source, so rejection is asserted automatically; the corresponding cases in
-/// ConsumePlugin/ArgParserConflictTests.fs are commented out precisely because a rejected
-/// source cannot take part in a build.
+/// in-memory source, so rejection is asserted automatically (a rejected source could not take
+/// part in an ordinary build).
 ///
 /// The scanner in the generated parser matches argument names case-insensitively, so the
 /// generator must reject name collisions under that same equality: a case-sensitive check
@@ -85,7 +84,6 @@ type Args =
 
     [<Test>]
     let ``A field name colliding with another field's negated form is rejected`` () =
-        // ConsumePlugin/ArgParserConflictTests.fs, test 1.
         """namespace TestMe
 
 open WoofWare.Myriad.Plugins
@@ -103,7 +101,6 @@ type ConflictingFieldNames =
 
     [<Test>]
     let ``A long form colliding with a negated form is rejected`` () =
-        // ConsumePlugin/ArgParserConflictTests.fs, test 2.
         """namespace TestMe
 
 open WoofWare.Myriad.Plugins
@@ -140,7 +137,6 @@ type Args =
 
     [<Test>]
     let ``One of several long forms colliding with a negated form is rejected`` () =
-        // ConsumePlugin/ArgParserConflictTests.fs, test 3.
         """namespace TestMe
 
 open WoofWare.Myriad.Plugins
@@ -162,7 +158,6 @@ type ConflictingMultipleLongForms =
 
     [<Test>]
     let ``A custom long form may collide with another custom long form's negation`` () =
-        // ConsumePlugin/ArgParserConflictTests.fs, test 6.
         """namespace TestMe
 
 open WoofWare.Myriad.Plugins
@@ -303,7 +298,6 @@ type ReservedHelpName =
 
     [<Test>]
     let ``Negation is only available on boolean-like fields`` () =
-        // ConsumePlugin/ArgParserConflictTests.fs, tests 4 and 5.
         let expectReject (source : string) =
             let exc =
                 Assert.Throws<exn> (fun () -> generateFromSource source |> ignore<SynModuleOrNamespace list>)
@@ -338,7 +332,7 @@ type InvalidAttributeOnInt =
 
     [<Test>]
     let ``Distinct negatable flags do not conflict`` () =
-        // ConsumePlugin/ArgParserConflictTests.fs, test 7: this must generate successfully.
+        // This must generate successfully.
         let modules =
             generateFromSource
                 """namespace TestMe
