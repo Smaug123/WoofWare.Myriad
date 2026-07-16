@@ -9,10 +9,10 @@
 
 
 
-namespace ConsumePlugin.OpensLeakVictim
+namespace ConsumePlugin
 
 /// The WoofWare.Myriad argument-parser runtime, embedded verbatim into this generated file.
-module private ArgParserRuntime_LeakArgs =
+module private ArgParserRuntime_SameBaseNameArgs =
     open System
 
     /// How many value tokens does one occurrence of a key consume?
@@ -1014,40 +1014,59 @@ module private ArgParserRuntime_LeakArgs =
                 ParseOutcome.Success
             else
                 ParseOutcome.Errors (List.ofSeq errors)
-namespace ConsumePlugin.OpensLeakVictim
+namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
-/// Methods to parse arguments for the type LeakArgs
+/// Methods to parse arguments for the type SameBaseNameArgs
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module LeakArgs =
-    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LeakArgs =
+module SameBaseNameArgs =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : SameBaseNameArgs =
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "") ] |> String.concat "\n"
+            [
+                (sprintf "%s  int32%s%s" (sprintf "--%s" "value") "" "")
+                (sprintf
+                    "%s  string%s%s"
+                    (sprintf "--%s / --%s" "rest" "others")
+                    " (positional args) (can be repeated)"
+                    "")
+            ]
+            |> String.concat "\n"
 
-        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let arg_1 : string ResizeArray = ResizeArray ()
         let mutable arg_0 : int option = None
 
-        let parser_schema : ArgParserRuntime_LeakArgs.ErasedSchema =
+        let parser_schema : ArgParserRuntime_SameBaseNameArgs.ErasedSchema =
             {
                 Leaves =
                     [
                         {
                             Id = 0
-                            Forms = [ "foo" ]
+                            Forms = [ "value" ]
                             AcceptsNegation = false
-                            Arity = ArgParserRuntime_LeakArgs.ErasedArity.One
+                            Arity = ArgParserRuntime_SameBaseNameArgs.ErasedArity.One
                             Repeatable = false
-                            Requirement = ArgParserRuntime_LeakArgs.ErasedRequirement.Required
+                            Requirement = ArgParserRuntime_SameBaseNameArgs.ErasedRequirement.Required
                             TypeDescription = ""
                             Help = None
                         }
                     ]
-                Tree = (ArgParserRuntime_LeakArgs.ErasedTree.Product[ArgParserRuntime_LeakArgs.ErasedTree.Leaf 0])
-                Positional = None
+                Tree =
+                    (ArgParserRuntime_SameBaseNameArgs.ErasedTree.Product[ArgParserRuntime_SameBaseNameArgs.ErasedTree.Leaf
+                                                                              0])
+                Positional =
+                    ({
+                        ArgParserRuntime_SameBaseNameArgs.ErasedPositional.Id = 1
+                        ArgParserRuntime_SameBaseNameArgs.ErasedPositional.Forms = [ "rest" ; "others" ]
+                        ArgParserRuntime_SameBaseNameArgs.ErasedPositional.FlagLike =
+                            ArgParserRuntime_SameBaseNameArgs.ErasedFlagLikeBehaviour.Reject
+                        ArgParserRuntime_SameBaseNameArgs.ErasedPositional.TypeDescription = ""
+                        ArgParserRuntime_SameBaseNameArgs.ErasedPositional.Help = None
+                    })
+                    |> Some
             }
 
-        let parser_storeOccurrence (occurrence : ArgParserRuntime_LeakArgs.ErasedOccurrence) : string option =
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_SameBaseNameArgs.ErasedOccurrence) : string option =
             match occurrence.LeafId with
             | 0 ->
                 match arg_0 with
@@ -1065,7 +1084,12 @@ module LeakArgs =
                             "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
             | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
-        let parser_storePositional (value : string) (afterSeparator : bool) : string option = None
+        let parser_storePositional (value : string) (afterSeparator : bool) : string option =
+            try
+                arg_1.Add (value |> (fun x -> x))
+                None
+            with _ as exc ->
+                (sprintf "%s (at arg %s)" exc.Message value) |> Some
 
         let parser_renderStored (leafId : int) : string =
             match leafId with
@@ -1079,7 +1103,7 @@ module LeakArgs =
             match leafId with
             | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
 
-        let parser_callbacks : ArgParserRuntime_LeakArgs.TypedCallbacks =
+        let parser_callbacks : ArgParserRuntime_SameBaseNameArgs.TypedCallbacks =
             {
                 StoreOccurrence = parser_storeOccurrence
                 StorePositional = parser_storePositional
@@ -1089,12 +1113,14 @@ module LeakArgs =
             }
 
         match
-            ArgParserRuntime_LeakArgs.runParse
-                (ArgParserRuntime_LeakArgs.WellFormedSchema.checkOrFail parser_schema)
+            ArgParserRuntime_SameBaseNameArgs.runParse
+                (ArgParserRuntime_SameBaseNameArgs.WellFormedSchema.checkOrFail parser_schema)
                 parser_callbacks
                 args
         with
-        | ArgParserRuntime_LeakArgs.ParseOutcome.Success ->
+        | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.Success ->
+            let arg_1 = arg_1 |> Seq.toList
+
             let arg_0 =
                 match arg_0 with
                 | Some x -> x
@@ -1103,12 +1129,14 @@ module LeakArgs =
                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
 
             {
-                Foo = arg_0
+                Rest = arg_1
+                Value = arg_0
             }
-        | ArgParserRuntime_LeakArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
-        | ArgParserRuntime_LeakArgs.ParseOutcome.Fatal message -> failwith message
-        | ArgParserRuntime_LeakArgs.ParseOutcome.Errors errors ->
+        | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_SameBaseNameArgs.ParseOutcome.Errors errors ->
             errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
-    let parse (args : string list) : LeakArgs =
+    let parse (args : string list) : SameBaseNameArgs =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <TargetFramework>net9.0</TargetFramework>
+
+      <IsPackable>false</IsPackable>
+      <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <!--
+      Tests which drive the generators in-process over in-memory source. These live in their own
+      assembly because they need the Fantomas.FCS version WoofWare.Whippet.Fantomas was compiled
+      against; the main test project's dependencies (WoofWare.Expect) force a newer,
+      binary-incompatible Fantomas.FCS, under which the generators' AST construction fails with
+      MissingMethodException at runtime.
+    -->
+
+    <ItemGroup>
+        <Compile Include="TestArgParserRejection.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FsUnit" Version="7.1.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0"/>
+        <PackageReference Include="NUnit" Version="4.5.0"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="6.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WoofWare.Myriad.Plugins.fsproj" />
+    </ItemGroup>
+
+</Project>
