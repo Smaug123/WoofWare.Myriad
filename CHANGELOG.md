@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.1.1
+
+Fixes a number of bugs in the `ArgParserGenerator` by extracting the "untyped" logic into a standalone module.
+The generated code changes substantially, but the only behaviour changes you should observe are correctness fixes.
+
 # WoofWare.Myriad.Plugins 10.0.1
 
 The `JsonSerializeGenerator` now requires `System.Text.Json` at version at least 8, to accommodate `JsonNode.DeepClone`.
