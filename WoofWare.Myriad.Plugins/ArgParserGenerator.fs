@@ -914,6 +914,33 @@ module internal ArgParserGenerator =
                         | [] -> List.singleton (SynExpr.CreateConst (argify ident))
                         | l -> List.ofSeq l
 
+                // A default-value attribute is only meaningful on a `Choice<'a, 'a>` field: a
+                // successful parse reports whether the value was user-supplied (Choice1Of2) or
+                // defaulted (Choice2Of2). The Choice-parsing path is the sole place these
+                // attributes are read, so on any other field they would be silently dropped,
+                // leaving the field required. Reject them here rather than emitting a parser in
+                // which the attribute has no effect.
+                let hasDefaultAttr =
+                    attrs
+                    |> List.exists (fun attr ->
+                        match (List.last attr.TypeName.LongIdent).idText with
+                        | "ArgumentDefaultFunction"
+                        | "ArgumentDefaultFunctionAttribute"
+                        | "ArgumentDefaultEnvironmentVariable"
+                        | "ArgumentDefaultEnvironmentVariableAttribute" -> true
+                        | _ -> false
+                    )
+
+                if hasDefaultAttr then
+                    match positionalArgAttr, fieldType with
+                    | Some _, _ ->
+                        failwith
+                            $"Field '%s{ident.idText}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
+                    | None, ChoiceType _ -> ()
+                    | None, _ ->
+                        failwith
+                            $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+
                 let ambientRecordMatch =
                     match localTypeName fieldType with
                     | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
@@ -945,12 +972,9 @@ module internal ArgParserGenerator =
 
                 match positionalArgAttr with
                 | Some includeFlagLike ->
-                    let getChoice (spec : ArgumentDefaultSpec option) : unit =
-                        match spec with
-                        | Some _ ->
-                            failwith
-                                "Positional Choice args cannot have default values. Remove [<ArgumentDefault*>] from the positional arg."
-                        | None -> ()
+                    // Positional fields carrying a default attribute are rejected above, so the
+                    // Choice-parsing path only ever reaches this callback with `None`.
+                    let getChoice (_ : ArgumentDefaultSpec option) : unit = ()
 
                     let parser, accumulation, parseTy =
                         createParseFunction<unit> getChoice flagDus finalRecord.Name ident attrs fieldType
