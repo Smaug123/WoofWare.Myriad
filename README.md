@@ -157,9 +157,24 @@ For an example of using both `JsonParse` and `JsonSerialize` together with compl
 Takes a record like this:
 
 ```fsharp
+type FishArgs =
+    {
+        [<ArgumentLongForm "number-of-fins">]
+        Fins : int
+    }
+
+type FowlArgs =
+    {
+        Species : string
+    }
+
+type AnimalArgs =
+    | Fish of FishArgs
+    | Fowl of FowlArgs
+
 type DryRunMode =
-    | [<ArgumentFlag true> Dry
-    | [<ArgumentFlag false> Wet
+    | [<ArgumentFlag true>] Dry
+    | [<ArgumentFlag false>] Wet
 
 [<ArgParser>]
 type Foo =
@@ -172,12 +187,8 @@ type Foo =
         [<ArgumentDefaultEnvironmentVariable "MY_ENV_VAR">]
         BWithEnv : Choice<int, int>
         [<ArgumentDefaultFunction>]
-        DryRun : DryRunMode
-        [<ArgumentLongForm "longer-form-replaces-c">]
-        C : float list
-        // optionally:
-        [<PositionalArgs>]
-        Rest : string list // or e.g. `int list` if you want them parsed into a type too
+        DryRun : Choice<DryRunMode, DryRunMode>
+        AnimalPart : AnimalArgs
     }
     static member DefaultB () = 4
     static member DefaultDryRun () = DryRunMode.Wet
@@ -194,6 +205,40 @@ module Foo =
     let parse (args : string list) : Foo = ...
 ```
 
+The user specifies, for example:
+
+```
+./my-app --some-flag --species pheasant
+```
+
+or
+
+```
+./my-app --dry-run --some-flag false --number-of-fins=39 --b-with-env 8
+```
+
+and you get back respectively these objects:
+
+```fsharp
+{
+    SomeFlag = true
+    A = None
+    B = Choice2Of2 4
+    BWithEnv = Choice2Of2 100 // whatever the value of $MY_ENV_VAR was, or a failed parse
+    DryRun = Choice2Of2 DryRunMode.Wet
+    AnimalPart = AnimalArgs.Fowl { Species = "pheasant" }
+}
+
+{
+    SomeFlag = false
+    A = None
+    B = Choice2Of2 4
+    BWithEnv = Choice1Of2 8
+    DryRun = Choice1Of2 DryRunMode.Dry
+    AnimalPart = AnimalArgs.Fish { Fins = 39 }
+}
+```
+
 Default arguments are handled as `Choice<'a, 'a>`:
 you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
 
@@ -201,16 +246,21 @@ You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<Pa
 
 You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
 
+You can collect leftover args as positional args, with `[<PositionalArgs>]`; this respects a trailing `--` so that you can specify positional args which look like flags.
+The positional args feature is currently *not* supported simultaneously with DUs, though: the generator will fail at build time.
+
 If `--help` appears in a position where the parser is expecting a key (e.g. in the first position, or after a `--foo=bar`), the parser fails with help text.
 The parser also makes a limited effort to supply help text when encountering an invalid parse.
+
+Records compose: if your record contains other records which are visible to the source generator (that is, they're in the same file as the main args type), the fields of *those* records will also be included in the command line, as if you'd specified them inline in the top-level record.
+
+Discriminated unions compose with each other and with records, hopefully as you would expect: the fields specified by the record of a DU field must be mutually satisified, or the parse will fail to select that DU field.
 
 ### What's the point?
 
 I got fed up of waiting for us to find time to rewrite the in-house one at work.
-That one has a bunch of nice compositional properties, which my version lacks:
-I can basically only deal with primitive types, and e.g. you can't stack records and discriminated unions inside each other.
-
-But I *do* want an F#-native argument parser suitable for AOT-compilation.
+That one has slightly nicer usability properties, because it operates by reflection so it has fuller information at runtime.
+(But I *do* want an F#-native argument parser suitable for AOT-compilation, so perhaps the limitations of my one here are inherent.)
 
 Why not [Argu](https://fsprojects.github.io/Argu/)?
 Answer: I got annoyed with having to construct my records by hand even after Argu returned and said the parsing was all "done".
@@ -221,9 +271,10 @@ This is very bare-bones, but do raise GitHub issues if you like (or if you find 
 
 * Help is signalled by throwing an exception, so you'll get an unsightly stack trace and a nonzero exit code.
 * Help doesn't take into account any arguments the user has entered. Ideally you'd get contextual information like an identification of which args the user has supplied at the point where the parse failed or help was requested.
-* I don't handle very many types, and in particular a real arg parser would handle DUs and records with nesting.
+* I don't handle very many types at the leaves. You may find yourself needing to write wrapper types to contain the leaf values, if you want to parse them correctly.
 * I don't try very hard to find a valid parse. It may well be possible to find a case where I fail to parse despite there existing a valid parse.
 * There's no subcommand support (you'll have to do that yourself).
+* Discriminated unions can't currently be specified in a type that contains positional args. This is a limitation I hope to relax soon.
 
 It should work fine if you just want to compose a few primitive types, though.
 

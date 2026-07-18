@@ -831,8 +831,9 @@ module private ArgParserRuntime_BoolNegation =
     [<RequireQualifiedAccess>]
     type ParseOutcome =
         /// Every argument was routed, converted and defaulted without error: the typed layer's
-        /// slots are fully populated and it may assemble the result.
-        | Success
+        /// slots are fully populated and it may assemble the result. The selection records which
+        /// case was chosen for every discriminated union in the schema.
+        | Success of selection : Selection
         /// A `--help`-shaped token was seen; the typed layer should render help and stop.
         | HelpRequested
         /// The parse was aborted mid-scan (historically these conditions threw immediately). The
@@ -1011,7 +1012,7 @@ module private ArgParserRuntime_BoolNegation =
                     | None -> ()
 
             if errors.Count = 0 then
-                ParseOutcome.Success
+                ParseOutcome.Success selection
             else
                 ParseOutcome.Errors (List.ofSeq errors)
 namespace ConsumePlugin
@@ -1050,8 +1051,9 @@ module BoolNegationArgParse =
                             }
                         ]
                     Tree =
-                        (ArgParserRuntime_BoolNegation.ErasedTree.Product[ArgParserRuntime_BoolNegation.ErasedTree.Leaf
-                                                                              0])
+                        (ArgParserRuntime_BoolNegation.ErasedTree.Product (
+                            [ ArgParserRuntime_BoolNegation.ErasedTree.Leaf 0 ]
+                        ))
                     Positional = None
                 }
 
@@ -1104,16 +1106,14 @@ module BoolNegationArgParse =
                     parser_callbacks
                     args
             with
-            | ArgParserRuntime_BoolNegation.ParseOutcome.Success ->
-                let arg_0 =
-                    match arg_0 with
-                    | Some x -> x
-                    | None ->
-                        failwith
-                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
+            | ArgParserRuntime_BoolNegation.ParseOutcome.Success parser_selection ->
                 {
-                    EnableFeature = arg_0
+                    EnableFeature =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                 }
             | ArgParserRuntime_BoolNegation.ParseOutcome.HelpRequested ->
                 helpText () |> failwithf "Help text requested.\n%s"
@@ -1159,8 +1159,9 @@ module FlagNegationArgParse =
                             }
                         ]
                     Tree =
-                        (ArgParserRuntime_BoolNegation.ErasedTree.Product[ArgParserRuntime_BoolNegation.ErasedTree.Leaf
-                                                                              0])
+                        (ArgParserRuntime_BoolNegation.ErasedTree.Product (
+                            [ ArgParserRuntime_BoolNegation.ErasedTree.Leaf 0 ]
+                        ))
                     Positional = None
                 }
 
@@ -1234,16 +1235,14 @@ module FlagNegationArgParse =
                     parser_callbacks
                     args
             with
-            | ArgParserRuntime_BoolNegation.ParseOutcome.Success ->
-                let arg_0 =
-                    match arg_0 with
-                    | Some x -> x
-                    | None ->
-                        failwith
-                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
+            | ArgParserRuntime_BoolNegation.ParseOutcome.Success parser_selection ->
                 {
-                    DryRun = arg_0
+                    DryRun =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                 }
             | ArgParserRuntime_BoolNegation.ParseOutcome.HelpRequested ->
                 helpText () |> failwithf "Help text requested.\n%s"
@@ -1297,8 +1296,9 @@ module MultipleFormsNegationArgParse =
                             }
                         ]
                     Tree =
-                        (ArgParserRuntime_BoolNegation.ErasedTree.Product[ArgParserRuntime_BoolNegation.ErasedTree.Leaf
-                                                                              0])
+                        (ArgParserRuntime_BoolNegation.ErasedTree.Product (
+                            [ ArgParserRuntime_BoolNegation.ErasedTree.Leaf 0 ]
+                        ))
                     Positional = None
                 }
 
@@ -1351,16 +1351,14 @@ module MultipleFormsNegationArgParse =
                     parser_callbacks
                     args
             with
-            | ArgParserRuntime_BoolNegation.ParseOutcome.Success ->
-                let arg_0 =
-                    match arg_0 with
-                    | Some x -> x
-                    | None ->
-                        failwith
-                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
+            | ArgParserRuntime_BoolNegation.ParseOutcome.Success parser_selection ->
                 {
-                    VerboseMode = arg_0
+                    VerboseMode =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                 }
             | ArgParserRuntime_BoolNegation.ParseOutcome.HelpRequested ->
                 helpText () |> failwithf "Help text requested.\n%s"
@@ -1446,14 +1444,13 @@ module CombinedFeaturesArgParse =
                             }
                         ]
                     Tree =
-                        (ArgParserRuntime_BoolNegation.ErasedTree.Product[ArgParserRuntime_BoolNegation.ErasedTree.Leaf
-                                                                              0
-
-                                                                          ArgParserRuntime_BoolNegation.ErasedTree.Leaf
-                                                                              1
-
-                                                                          ArgParserRuntime_BoolNegation.ErasedTree.Leaf
-                                                                              2])
+                        (ArgParserRuntime_BoolNegation.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BoolNegation.ErasedTree.Leaf 0
+                                ArgParserRuntime_BoolNegation.ErasedTree.Leaf 1
+                                ArgParserRuntime_BoolNegation.ErasedTree.Leaf 2
+                            ]
+                        ))
                     Positional = None
                 }
 
@@ -1550,32 +1547,26 @@ module CombinedFeaturesArgParse =
                     parser_callbacks
                     args
             with
-            | ArgParserRuntime_BoolNegation.ParseOutcome.Success ->
-                let arg_0 =
-                    match arg_0 with
-                    | Some x -> x
-                    | None ->
-                        failwith
-                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
-                let arg_1 =
-                    match arg_1 with
-                    | Some x -> x
-                    | None ->
-                        failwith
-                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
-                let arg_2 =
-                    match arg_2 with
-                    | Some x -> x
-                    | None ->
-                        failwith
-                            "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse"
-
+            | ArgParserRuntime_BoolNegation.ParseOutcome.Success parser_selection ->
                 {
-                    Debug = arg_1
-                    NormalBool = arg_2
-                    Verbose = arg_0
+                    Debug =
+                        (match arg_1 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    NormalBool =
+                        (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Verbose =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                 }
             | ArgParserRuntime_BoolNegation.ParseOutcome.HelpRequested ->
                 helpText () |> failwithf "Help text requested.\n%s"

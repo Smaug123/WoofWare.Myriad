@@ -356,75 +356,249 @@ type NoConflict =
         List.length modules |> shouldEqual 2
 
     // ------------------------------------------------------------------------------------------
-    // Qualified type references. A type defined alongside the tagged type is referred to by its
-    // bare name; resolving ambient references by *last segment* instead of by the complete
-    // reference would let a local type capture a qualified reference to a foreign type (e.g.
-    // `System.Uri` alongside a local type named `Uri`), silently generating code which does not
-    // compile.
-
-    let private renderOrFail (modules : SynModuleOrNamespace list) : string =
-        match Ast.render modules with
-        | Some rendered -> rendered
-        | None -> failwith "expected the generated modules to render"
+    // Discriminated unions of alternative argument sets. Global name uniqueness (under the
+    // scanner's case-insensitive equality) is the axiom which makes case selection sound: an
+    // argument name shared between two cases would be routed to whichever case is declared
+    // first, silently selecting it.
 
     [<Test>]
-    let ``A qualified reference is not captured by a local record with the same last segment`` () =
-        // `Address : System.Uri` names the BCL type, parsed by the built-in Uri leaf parser. If
-        // the local record `Uri` captured it, the generated parser would recurse into that record
-        // and construct `{ Foo = ... }` where a `System.Uri` is required.
-        let rendered =
-            generateFromSource
-                """namespace TestMe
+    let ``Argument names differing only by case collide across union cases`` () =
+        // The empirical counterexample from review: with a case-sensitive check, `--FOO=3` parsed
+        // successfully and constructed FooCase, and BarCase's argument was unreachable.
+        """namespace TestMe
 
 open WoofWare.Myriad.Plugins
 
-type Uri =
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        [<ArgumentLongForm "FOO">]
+        Bar : int
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--foo' is claimed by: '--foo' (field 'Foo'); '--FOO' (field 'Bar')"
+
+    [<Test>]
+    let ``Identical argument names collide across union cases`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        [<ArgumentLongForm "foo">]
+        Bar : int
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--foo' is claimed by: '--foo' (field 'Foo'); '--foo' (field 'Bar')"
+
+    [<Test>]
+    let ``Two union cases which are both satisfiable with no arguments are rejected`` () =
+        // An empty command line could not choose between them.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type AllOptionalA =
+    {
+        A : int option
+    }
+
+type AllOptionalB =
+    {
+        B : int option
+    }
+
+[<ArgParser>]
+type AmbiguousEmptyCases =
+    | CaseA of AllOptionalA
+    | CaseB of AllOptionalB
+"""
+        |> shouldRejectWith
+            "Cases CaseA, CaseB can all be satisfied without supplying any arguments, so an empty command line cannot choose between them. Make an argument in all but one of them mandatory."
+
+    [<Test>]
+    let ``Positional args are rejected inside a union case`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type SomePositionals =
+    {
+        [<PositionalArgs>]
+        Rest : string list
+    }
+
+type NotPositional =
+    {
+        C : int
+    }
+
+type PositionalOrNot =
+    | Pos of SomePositionals
+    | NotPos of NotPositional
+
+[<ArgParser>]
+type PositionalInsideUnion =
+    {
+        Choice : PositionalOrNot
+    }
+"""
+        |> shouldRejectWith
+            "Positional args are not permitted inside cases of the [<ArgParser>] union PositionalOrNot: the parser could not tell which alternative a positional arg belongs to."
+
+    [<Test>]
+    let ``Positional args are rejected alongside a union`` () =
+        // Conservative in v1: a Reject-mode sink beside a union is in principle sound (bare
+        // tokens cannot influence case selection), but a Collect-mode sink silently swallows
+        // typo'd case-selecting keys, so for now the combination is banned wholesale.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type AutoMode =
+    {
+        Quiet : bool option
+    }
+
+type ManualMode =
+    {
+        Level : int
+    }
+
+type Mode =
+    | Auto of AutoMode
+    | Manual of ManualMode
+
+[<ArgParser>]
+type WithModeAndPositionals =
+    {
+        Mode : Mode
+
+        [<PositionalArgs>]
+        Rest : string list
+    }
+"""
+        |> shouldRejectWith
+            "Positional args cannot be combined with a discriminated-union arg: the parser could not tell which alternative an unrecognised arg belongs to."
+
+    [<Test>]
+    let ``A union case must carry a record defined alongside the union`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
     {
         Foo : int
     }
 
 [<ArgParser>]
-type TopLevel =
-    {
-        Address : System.Uri
-    }
+type BadDu =
+    | FooCase of int
+    | BarCase of FooArgs
 """
-            |> renderOrFail
-
-        rendered.Contains "Foo" |> shouldEqual false
-        rendered.Contains "System.Uri" |> shouldEqual true
+        |> shouldRejectWith
+            "Case FooCase of [<ArgParser>] union BadDu must have a payload which is a record defined alongside the union."
 
     [<Test>]
-    let ``A qualified reference is not captured by a local flag DU with the same last segment`` () =
-        // `External.Enabled` is some foreign type the generator cannot parse; treating it as the
-        // local flag DU `Enabled` would emit `Enabled.On`/`Enabled.Off` into an
-        // `External.Enabled` field. Rejection is the correct outcome.
-        let exc =
-            Assert.Throws<exn> (fun () ->
-                generateFromSource
-                    """namespace TestMe
+    let ``A union case must carry exactly one field`` () =
+        """namespace TestMe
 
 open WoofWare.Myriad.Plugins
 
-type Enabled =
-    | [<ArgumentFlag true>] On
-    | [<ArgumentFlag false>] Off
+type FooArgs =
+    {
+        Foo : int
+    }
 
 [<ArgParser>]
-type FlagClash =
-    {
-        Mode : External.Enabled
-    }
+type BadDu =
+    | FooCase of FooArgs * int
+    | BarCase of FooArgs
 """
-                |> ignore<SynModuleOrNamespace list>
-            )
-
-        exc.Message.Contains "Could not decide how to parse" |> shouldEqual true
+        |> shouldRejectWith
+            "Case FooCase of [<ArgParser>] union BadDu must have exactly one field: a record holding that case's arguments."
 
     [<Test>]
-    let ``Parenthesized ambient record references are accepted wherever bare ones are`` () =
-        // FCS represents `Child : (ChildRecord)` as SynType.Paren; the by-name lookup for a
-        // record-typed field must see through it.
+    let ``Parenthesized type references are accepted wherever bare ones are`` () =
+        // FCS represents `of (FooArgs)` as SynType.Paren; the by-name lookups for a case's
+        // payload record, and for union- or record-typed fields, must see through it.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        Bar : int
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of (FooArgs)
+    | BarCase of BarArgs
+"""
+
+        List.length modules |> shouldEqual 2
+
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type AutoMode =
+    {
+        Quiet : bool option
+    }
+
+type ManualMode =
+    {
+        Level : int
+    }
+
+type Mode =
+    | Auto of AutoMode
+    | Manual of ManualMode
+
+[<ArgParser>]
+type WithModeArgs =
+    {
+        Verbose : bool
+        Mode : (Mode)
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
         let modules =
             generateFromSource
                 """namespace TestMe
@@ -447,10 +621,10 @@ type ParentRecord =
         List.length modules |> shouldEqual 2
 
     // ------------------------------------------------------------------------------------------
-    // Recursive schemas. An argument schema must be a finite tree: a record which refers to
-    // itself, even indirectly, would expand forever. Without an explicit check the generator
-    // recurses until the process dies with a stack overflow instead of producing a comprehensible
-    // error.
+    // Recursive schemas. An argument schema must be a finite tree: a record or union which
+    // refers to itself, even indirectly, would expand forever. Without an explicit check the
+    // generator recurses until the process dies with a stack overflow instead of producing a
+    // comprehensible error.
 
     [<Test>]
     let ``A record which contains itself is rejected`` () =
@@ -489,3 +663,191 @@ type OuterRef =
 """
         |> shouldRejectWith
             "The [<ArgParser>] schema is recursive: OuterRef -> Inner -> OuterRef. Argument records and unions may not contain themselves, even indirectly."
+
+    [<Test>]
+    let ``A union whose case payload contains the union itself is rejected`` () =
+        // The review counterexample: descending into the payload record re-enters the union,
+        // and the Myriad subprocess used to die with a stack overflow (exit 134).
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type LoopArgs =
+    {
+        Foo : int
+        Again : LoopDu
+    }
+
+[<ArgParser>]
+type LoopDu =
+    | Loop of LoopArgs
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: LoopDu -> LoopArgs -> LoopDu. Argument records and unions may not contain themselves, even indirectly."
+
+    [<Test>]
+    let ``A cycle which does not pass through the tagged type is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type ModePayload =
+    {
+        Level : int
+        Fallback : Mode
+    }
+
+type Mode =
+    | Auto of ModePayload
+
+[<ArgParser>]
+type TopArgs =
+    {
+        Verbose : bool
+        Mode : Mode
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: TopArgs -> Mode -> ModePayload -> Mode. Argument records and unions may not contain themselves, even indirectly."
+
+    // ------------------------------------------------------------------------------------------
+    // Qualified type references. A type defined alongside the tagged type is referred to by its
+    // bare name; resolving ambient references by *last segment* instead of by the complete
+    // reference would let a local type capture a qualified reference to a foreign type (e.g.
+    // `System.Uri` alongside a local type named `Uri`), silently generating code which does not
+    // compile.
+
+    let private renderOrFail (modules : SynModuleOrNamespace list) : string =
+        match Ast.render modules with
+        | Some rendered -> rendered
+        | None -> failwith "expected the generated modules to render"
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local union with the same last segment`` () =
+        // `Address : System.Uri` names the BCL type. If the structural union `Uri` captured it,
+        // the generated parser would construct `Uri.CaseA ...` where a `System.Uri` is required.
+        let rendered =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type CaseARecord =
+    {
+        Alpha : int
+    }
+
+type Uri =
+    | CaseA of CaseARecord
+
+[<ArgParser>]
+type TopLevel =
+    {
+        Address : System.Uri
+        Count : int
+    }
+"""
+            |> renderOrFail
+
+        rendered.Contains "CaseA" |> shouldEqual false
+        rendered.Contains "System.Uri" |> shouldEqual true
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local record with the same last segment`` () =
+        let rendered =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Uri =
+    {
+        Foo : int
+    }
+
+[<ArgParser>]
+type TopLevel =
+    {
+        Address : System.Uri
+    }
+"""
+            |> renderOrFail
+
+        rendered.Contains "Foo" |> shouldEqual false
+        rendered.Contains "System.Uri" |> shouldEqual true
+
+    [<Test>]
+    let ``A qualified case payload is not captured by a local record with the same last segment`` () =
+        // `System.Uri` is not a record defined alongside the union, so this must be rejected
+        // (rather than lowering the local record `Uri` and constructing `BadDu.Fetch { Foo = ... }`
+        // where a `System.Uri` is required).
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Uri =
+    {
+        Foo : int
+    }
+
+[<ArgParser>]
+type BadDu =
+    | Fetch of System.Uri
+"""
+        |> shouldRejectWith
+            "Case Fetch of [<ArgParser>] union BadDu must have a payload which is a record defined alongside the union."
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local flag DU with the same last segment`` () =
+        // `External.Enabled` is some foreign type the generator cannot parse; treating it as the
+        // local flag DU `Enabled` would emit `Enabled.On`/`Enabled.Off` into an
+        // `External.Enabled` field. Rejection is the correct outcome.
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                generateFromSource
+                    """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Enabled =
+    | [<ArgumentFlag true>] On
+    | [<ArgumentFlag false>] Off
+
+[<ArgParser>]
+type FlagClash =
+    {
+        Mode : External.Enabled
+    }
+"""
+                |> ignore<SynModuleOrNamespace list>
+            )
+
+        exc.Message.Contains "Could not decide how to parse" |> shouldEqual true
+
+    [<Test>]
+    let ``The motivating union of alternative argument sets generates successfully`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        Bar : int
+        Baz : int
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
