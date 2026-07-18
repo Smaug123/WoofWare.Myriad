@@ -424,16 +424,19 @@ module internal ArgParserGenerator =
 
         result.ToString().TrimStart '-'
 
-    let private identifyAsFlag (flagDus : FlagDu list) (ty : SynType) : FlagDu option =
-        match ty with
-        | SynType.LongIdent (SynLongIdent.SynLongIdent (ident, _, _)) ->
-            flagDus
-            |> List.tryPick (fun du ->
-                let duName = du.Name.idText
-                let ident = List.last(ident).idText
-                if duName = ident then Some du else None
-            )
+    /// A type defined alongside the tagged type is referred to by its bare name, so only a
+    /// single-segment reference (possibly parenthesized) may resolve to a local type. Matching
+    /// anything less than the complete reference would let e.g. a local union named `Uri`
+    /// capture a field of the foreign type `System.Uri`.
+    let private localTypeName (ty : SynType) : string option =
+        match SynType.stripOptionalParen ty with
+        | SynType.LongIdent (SynLongIdent.SynLongIdent ([ ident ], _, _)) -> Some ident.idText
         | _ -> None
+
+    let private identifyAsFlag (flagDus : FlagDu list) (ty : SynType) : FlagDu option =
+        match localTypeName ty with
+        | Some name -> flagDus |> List.tryFind (fun du -> du.Name.idText = name)
+        | None -> None
 
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
     /// for example, maybe it returns a `ty option` or a `ty list`).
@@ -631,13 +634,30 @@ module internal ArgParserGenerator =
 
                 parser, Accumulation.Required, ty
 
+    /// An argument schema must be a finite tree: a record which refers to itself, even
+    /// indirectly, would expand forever. `ancestors` is the chain of type names currently being
+    /// lowered, innermost first; re-entry into any of them is a cycle, which we reject rather
+    /// than dying with a stack overflow. (Names are the bare idText, matching the by-name lookup
+    /// which resolves ambient type references.)
+    let private pushSchemaType (ancestors : string list) (name : Ident) : string list =
+        if ancestors |> List.contains name.idText then
+            let path = name.idText :: ancestors |> List.rev |> String.concat " -> "
+
+            failwith
+                $"The [<ArgParser>] schema is recursive: %s{path}. Argument records and unions may not contain themselves, even indirectly."
+
+        name.idText :: ancestors
+
     let rec private toParseSpec
+        (ancestors : string list)
         (counter : int)
         (flagDus : FlagDu list)
         (ambientRecords : RecordType list)
         (finalRecord : RecordType)
         : ParseTreeCrate * int
         =
+        let ancestors = pushSchemaType ancestors finalRecord.Name
+
         finalRecord.Fields
         |> List.iter (fun (SynField.SynField (isStatic = isStatic)) ->
             if isStatic then
@@ -714,16 +734,14 @@ module internal ArgParserGenerator =
                         | l -> List.ofSeq l
 
                 let ambientRecordMatch =
-                    match fieldType with
-                    | SynType.LongIdent (SynLongIdent.SynLongIdent (id, _, _)) ->
-                        let target = List.last(id).idText
-                        ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
-                    | _ -> None
+                    match localTypeName fieldType with
+                    | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                    | None -> None
 
                 match ambientRecordMatch with
                 | Some ambient ->
                     // This field has a type we need to obtain from parsing another record.
-                    let spec, counter = toParseSpec counter flagDus ambientRecords ambient
+                    let spec, counter = toParseSpec ancestors counter flagDus ambientRecords ambient
                     counter, (ident, spec) :: acc
                 | None ->
 
@@ -998,7 +1016,7 @@ module internal ArgParserGenerator =
         (recordType : RecordType)
         : SynExpr
         =
-        let spec, _ = toParseSpec 0 flagDus ambientRecords recordType
+        let spec, _ = toParseSpec [] 0 flagDus ambientRecords recordType
         // For each argument (positional and non-positional), create an accumulator for it.
         let nonPos, pos =
             { new ParseTreeEval<_> with

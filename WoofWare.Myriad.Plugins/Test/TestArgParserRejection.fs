@@ -354,3 +354,138 @@ type NoConflict =
 
         // One namespace for the embedded runtime module, one for the generated parser module.
         List.length modules |> shouldEqual 2
+
+    // ------------------------------------------------------------------------------------------
+    // Qualified type references. A type defined alongside the tagged type is referred to by its
+    // bare name; resolving ambient references by *last segment* instead of by the complete
+    // reference would let a local type capture a qualified reference to a foreign type (e.g.
+    // `System.Uri` alongside a local type named `Uri`), silently generating code which does not
+    // compile.
+
+    let private renderOrFail (modules : SynModuleOrNamespace list) : string =
+        match Ast.render modules with
+        | Some rendered -> rendered
+        | None -> failwith "expected the generated modules to render"
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local record with the same last segment`` () =
+        // `Address : System.Uri` names the BCL type, parsed by the built-in Uri leaf parser. If
+        // the local record `Uri` captured it, the generated parser would recurse into that record
+        // and construct `{ Foo = ... }` where a `System.Uri` is required.
+        let rendered =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Uri =
+    {
+        Foo : int
+    }
+
+[<ArgParser>]
+type TopLevel =
+    {
+        Address : System.Uri
+    }
+"""
+            |> renderOrFail
+
+        rendered.Contains "Foo" |> shouldEqual false
+        rendered.Contains "System.Uri" |> shouldEqual true
+
+    [<Test>]
+    let ``A qualified reference is not captured by a local flag DU with the same last segment`` () =
+        // `External.Enabled` is some foreign type the generator cannot parse; treating it as the
+        // local flag DU `Enabled` would emit `Enabled.On`/`Enabled.Off` into an
+        // `External.Enabled` field. Rejection is the correct outcome.
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                generateFromSource
+                    """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Enabled =
+    | [<ArgumentFlag true>] On
+    | [<ArgumentFlag false>] Off
+
+[<ArgParser>]
+type FlagClash =
+    {
+        Mode : External.Enabled
+    }
+"""
+                |> ignore<SynModuleOrNamespace list>
+            )
+
+        exc.Message.Contains "Could not decide how to parse" |> shouldEqual true
+
+    [<Test>]
+    let ``Parenthesized ambient record references are accepted wherever bare ones are`` () =
+        // FCS represents `Child : (ChildRecord)` as SynType.Paren; the by-name lookup for a
+        // record-typed field must see through it.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type ChildRecord =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type ParentRecord =
+    {
+        Child : (ChildRecord)
+        AndAnother : bool
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    // ------------------------------------------------------------------------------------------
+    // Recursive schemas. An argument schema must be a finite tree: a record which refers to
+    // itself, even indirectly, would expand forever. Without an explicit check the generator
+    // recurses until the process dies with a stack overflow instead of producing a comprehensible
+    // error.
+
+    [<Test>]
+    let ``A record which contains itself is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type SelfRef =
+    {
+        Value : int
+        Nested : SelfRef
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: SelfRef -> SelfRef. Argument records and unions may not contain themselves, even indirectly."
+
+    [<Test>]
+    let ``Mutually recursive records are rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Inner =
+    {
+        A : int
+        Outer : OuterRef
+    }
+
+[<ArgParser>]
+type OuterRef =
+    {
+        B : int
+        Inner : Inner
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: OuterRef -> Inner -> OuterRef. Argument records and unions may not contain themselves, even indirectly."
