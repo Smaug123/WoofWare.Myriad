@@ -1231,8 +1231,8 @@ module internal ArgParserGenerator =
         // Walk the tree so that a union's alternatives are *grouped* in the help, not flattened
         // into one undifferentiated list: the user must be able to see which arguments go
         // together. Non-positional lines appear in declaration order; the positional-args line,
-        // if any, comes last, as it always has. (Positionals cannot coexist with unions, so the
-        // two features never interleave.)
+        // if any, comes last, as it always has (a sink beside a union is shared by every
+        // alternative, so it stays outside the case groups).
         let rec fieldHelpNonPos (depth : int) (tree : ParseTree<HasNoPositional>) : SynExpr list =
             match tree with
             | ParseTree.NonPositionalLeaf (pf, _) -> [ toPrintable depth describeNonPositional pf ]
@@ -1344,9 +1344,33 @@ module internal ArgParserGenerator =
             }
             |> spec.Apply
 
-        if Option.isSome pos && hasSum then
-            failwith
-                "Positional args cannot be combined with a discriminated-union arg: the parser could not tell which alternative an unrecognised arg belongs to."
+        // A positional sink may sit beside a union only when the scanner's treatment of an
+        // unrecognised `--key`-shaped token is provably Reject (fatal). A Collect-mode sink
+        // treats such a token as a positional arg, so a typo of a case-selecting argument would
+        // be silently collected — with a union in play, silently changing which alternative is
+        // chosen. Bare positional tokens are sound beside a union: they are routed to the sink
+        // and never influence case selection.
+        match pos with
+        | Some pf when hasSum ->
+            let includeFlagLike =
+                match pf.Accumulation with
+                | ChoicePositional.Normal fl
+                | ChoicePositional.Choice fl -> fl
+
+            match includeFlagLike with
+            // The default [<PositionalArgs>] is Reject.
+            | None -> ()
+            | Some expr ->
+                match SynExpr.stripOptionalParen expr with
+                | SynExpr.Const (SynConst.Bool false, _) -> ()
+                | SynExpr.Const (SynConst.Bool true, _) ->
+                    failwith
+                        "Positional args which collect unrecognised flag-like tokens ([<PositionalArgs true>]) cannot be combined with a discriminated-union arg: a mistyped case-selecting argument would be collected as a positional arg instead of being reported."
+                | _ ->
+                    // E.g. a [<Literal>] constant, which the untyped AST does not resolve.
+                    failwith
+                        "Positional args combined with a discriminated-union arg must provably reject unrecognised flag-like tokens: use [<PositionalArgs>] or a literal [<PositionalArgs false>]."
+        | _ -> ()
 
         let bindings =
             nonPos

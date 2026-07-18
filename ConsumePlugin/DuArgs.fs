@@ -65,3 +65,43 @@ type PlainArgs =
 type DuWithDefaultArgs =
     | Defaulted of DefaultedArgs
     | Plain of PlainArgs
+
+/// A union beside a positional sink (default, i.e. Reject-mode): named arguments select the
+/// union case, and every bare token is routed to the sink whichever case wins. An unrecognised
+/// `--key`-shaped token remains fatal. The sink converts, so selection must not depend on the
+/// tokens' parseability as int.
+[<ArgParser>]
+type ModeAndPositionals =
+    {
+        Mode : Mode
+
+        [<PositionalArgs>]
+        Rest : int list
+    }
+
+type FetchArgs =
+    {
+        Url : string
+    }
+
+type PushArgs =
+    {
+        Remote : string
+        Force : bool
+    }
+
+/// No case is satisfiable with no arguments, so bare positional tokens alone must fail with
+/// "no case selected" rather than picking a fallback.
+type Command =
+    | Fetch of FetchArgs
+    | Push of PushArgs
+
+/// The literal [<PositionalArgs false>] spelling of a Reject-mode sink beside a union.
+[<ArgParser>]
+type CommandAndPositionals =
+    {
+        Command : Command
+
+        [<PositionalArgs false>]
+        Paths : string list
+    }

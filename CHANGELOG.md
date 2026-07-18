@@ -1,5 +1,11 @@
 Notable changes are recorded here.
 
+# Unreleased
+
+The `ArgParserGenerator` now permits a `[<PositionalArgs>]` field alongside a discriminated-union arg, as long as the positional sink rejects unrecognised flag-like tokens (the default; `[<PositionalArgs true>]` remains banned beside a union).
+Bare tokens are collected by the sink and never influence which union case is selected.
+Note that this applies only to a union which is a *field of a record*; positional args inside a union's cases are still rejected.
+
 # WoofWare.Myriad.Plugins 10.2.1
 
 The `ArgParserGenerator` now ships with (limited) discriminated-union support: you can specify mutually exclusive sets of args and the parser will select the correct set.

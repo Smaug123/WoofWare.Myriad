@@ -468,12 +468,11 @@ type PositionalInsideUnion =
         |> shouldRejectWith
             "Positional args are not permitted inside cases of the [<ArgParser>] union PositionalOrNot: the parser could not tell which alternative a positional arg belongs to."
 
-    [<Test>]
-    let ``Positional args are rejected alongside a union`` () =
-        // Conservative in v1: a Reject-mode sink beside a union is in principle sound (bare
-        // tokens cannot influence case selection), but a Collect-mode sink silently swallows
-        // typo'd case-selecting keys, so for now the combination is banned wholesale.
-        """namespace TestMe
+    /// A record holding a union-typed field and a positional sink, with the sink's
+    /// [<PositionalArgs>] attribute rendered from the given text.
+    let private modeAndPositionalsSource (positionalAttr : string) : string =
+        sprintf
+            """namespace TestMe
 
 open WoofWare.Myriad.Plugins
 
@@ -496,12 +495,72 @@ type WithModeAndPositionals =
     {
         Mode : Mode
 
-        [<PositionalArgs>]
+        [<%s>]
+        Rest : string list
+    }
+"""
+            positionalAttr
+
+    [<Test>]
+    let ``A Reject-mode positional sink is permitted alongside a union`` () =
+        // Sound because bare tokens cannot influence case selection, and in Reject mode an
+        // unrecognised `--key`-shaped token is still fatal rather than swallowed. Both the
+        // default form and the explicit literal must be accepted.
+        for attr in [ "PositionalArgs" ; "PositionalArgs false" ] do
+            // One namespace for the embedded runtime module, one for the generated parser module.
+            generateFromSource (modeAndPositionalsSource attr)
+            |> List.length
+            |> shouldEqual 2
+
+    [<Test>]
+    let ``A Collect-mode positional sink is rejected alongside a union`` () =
+        // A Collect-mode sink treats an unrecognised `--key` as a positional arg, so a typo of a
+        // case-selecting argument would be silently collected instead of reported — and with a
+        // union in play, that can silently change which alternative is chosen.
+        modeAndPositionalsSource "PositionalArgs true"
+        |> shouldRejectWith
+            "Positional args which collect unrecognised flag-like tokens ([<PositionalArgs true>]) cannot be combined with a discriminated-union arg: a mistyped case-selecting argument would be collected as a positional arg instead of being reported."
+
+    [<Test>]
+    let ``A positional sink whose flag-like setting cannot be proved Reject is rejected alongside a union`` () =
+        // The attribute argument is a [<Literal>] constant, which the untyped AST does not
+        // resolve: the generator cannot prove it is `false`, so it must be conservative.
+        """namespace TestMe
+
+[<AutoOpen>]
+module Constants =
+    [<Literal>]
+    let GrabEverything = false
+
+namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type AutoMode =
+    {
+        Quiet : bool option
+    }
+
+type ManualMode =
+    {
+        Level : int
+    }
+
+type Mode =
+    | Auto of AutoMode
+    | Manual of ManualMode
+
+[<ArgParser>]
+type WithModeAndPositionals =
+    {
+        Mode : Mode
+
+        [<PositionalArgs(GrabEverything)>]
         Rest : string list
     }
 """
         |> shouldRejectWith
-            "Positional args cannot be combined with a discriminated-union arg: the parser could not tell which alternative an unrecognised arg belongs to."
+            "Positional args combined with a discriminated-union arg must provably reject unrecognised flag-like tokens: use [<PositionalArgs>] or a literal [<PositionalArgs false>]."
 
     [<Test>]
     let ``A union case must carry a record defined alongside the union`` () =
