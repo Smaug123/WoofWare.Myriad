@@ -851,3 +851,111 @@ type DuArgs =
 
         // One namespace for the embedded runtime module, one for the generated parser module.
         List.length modules |> shouldEqual 2
+
+    // ------------------------------------------------------------------------------------------
+    // Default-value attributes. `[<ArgumentDefaultFunction>]` and
+    // `[<ArgumentDefaultEnvironmentVariable>]` are only meaningful on a `Choice<'a, 'a>` field: a
+    // successful parse reports whether the value was user-supplied (Choice1Of2) or defaulted
+    // (Choice2Of2). On a bare (non-Choice) field the default cannot be surfaced, so honouring it
+    // silently would defeat the point; the generator used to accept the attribute and drop it,
+    // leaving the field required. It must be rejected at generation time instead.
+
+    [<Test>]
+    let ``ArgumentDefaultFunction on a bare flag DU field is rejected`` () =
+        // The motivating repro from the issue: DryRun is a flag DU, not Choice<DryRunMode, DryRunMode>.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type DryRunMode =
+    | [<ArgumentFlag false>] Wet
+    | [<ArgumentFlag true>] Dry
+
+[<ArgParser>]
+type BareFlagDefault =
+    {
+        [<ArgumentDefaultFunction>]
+        DryRun : DryRunMode
+    }
+"""
+        |> shouldRejectWith
+            "Field 'DryRun' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+
+    [<Test>]
+    let ``ArgumentDefaultEnvironmentVariable on a bare scalar field is rejected`` () =
+        // The sibling default attribute shares the gap.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type BareScalarDefault =
+    {
+        [<ArgumentDefaultEnvironmentVariable "MY_ENV_VAR">]
+        Count : int
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Count' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+
+    [<Test>]
+    let ``A default attribute on a record-typed field is rejected`` () =
+        // Record- and union-typed fields never reach the Choice-parsing path, so the attribute
+        // was dropped silently there too.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type ChildRecord =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type ParentRecord =
+    {
+        [<ArgumentDefaultFunction>]
+        Child : ChildRecord
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Child' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+
+    [<Test>]
+    let ``A default attribute on a positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type PositionalDefault =
+    {
+        [<PositionalArgs>]
+        [<ArgumentDefaultFunction>]
+        Rest : string list
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Rest' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
+
+    [<Test>]
+    let ``A default attribute on a Choice field generates successfully`` () =
+        // The valid form: the generator must still accept it.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type WithDefault =
+    {
+        [<ArgumentDefaultFunction>]
+        Count : Choice<int, int>
+    }
+
+    static member DefaultCount () = 4
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
