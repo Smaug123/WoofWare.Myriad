@@ -187,7 +187,7 @@ type Foo =
         [<ArgumentDefaultEnvironmentVariable "MY_ENV_VAR">]
         BWithEnv : Choice<int, int>
         [<ArgumentDefaultFunction>]
-        DryRun : DryRunMode
+        DryRun : Choice<DryRunMode, DryRunMode>
         AnimalPart : AnimalArgs
     }
     static member DefaultB () = 4
@@ -214,7 +214,7 @@ The user specifies, for example:
 or
 
 ```
-./my-app --some-flag false --number-of-fins=39 --b-with-env 8
+./my-app --dry-run --some-flag false --number-of-fins=39 --b-with-env 8
 ```
 
 and you get back respectively these objects:
@@ -225,7 +225,7 @@ and you get back respectively these objects:
     A = None
     B = Choice2Of2 4
     BWithEnv = Choice2Of2 100 // whatever the value of $MY_ENV_VAR was, or a failed parse
-    DryRun = DryRunMode.Wet
+    DryRun = Choice2Of2 DryRunMode.Wet
     AnimalPart = AnimalArgs.Fowl { Species = "pheasant" }
 }
 
@@ -234,7 +234,7 @@ and you get back respectively these objects:
     A = None
     B = Choice2Of2 4
     BWithEnv = Choice1Of2 8
-    DryRun = DryRunMode.Wet
+    DryRun = Choice1Of2 DryRunMode.Dry
     AnimalPart = AnimalArgs.Fish { Fins = 39 }
 }
 ```
