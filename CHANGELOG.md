@@ -1,5 +1,9 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.2.1
+
+The `ArgParserGenerator` now ships with (limited) discriminated-union support: you can specify mutually exclusive sets of args and the parser will select the correct set.
+
 # WoofWare.Myriad.Plugins 10.1.1
 
 Fixes a number of bugs in the `ArgParserGenerator` by extracting the "untyped" logic into a standalone module.
