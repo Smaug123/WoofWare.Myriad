@@ -51,6 +51,15 @@ module TestArgParserRuntime =
                 Source = source
             }
 
+    let private posEv (value : string) (afterSep : bool) (form : PositionalForm) (candidates : int list) : ScanEvent =
+        ScanEvent.Positional
+            {
+                Value = value
+                AfterSeparator = afterSep
+                Form = form
+                Candidates = Set.ofList candidates
+            }
+
     // ----------------------------------------------------------------------------------------
     // Unit tests: the token grammar.
 
@@ -162,8 +171,8 @@ module TestArgParserRuntime =
         scan schema [ "--unknown" ; "foo" ]
         |> shouldEqual
             [
-                ScanEvent.Positional ("--unknown", false, PositionalForm.Bare)
-                ScanEvent.Positional ("foo", false, PositionalForm.Bare)
+                posEv "--unknown" false PositionalForm.Bare [ 99 ]
+                posEv "foo" false PositionalForm.Bare [ 99 ]
             ]
 
         scan schema [ "--unknown" ]
@@ -172,8 +181,8 @@ module TestArgParserRuntime =
         scan schema [ "--unknown=3" ; "foo" ]
         |> shouldEqual
             [
-                ScanEvent.Positional ("--unknown=3", false, PositionalForm.Bare)
-                ScanEvent.Positional ("foo", false, PositionalForm.Bare)
+                posEv "--unknown=3" false PositionalForm.Bare [ 99 ]
+                posEv "foo" false PositionalForm.Bare [ 99 ]
             ]
 
     [<Test>]
@@ -193,18 +202,18 @@ module TestArgParserRuntime =
         scan schema [ "--rest=5" ; "--rest" ; "6" ; "plain" ]
         |> shouldEqual
             [
-                ScanEvent.Positional ("5", false, PositionalForm.KeyEquals "--rest")
-                ScanEvent.Positional ("6", false, PositionalForm.KeySpaced "--rest")
-                ScanEvent.Positional ("plain", false, PositionalForm.Bare)
+                posEv "5" false (PositionalForm.KeyEquals "--rest") [ 99 ]
+                posEv "6" false (PositionalForm.KeySpaced "--rest") [ 99 ]
+                posEv "plain" false PositionalForm.Bare [ 99 ]
             ]
 
         // Case-insensitive, like every other key.
         scan schema [ "--REST=5" ]
-        |> shouldEqual [ ScanEvent.Positional ("5", false, PositionalForm.KeyEquals "--REST") ]
+        |> shouldEqual [ posEv "5" false (PositionalForm.KeyEquals "--REST") [ 99 ] ]
 
         // The keyed form always consumes exactly one value, greedily.
         scan schema [ "--rest" ; "--rest" ]
-        |> shouldEqual [ ScanEvent.Positional ("--rest", false, PositionalForm.KeySpaced "--rest") ]
+        |> shouldEqual [ posEv "--rest" false (PositionalForm.KeySpaced "--rest") [ 99 ] ]
 
         // Trailing key with no value: same error as any other arity-one key.
         scan schema [ "--rest" ]
@@ -229,12 +238,12 @@ module TestArgParserRuntime =
         scan schema [ "--remainder=5" ; "--REMAINDER" ; "6" ]
         |> shouldEqual
             [
-                ScanEvent.Positional ("5", false, PositionalForm.KeyEquals "--remainder")
-                ScanEvent.Positional ("6", false, PositionalForm.KeySpaced "--REMAINDER")
+                posEv "5" false (PositionalForm.KeyEquals "--remainder") [ 99 ]
+                posEv "6" false (PositionalForm.KeySpaced "--REMAINDER") [ 99 ]
             ]
 
         scan schema [ "--rest=7" ]
-        |> shouldEqual [ ScanEvent.Positional ("7", false, PositionalForm.KeyEquals "--rest") ]
+        |> shouldEqual [ posEv "7" false (PositionalForm.KeyEquals "--rest") [ 99 ] ]
 
     [<Test>]
     let ``An unknown key is an error where flag-like collection is not allowed`` () =
@@ -248,7 +257,7 @@ module TestArgParserRuntime =
         |> shouldEqual
             [
                 ScanEvent.Error (ScanError.UnknownKey "--unknown")
-                ScanEvent.Positional ("x", false, PositionalForm.Bare)
+                posEv "x" false PositionalForm.Bare []
             ]
 
     // ----------------------------------------------------------------------------------------
@@ -1009,11 +1018,11 @@ module TestArgParserRuntime =
                         [ occurrence.Source ]
                     else
                         [ occurrence.Source ; value ]
-            | ScanEvent.Positional (value, _, form) ->
-                match form with
-                | PositionalForm.Bare -> [ value ]
-                | PositionalForm.KeyEquals key -> [ key + "=" + value ]
-                | PositionalForm.KeySpaced key -> [ key ; value ]
+            | ScanEvent.Positional positional ->
+                match positional.Form with
+                | PositionalForm.Bare -> [ positional.Value ]
+                | PositionalForm.KeyEquals key -> [ key + "=" + positional.Value ]
+                | PositionalForm.KeySpaced key -> [ key ; positional.Value ]
             | ScanEvent.Error (ScanError.TrailingKeyNoValue source) -> [ source ]
             | ScanEvent.Error (ScanError.UnknownKey source) -> [ source ]
             | ScanEvent.Error (ScanError.UnknownKeyEqualsValue (key, value)) -> [ key + "=" + value ]
@@ -1241,7 +1250,7 @@ module TestArgParserRuntime =
             return
                 {
                     Tokens = [ value ]
-                    Expected = [ ScanEvent.Positional (value, false, PositionalForm.Bare) ]
+                    Expected = [ posEv value false PositionalForm.Bare [ 1000 ] ]
                 }
         }
 
@@ -1366,8 +1375,7 @@ module TestArgParserRuntime =
                 (fixedUnits |> List.collect (fun u -> u.Expected))
                 @ (if withSeparator then
                        ScanEvent.Separator
-                       :: (postSep
-                           |> List.map (fun t -> ScanEvent.Positional (t, true, PositionalForm.Bare)))
+                       :: (postSep |> List.map (fun t -> posEv t true PositionalForm.Bare [ 1000 ]))
                    else
                        [])
 
@@ -1895,3 +1903,86 @@ module TestArgParserRuntime =
 
         let config = Config.QuickThrowOnFailure.WithMaxTest 1000
         Check.One (config, Prop.forAll (Arb.fromGen cases) property)
+
+    // ----------------------------------------------------------------------------------------
+    // Candidate sets: the spelling of a positional token determines which sinks could consume
+    // it, and nothing else does — scanning stays independent of the eventual case selection.
+
+    [<Test>]
+    let ``Positional events carry the claimant sets of their spelling`` () =
+        // Two sinks in mutually exclusive cases, sharing the form "rest"; only sink 11 also
+        // answers to "files".
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Sum (
+                        0,
+                        [
+                            "A", ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.PositionalLeaf 10 ]
+                            "B", ErasedTree.Product [ ErasedTree.Leaf 1 ; ErasedTree.PositionalLeaf 11 ]
+                        ]
+                    )
+                Positionals =
+                    [
+                        sink' 10 [ "rest" ] ErasedFlagLikeBehaviour.Reject
+                        sink' 11 [ "rest" ; "files" ] ErasedFlagLikeBehaviour.Reject
+                    ]
+            }
+
+        // A shared keyed form yields the union of its claimants.
+        scan schema [ "--rest=1" ]
+        |> shouldEqual [ posEv "1" false (PositionalForm.KeyEquals "--rest") [ 10 ; 11 ] ]
+
+        // A form claimed by one sink yields that sink alone, case-insensitively.
+        scan schema [ "--FILES" ; "2" ]
+        |> shouldEqual [ posEv "2" false (PositionalForm.KeySpaced "--FILES") [ 11 ] ]
+
+        // Bare tokens, and everything after the separator, name every sink.
+        scan schema [ "bare" ]
+        |> shouldEqual [ posEv "bare" false PositionalForm.Bare [ 10 ; 11 ] ]
+
+        scan schema [ "--" ; "tail" ]
+        |> shouldEqual [ ScanEvent.Separator ; posEv "tail" true PositionalForm.Bare [ 10 ; 11 ] ]
+
+    [<Test>]
+    let ``Every positional event of a one-sink schema names exactly that sink`` () =
+        // The legacy-projection property: for the schemas the generator emits today (at most
+        // one sink), the candidate metadata is fully determined, so erasing it recovers the
+        // historical event log.
+        let mutable positionalEvents = 0
+
+        let cases =
+            gen {
+                let! sumBias = Gen.elements [ 0 ; 50 ]
+                let! schema = genSchema sumBias
+
+                let! flagLike = Gen.elements [ ErasedFlagLikeBehaviour.Collect ; ErasedFlagLikeBehaviour.Reject ]
+
+                let schema =
+                    { schema with
+                        Positionals = [ sink' 1000 [ "rest" ] flagLike ]
+                        Tree = ErasedTree.Product [ schema.Tree ; ErasedTree.PositionalLeaf 1000 ]
+                    }
+
+                let! count = Gen.choose (0, 15)
+                let! tokens = Gen.listOfLength count (genToken schema)
+                return schema, tokens
+            }
+
+        let property (schema : ErasedSchema, tokens : string list) : unit =
+            for event in scan schema tokens do
+                match event with
+                | ScanEvent.Positional positional ->
+                    positionalEvents <- positionalEvents + 1
+                    positional.Candidates |> shouldEqual (Set.singleton 1000)
+                | _ -> ()
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 1000
+        Check.One (config, Prop.forAll (Arb.fromGen cases) property)
+
+        positionalEvents |> shouldBeGreaterThan 1000
