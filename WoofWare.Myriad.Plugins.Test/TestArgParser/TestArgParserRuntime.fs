@@ -26,11 +26,15 @@ module TestArgParserRuntime =
             Help = None
         }
 
-    let private productSchema (leaves : ErasedLeaf list) (positional : ErasedPositional option) : ErasedSchema =
+    let private productSchema (leaves : ErasedLeaf list) (positionals : ErasedPositional list) : ErasedSchema =
         {
             Leaves = leaves
-            Tree = ErasedTree.Product (leaves |> List.map (fun l -> ErasedTree.Leaf l.Id))
-            Positional = positional
+            Tree =
+                ErasedTree.Product (
+                    (leaves |> List.map (fun l -> ErasedTree.Leaf l.Id))
+                    @ (positionals |> List.map (fun p -> ErasedTree.PositionalLeaf p.Id))
+                )
+            Positionals = positionals
         }
 
     /// Shadows the kernel's runParse: every schema in these tests is well-formed, so go through
@@ -53,7 +57,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``Equals form and space form produce the same occurrence`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] []
 
         scan schema [ "--foo=3" ] |> shouldEqual [ occ 0 (Some "3") false "--foo=3" ]
 
@@ -62,7 +66,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``Keys match case-insensitively`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] []
 
         scan schema [ "--FOO=3" ] |> shouldEqual [ occ 0 (Some "3") false "--FOO=3" ]
 
@@ -74,7 +78,7 @@ module TestArgParserRuntime =
                     leaf 0 "a" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "b" ErasedArity.One ErasedRequirement.Optional
                 ]
-                None
+                []
 
         scan schema [ "--a" ; "--b=false" ]
         |> shouldEqual [ occ 0 (Some "--b=false") false "--a" ]
@@ -87,7 +91,7 @@ module TestArgParserRuntime =
                     leaf 0 "flag" ErasedArity.BoolLike ErasedRequirement.Required
                     leaf 1 "b" ErasedArity.One ErasedRequirement.Optional
                 ]
-                None
+                []
 
         scan schema [ "--flag" ; "TRUE" ]
         |> shouldEqual [ occ 0 (Some "TRUE") false "--flag" ]
@@ -104,7 +108,7 @@ module TestArgParserRuntime =
                     leaf 0 "flag" ErasedArity.BoolLike ErasedRequirement.Required
                     leaf 1 "b" ErasedArity.One ErasedRequirement.Optional
                 ]
-                None
+                []
 
         scan schema [ "--flag" ] |> shouldEqual [ occ 0 None false "--flag" ]
 
@@ -120,7 +124,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``Help is recognised case-insensitively in key position but not in value position`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] []
 
         scan schema [ "--HELP" ] |> shouldEqual [ ScanEvent.Help "--HELP" ]
 
@@ -136,7 +140,7 @@ module TestArgParserRuntime =
                         AcceptsNegation = true
                     }
                 ]
-                None
+                []
 
         scan schema [ "--no-flag" ] |> shouldEqual [ occ 0 None true "--no-flag" ]
         scan schema [ "--NO-FLAG" ] |> shouldEqual [ occ 0 None true "--NO-FLAG" ]
@@ -153,9 +157,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            { productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] (Some sink) with
-                Positional = Some sink
-            }
+            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] [ sink ]
 
         scan schema [ "--unknown" ; "foo" ]
         |> shouldEqual
@@ -186,7 +188,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Optional ] (Some sink)
+            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Optional ] [ sink ]
 
         scan schema [ "--rest=5" ; "--rest" ; "6" ; "plain" ]
         |> shouldEqual
@@ -222,7 +224,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Optional ] (Some sink)
+            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Optional ] [ sink ]
 
         scan schema [ "--remainder=5" ; "--REMAINDER" ; "6" ]
         |> shouldEqual
@@ -237,7 +239,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``An unknown key is an error where flag-like collection is not allowed`` () =
         let schema =
-            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] []
 
         scan schema [ "--unknown=3" ]
         |> shouldEqual [ ScanEvent.Error (ScanError.UnknownKeyEqualsValue ("--unknown", "3")) ]
@@ -272,7 +274,7 @@ module TestArgParserRuntime =
                         "BarCase", ErasedTree.Product [ ErasedTree.Leaf 1 ; ErasedTree.Leaf 2 ]
                     ]
                 )
-            Positional = None
+            Positionals = []
         }
 
     let private observedOf (events : ScanEvent list) : Map<int, string> =
@@ -347,7 +349,7 @@ module TestArgParserRuntime =
                         AcceptsNegation = true
                     }
                 ]
-                None
+                []
 
         // Twice through different spellings: still a duplicate of the one leaf.
         let events = scan schema [ "--flag=true" ; "--no-alias" ]
@@ -368,7 +370,7 @@ module TestArgParserRuntime =
                         Repeatable = true
                     }
                 ]
-                None
+                []
 
         let events = scan schema [ "--rest=1" ; "--rest=2" ]
         let selection = select schema (observedOf events)
@@ -443,6 +445,7 @@ module TestArgParserRuntime =
         {
             Choices = Map.empty
             ActiveLeaves = schema.Leaves |> List.map (fun l -> l.Id) |> Set.ofList
+            ActivePositional = schema.Positionals |> List.tryHead |> Option.map (fun p -> p.Id)
             Errors = []
         }
 
@@ -454,7 +457,7 @@ module TestArgParserRuntime =
                     leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "bar" ErasedArity.One ErasedRequirement.HasDefault
                 ]
-                None
+                []
 
         let fake = FakeTyped.Fresh ()
 
@@ -473,7 +476,7 @@ module TestArgParserRuntime =
                     leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "bar" ErasedArity.One ErasedRequirement.HasDefault
                 ]
-                None
+                []
 
         let fake = FakeTyped.Fresh ()
 
@@ -496,7 +499,7 @@ module TestArgParserRuntime =
                     leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
                 ]
-                None
+                []
 
         let fake = FakeTyped.Fresh ()
 
@@ -515,7 +518,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``runParse: help wins, lazily`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] []
 
         let fake = FakeTyped.Fresh ()
 
@@ -528,7 +531,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``runParse: unknown keys are fatal where flag-like collection is not allowed`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] []
 
         let fake = FakeTyped.Fresh ()
 
@@ -550,7 +553,7 @@ module TestArgParserRuntime =
                     leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "flag" ErasedArity.BoolLike ErasedRequirement.Optional
                 ]
-                None
+                []
 
         let fake = FakeTyped.Fresh ()
 
@@ -569,7 +572,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``runParse: a failed first occurrence is not a duplicate of a successful second`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Required ] []
 
         let fake = FakeTyped.Fresh ()
 
@@ -588,7 +591,7 @@ module TestArgParserRuntime =
                     leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
                 ]
-                None
+                []
 
         let fake = FakeTyped.Fresh ()
 
@@ -605,7 +608,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``runParse: leftover positionals without a sink are an error`` () =
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] None
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] []
 
         let fake = FakeTyped.Fresh ()
 
@@ -626,7 +629,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] (Some sink)
+            productSchema [ leaf 0 "foo" ErasedArity.One ErasedRequirement.Optional ] [ sink ]
 
         let fake = FakeTyped.Fresh ()
 
@@ -662,6 +665,9 @@ module TestArgParserRuntime =
     let rec private alternatives (tree : ErasedTree) : (Map<int, int> * Set<int>) list =
         match tree with
         | ErasedTree.Leaf leafId -> [ Map.empty, Set.singleton leafId ]
+        // These alternatives track named leaves only; positional resolution has its own
+        // reference semantics in TestArgParserPositionalReference.
+        | ErasedTree.PositionalLeaf _ -> [ Map.empty, Set.empty ]
         | ErasedTree.Product children ->
             ([ Map.empty, Set.empty ], children)
             ||> List.fold (fun accs child ->
@@ -814,6 +820,7 @@ module TestArgParserRuntime =
         let rec go (tree : ErasedTree) : ErasedTree =
             match tree with
             | ErasedTree.Leaf id -> ErasedTree.Leaf id
+            | ErasedTree.PositionalLeaf id -> ErasedTree.PositionalLeaf id
             | ErasedTree.Product children -> ErasedTree.Product (children |> List.map go)
             | ErasedTree.Sum (_, cases) ->
                 let id = next
@@ -832,7 +839,7 @@ module TestArgParserRuntime =
                 {
                     Leaves = leaves
                     Tree = renumberSums tree
-                    Positional = None
+                    Positionals = []
                 }
         }
 
@@ -852,6 +859,7 @@ module TestArgParserRuntime =
             let rec pickAlternative (tree : ErasedTree) : Gen<Set<int>> =
                 match tree with
                 | ErasedTree.Leaf id -> Gen.constant (Set.singleton id)
+                | ErasedTree.PositionalLeaf _ -> Gen.constant Set.empty
                 | ErasedTree.Product children ->
                     gen {
                         let! sets = children |> List.map pickAlternative |> Gen.sequenceToList
@@ -1018,7 +1026,7 @@ module TestArgParserRuntime =
     let private genToken (schema : ErasedSchema) : Gen<string> =
         let forms =
             (schema.Leaves |> List.collect (fun l -> l.Forms))
-            @ (schema.Positional |> Option.toList |> List.collect (fun p -> p.Forms))
+            @ (schema.Positionals |> List.collect (fun p -> p.Forms))
 
         let keyish =
             match forms with
@@ -1056,8 +1064,8 @@ module TestArgParserRuntime =
                 let schema =
                     if hasSink then
                         { schema with
-                            Positional =
-                                Some
+                            Positionals =
+                                [
                                     {
                                         Id = 1000
                                         Forms = [ "rest" ]
@@ -1065,6 +1073,8 @@ module TestArgParserRuntime =
                                         TypeDescription = "string"
                                         Help = None
                                     }
+                                ]
+                            Tree = ErasedTree.Product [ schema.Tree ; ErasedTree.PositionalLeaf 1000 ]
                         }
                     else
                         schema
@@ -1258,8 +1268,8 @@ module TestArgParserRuntime =
 
                 let schema =
                     { schema with
-                        Positional =
-                            Some
+                        Positionals =
+                            [
                                 {
                                     Id = 1000
                                     Forms = [ "rest" ]
@@ -1267,6 +1277,8 @@ module TestArgParserRuntime =
                                     TypeDescription = "string"
                                     Help = None
                                 }
+                            ]
+                        Tree = ErasedTree.Product [ schema.Tree ; ErasedTree.PositionalLeaf 1000 ]
                     }
 
                 // Any leaf may occur any number of times: the scanner does not enforce
@@ -1394,7 +1406,7 @@ module TestArgParserRuntime =
                         leaf 1 "FOO" ErasedArity.One ErasedRequirement.Required
                     ]
                 Tree = ErasedTree.Sum (0, [ "CaseA", ErasedTree.Leaf 0 ; "CaseB", ErasedTree.Leaf 1 ])
-                Positional = None
+                Positionals = []
             }
 
         WellFormedSchema.errors schema
@@ -1411,7 +1423,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            productSchema [ negatable ; leaf 1 "No-Foo" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ negatable ; leaf 1 "No-Foo" ErasedArity.One ErasedRequirement.Required ] []
 
         WellFormedSchema.errors schema
         |> shouldEqual
@@ -1425,7 +1437,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``No argument may claim the reserved help name, in any casing`` () =
         let schema =
-            productSchema [ leaf 0 "HeLp" ErasedArity.One ErasedRequirement.Required ] None
+            productSchema [ leaf 0 "HeLp" ErasedArity.One ErasedRequirement.Required ] []
 
         WellFormedSchema.errors schema
         |> shouldEqual
@@ -1445,7 +1457,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            productSchema [ leaf 0 "rest" ErasedArity.One ErasedRequirement.Required ] (Some sink)
+            productSchema [ leaf 0 "rest" ErasedArity.One ErasedRequirement.Required ] [ sink ]
 
         WellFormedSchema.errors schema
         |> shouldEqual
@@ -1466,7 +1478,7 @@ module TestArgParserRuntime =
             }
 
         let schema =
-            productSchema [ leaf 0 "target" ErasedArity.One ErasedRequirement.Required ] (Some sink)
+            productSchema [ leaf 0 "target" ErasedArity.One ErasedRequirement.Required ] [ sink ]
 
         WellFormedSchema.errors schema
         |> shouldEqual
@@ -1484,7 +1496,7 @@ module TestArgParserRuntime =
                 Forms = [ "foo" ; "FOO" ]
             }
 
-        WellFormedSchema.errors (productSchema [ doubled ] None)
+        WellFormedSchema.errors (productSchema [ doubled ] [])
         |> shouldEqual
             [
                 SchemaError.TokenCollision ("--foo", [ "argument '--foo'" ; "argument '--FOO'" ])
@@ -1500,7 +1512,7 @@ module TestArgParserRuntime =
                         leaf 0 "b" ErasedArity.One ErasedRequirement.Required
                     ]
                 Tree = ErasedTree.Product [ ErasedTree.Leaf 0 ]
-                Positional = None
+                Positionals = []
             }
 
         WellFormedSchema.errors schema |> shouldEqual [ SchemaError.DuplicateLeafId 0 ]
@@ -1508,7 +1520,7 @@ module TestArgParserRuntime =
     [<Test>]
     let ``A leaf repeated in the tree is rejected`` () =
         let schema =
-            { productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] None with
+            { productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] [] with
                 Tree = ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.Leaf 0 ]
             }
 
@@ -1525,7 +1537,7 @@ module TestArgParserRuntime =
                         leaf 1 "b" ErasedArity.One ErasedRequirement.Required
                     ]
                 Tree = ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.Leaf 2 ]
-                Positional = None
+                Positionals = []
             }
 
         WellFormedSchema.errors schema
@@ -1546,7 +1558,7 @@ module TestArgParserRuntime =
                             ErasedTree.Sum (0, [ "A", ErasedTree.Leaf 0 ])
                             ErasedTree.Sum (0, [ "B", ErasedTree.Leaf 1 ])
                         ]
-                Positional = None
+                Positionals = []
             }
 
         WellFormedSchema.errors schema |> shouldEqual [ SchemaError.DuplicateSumId 0 ]
@@ -1558,7 +1570,7 @@ module TestArgParserRuntime =
                 AcceptsNegation = true
             }
 
-        WellFormedSchema.errors (productSchema [ bad ] None)
+        WellFormedSchema.errors (productSchema [ bad ] [])
         |> shouldEqual [ SchemaError.NegationOnNonBool 0 ]
 
     [<Test>]
@@ -1568,7 +1580,7 @@ module TestArgParserRuntime =
                 Forms = []
             }
 
-        WellFormedSchema.errors (productSchema [ bad ] None)
+        WellFormedSchema.errors (productSchema [ bad ] [])
         |> shouldEqual [ SchemaError.NoForms 0 ]
 
     [<Test>]
@@ -1581,7 +1593,7 @@ module TestArgParserRuntime =
                         leaf 1 "FOO" ErasedArity.One ErasedRequirement.Required
                     ]
                 Tree = ErasedTree.Sum (0, [ "CaseA", ErasedTree.Leaf 0 ; "CaseB", ErasedTree.Leaf 1 ])
-                Positional = None
+                Positionals = []
             }
 
         let exc =
@@ -1620,7 +1632,7 @@ module TestArgParserRuntime =
                     leaf 0 "s" ErasedArity.One ErasedRequirement.Required
                     leaf 1 "ſ" ErasedArity.One ErasedRequirement.Required
                 ]
-                None
+                []
 
         // The scanner really does distinguish them.
         scan schema [ "--s=1" ] |> shouldEqual [ occ 0 (Some "1") false "--s=1" ]
@@ -1635,7 +1647,7 @@ module TestArgParserRuntime =
                 Forms = [ "" ]
             }
 
-        WellFormedSchema.errors (productSchema [ bad ] None)
+        WellFormedSchema.errors (productSchema [ bad ] [])
         |> shouldEqual [ SchemaError.EmptyForm "argument id 0" ]
 
     [<Test>]
@@ -1647,7 +1659,7 @@ module TestArgParserRuntime =
                 Forms = [ "foo=bar" ]
             }
 
-        WellFormedSchema.errors (productSchema [ bad ] None)
+        WellFormedSchema.errors (productSchema [ bad ] [])
         |> shouldEqual [ SchemaError.FormContainsEquals ("argument id 0", "foo=bar") ]
 
         let badSink =
@@ -1659,5 +1671,227 @@ module TestArgParserRuntime =
                 Help = None
             }
 
-        WellFormedSchema.errors (productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] (Some badSink))
-        |> shouldEqual [ SchemaError.FormContainsEquals ("the positional-args sink", "rest=stuff") ]
+        WellFormedSchema.errors (productSchema [ leaf 0 "a" ErasedArity.One ErasedRequirement.Required ] [ badSink ])
+        |> shouldEqual [ SchemaError.FormContainsEquals ("positional-args sink id 99", "rest=stuff") ]
+
+    // ----------------------------------------------------------------------------------------
+    // Well-formedness: positional sinks in the tree. The capacity rule (at most one sink per
+    // complete interpretation), the global flag-like policy, and the sink table/tree
+    // correspondence.
+
+    let private sink' (id : int) (forms : string list) (flagLike : ErasedFlagLikeBehaviour) : ErasedPositional =
+        {
+            Id = id
+            Forms = forms
+            FlagLike = flagLike
+            TypeDescription = "string"
+            Help = None
+        }
+
+    [<Test>]
+    let ``Two sinks in one product exceed positional capacity`` () =
+        let schema =
+            {
+                Leaves = []
+                Tree = ErasedTree.Product [ ErasedTree.PositionalLeaf 0 ; ErasedTree.PositionalLeaf 1 ]
+                Positionals =
+                    [
+                        sink' 0 [ "rest" ] ErasedFlagLikeBehaviour.Reject
+                        sink' 1 [ "files" ] ErasedFlagLikeBehaviour.Reject
+                    ]
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual [ SchemaError.PositionalCapacityExceeded 2 ]
+
+    [<Test>]
+    let ``Sinks in mutually exclusive cases are within capacity, and may share forms`` () =
+        // (A × P) + (B × Q), both sinks addressable as --rest: the sinks can never both be
+        // active, and a keyed --rest token has the same arity whichever wins, so this is fine.
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Sum (
+                        0,
+                        [
+                            "A", ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.PositionalLeaf 0 ]
+                            "B", ErasedTree.Product [ ErasedTree.Leaf 1 ; ErasedTree.PositionalLeaf 1 ]
+                        ]
+                    )
+                Positionals =
+                    [
+                        sink' 0 [ "rest" ] ErasedFlagLikeBehaviour.Reject
+                        sink' 1 [ "rest" ] ErasedFlagLikeBehaviour.Reject
+                    ]
+            }
+
+        WellFormedSchema.errors schema |> shouldEqual []
+
+    [<Test>]
+    let ``A sink form colliding with a named form is still rejected, even across cases`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "rest" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Sum (
+                        0,
+                        [
+                            "A", ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.PositionalLeaf 0 ]
+                            "B", ErasedTree.Leaf 1
+                        ]
+                    )
+                Positionals = [ sink' 0 [ "REST" ] ErasedFlagLikeBehaviour.Reject ]
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.TokenCollision ("--rest", [ "argument '--rest'" ; "the positional-args sink '--REST'" ])
+            ]
+
+    [<Test>]
+    let ``Sinks disagreeing on flag-like policy are rejected`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Sum (
+                        0,
+                        [
+                            "A", ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.PositionalLeaf 0 ]
+                            "B", ErasedTree.Product [ ErasedTree.Leaf 1 ; ErasedTree.PositionalLeaf 1 ]
+                        ]
+                    )
+                Positionals =
+                    [
+                        sink' 0 [ "rest" ] ErasedFlagLikeBehaviour.Reject
+                        sink' 1 [ "files" ] ErasedFlagLikeBehaviour.Collect
+                    ]
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual [ SchemaError.FlagLikePolicyDisagreement ]
+
+    [<Test>]
+    let ``Sink table and tree must correspond`` () =
+        let schema =
+            {
+                Leaves = []
+                Tree = ErasedTree.Product [ ErasedTree.PositionalLeaf 0 ]
+                Positionals = [ sink' 1 [ "rest" ] ErasedFlagLikeBehaviour.Reject ]
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual [ SchemaError.PositionalNotInTable 0 ; SchemaError.PositionalNotInTree 1 ]
+
+    [<Test>]
+    let ``Duplicate sink ids and repeated tree references are rejected`` () =
+        let schema =
+            {
+                Leaves = []
+                Tree = ErasedTree.Product [ ErasedTree.PositionalLeaf 0 ; ErasedTree.PositionalLeaf 0 ]
+                Positionals =
+                    [
+                        sink' 0 [ "rest" ] ErasedFlagLikeBehaviour.Reject
+                        sink' 0 [ "files" ] ErasedFlagLikeBehaviour.Reject
+                    ]
+            }
+
+        WellFormedSchema.errors schema
+        |> shouldEqual
+            [
+                SchemaError.DuplicatePositionalId 0
+                SchemaError.PositionalRepeatedInTree 0
+                SchemaError.PositionalCapacityExceeded 2
+            ]
+
+    [<Test>]
+    let ``Selection reports the active sink for a sink in the selected interpretation`` () =
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Product
+                        [
+                            ErasedTree.Sum (0, [ "A", ErasedTree.Leaf 0 ; "B", ErasedTree.Leaf 1 ])
+                            ErasedTree.PositionalLeaf 7
+                        ]
+                Positionals = [ sink' 7 [ "rest" ] ErasedFlagLikeBehaviour.Reject ]
+            }
+
+        let selection = select schema (Map.ofList [ 0, "--foo=1" ])
+        selection.Errors |> shouldEqual []
+        selection.Choices |> shouldEqual (Map.ofList [ 0, 0 ])
+        selection.ActivePositional |> shouldEqual (Some 7)
+
+        // A sink inside an unselected case is not active.
+        let schema =
+            {
+                Leaves =
+                    [
+                        leaf 0 "foo" ErasedArity.One ErasedRequirement.Required
+                        leaf 1 "bar" ErasedArity.One ErasedRequirement.Required
+                    ]
+                Tree =
+                    ErasedTree.Sum (
+                        0,
+                        [
+                            "A", ErasedTree.Leaf 0
+                            "B", ErasedTree.Product [ ErasedTree.Leaf 1 ; ErasedTree.PositionalLeaf 7 ]
+                        ]
+                    )
+                Positionals = [ sink' 7 [ "rest" ] ErasedFlagLikeBehaviour.Reject ]
+            }
+
+        let selection = select schema (Map.ofList [ 0, "--foo=1" ])
+        selection.Errors |> shouldEqual []
+        selection.ActivePositional |> shouldEqual None
+
+        let selection = select schema (Map.ofList [ 1, "--bar=1" ])
+        selection.Errors |> shouldEqual []
+        selection.ActivePositional |> shouldEqual (Some 7)
+
+    // ----------------------------------------------------------------------------------------
+    // Property: the runtime's compositional positional-capacity calculation agrees with the
+    // exhaustive reference model of TestArgParserPositionalReference.
+
+    [<Test>]
+    let ``Runtime positional capacity agrees with the reference model`` () =
+        let rec convert (tree : TestArgParserPositionalReference.RefTree) : ErasedTree =
+            match tree with
+            | TestArgParserPositionalReference.RefTree.Named leaf -> ErasedTree.Leaf leaf.Id
+            | TestArgParserPositionalReference.RefTree.Positional p -> ErasedTree.PositionalLeaf p.Id
+            | TestArgParserPositionalReference.RefTree.Product children ->
+                ErasedTree.Product (children |> List.map convert)
+            | TestArgParserPositionalReference.RefTree.Sum (sumId, cases) ->
+                ErasedTree.Sum (sumId, cases |> List.map (fun (name, case) -> name, convert case))
+
+        let cases =
+            gen {
+                let! sumBias = Gen.elements [ 20 ; 50 ; 80 ]
+                return! TestArgParserPositionalReference.genTree sumBias
+            }
+
+        let property (tree : TestArgParserPositionalReference.RefTree) : unit =
+            maxPositionals (convert tree)
+            |> shouldEqual (TestArgParserPositionalReference.maxPositionals tree)
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 1000
+        Check.One (config, Prop.forAll (Arb.fromGen cases) property)
