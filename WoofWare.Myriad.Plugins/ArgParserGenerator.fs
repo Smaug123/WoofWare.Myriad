@@ -4,7 +4,6 @@ open System
 open System.Text
 open Fantomas.FCS.Syntax
 open Fantomas.FCS.Text.Range
-open TypeEquality
 open WoofWare.Whippet.Fantomas
 
 type internal ArgParserOutputSpec =
@@ -114,343 +113,241 @@ type private ChoicePositional =
 type private ParseFunctionPositional = ParseFunction<ChoicePositional>
 type private ParseFunctionNonPositional = ParseFunction<Accumulation<ArgumentDefaultSpec>>
 
-type private ParserSpec =
-    {
-        NonPositionals : ParseFunctionNonPositional list
-        /// The variable into which positional arguments will be accumulated.
-        /// In this case, the TargetVariable is a `ResizeArray` rather than the usual `option`.
-        Positionals : ParseFunctionPositional option
-    }
-
-type private HasPositional = HasPositional
-type private HasNoPositional = HasNoPositional
-
-[<AutoOpen>]
-module private TeqUtils =
-    let exFalso<'a> (_ : Teq<HasNoPositional, HasPositional>) : 'a = failwith "LOGIC ERROR!"
-    let exFalso'<'a> (_ : Teq<HasPositional, HasNoPositional>) : 'a = failwith "LOGIC ERROR!"
-
+/// The parse tree mirroring the schema's shape: named-argument leaves, positional-stream
+/// leaves, products (records) and exclusive sums (unions of alternative argument sets).
+/// Build Branch nodes only through ParseTree.branch, which enforces the positional-capacity
+/// rule (argv holds a single positional stream, so at most one field chain of a record may
+/// claim positional args) and keeps the positional-claiming field after its siblings, which
+/// is where the positional args have always appeared in help text and in the erased schema.
 [<RequireQualifiedAccess>]
-type private ParseTree<'hasPositional> =
-    | NonPositionalLeaf of ParseFunctionNonPositional * Teq<'hasPositional, HasNoPositional>
-    | PositionalLeaf of ParseFunctionPositional * Teq<'hasPositional, HasPositional>
-    /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
-    /// the branch (e.g. each record field name),
-    /// and composes them into a `SynExpr` (e.g. the record-typed object).
-    | Branch of
-        fields : (Ident * ParseTree<HasNoPositional>) list *
-        assemble : (Map<string, SynExpr> -> SynExpr) *
-        Teq<'hasPositional, HasNoPositional>
-    /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each `Ident` in
-    /// the branch (e.g. each record field name),
-    /// and composes them into a `SynExpr` (e.g. the record-typed object).
-    | BranchPos of
-        posField : Ident *
-        fields : ParseTree<HasPositional> *
-        (Ident * ParseTree<HasNoPositional>) list *
-        assemble : (Map<string, SynExpr> -> SynExpr) *
-        Teq<'hasPositional, HasPositional>
+type private ParseTree =
+    | NonPositionalLeaf of ParseFunctionNonPositional
+    | PositionalLeaf of ParseFunctionPositional
+    /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each
+    /// `Ident` in the branch (e.g. each record field name), and composes them into a `SynExpr`
+    /// (e.g. the record-typed object).
+    | Branch of fields : (Ident * ParseTree) list * assemble : (Map<string, SynExpr> -> SynExpr)
     /// A discriminated-union arg: at runtime, exactly one case is selected by the arguments
     /// which were supplied. `sumId` ties this node to the erased schema's Sum node; `assemble`
     /// builds the union value from the selected case's name and its assembled payload.
-    /// Positional args are not permitted inside union cases.
-    | Sum of
-        sumId : int *
-        cases : (Ident * ParseTree<HasNoPositional>) list *
-        assemble : (Ident -> SynExpr -> SynExpr) *
-        Teq<'hasPositional, HasNoPositional>
-
-type private ParseTreeEval<'ret> =
-    abstract Eval<'a> : ParseTree<'a> -> 'ret
-
-type private ParseTreeCrate =
-    abstract Apply<'ret> : ParseTreeEval<'ret> -> 'ret
-
-[<RequireQualifiedAccess>]
-module private ParseTreeCrate =
-    let make<'a> (p : ParseTree<'a>) =
-        { new ParseTreeCrate with
-            member _.Apply a = a.Eval p
-        }
+    /// Positional args are not yet permitted inside union cases.
+    | Sum of sumId : int * cases : (Ident * ParseTree) list * assemble : (Ident -> SynExpr -> SynExpr)
 
 [<RequireQualifiedAccess>]
 module private ParseTree =
-    [<RequireQualifiedAccess>]
-    type State =
-        | Positional of ParseTree<HasPositional> * ParseTree<HasNoPositional> list
-        | NoPositional of ParseTree<HasNoPositional> list
 
-    let private cast (t : Teq<'a, 'b>) : Teq<ParseTree<'a>, ParseTree<'b>> = Teq.Cong.believeMe t
-
-    /// The `Ident` here is the field name.
-    let branch (assemble : Map<string, SynExpr> -> SynExpr) (subs : (Ident * ParseTreeCrate) list) : ParseTreeCrate =
-        let rec go
-            (selfIdent : Ident option)
-            (acc : (Ident * ParseTree<HasNoPositional>) list, pos : (Ident * ParseTree<HasPositional>) option)
-            (subs : (Ident * ParseTreeCrate) list)
-            : ParseTreeCrate
-            =
-            match subs with
-            | [] ->
-                match pos with
-                | None -> ParseTree.Branch (List.rev acc, assemble, Teq.refl) |> ParseTreeCrate.make
-                | Some (posField, pos) ->
-                    ParseTree.BranchPos (posField, pos, List.rev acc, assemble, Teq.refl)
-                    |> ParseTreeCrate.make
-            | (fieldName, sub) :: subs ->
-                { new ParseTreeEval<_> with
-                    member _.Eval (t : ParseTree<'a>) =
-                        match t with
-                        | ParseTree.NonPositionalLeaf (_, teq)
-                        | ParseTree.Branch (_, _, teq)
-                        | ParseTree.Sum (_, _, _, teq) ->
-                            go selfIdent (((fieldName, Teq.cast (cast teq) t) :: acc), pos) subs
-                        | ParseTree.PositionalLeaf (_, teq)
-                        | ParseTree.BranchPos (_, _, _, _, teq) ->
-                            match pos with
-                            | None -> go selfIdent (acc, Some (fieldName, Teq.cast (cast teq) t)) subs
-                            | Some (ident, _) ->
-                                failwith
-                                    $"Multiple entries tried to claim positional args! %s{ident.idText} and %s{fieldName.idText}"
-                }
-                |> sub.Apply
-
-        go None ([], None) subs
-
-    let rec accumulatorsNonPos (tree : ParseTree<HasNoPositional>) : ParseFunctionNonPositional list =
+    /// Does this tree contain a positional-args leaf anywhere?
+    let rec containsPositional (tree : ParseTree) : bool =
         match tree with
-        | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
-        | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
-        | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ]
-        | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos)
-        | ParseTree.Sum (_, cases, _, _) -> cases |> List.collect (snd >> accumulatorsNonPos)
+        | ParseTree.NonPositionalLeaf _ -> false
+        | ParseTree.PositionalLeaf _ -> true
+        | ParseTree.Branch (fields, _) -> fields |> List.exists (fun (_, child) -> containsPositional child)
+        | ParseTree.Sum (_, cases, _) -> cases |> List.exists (fun (_, case) -> containsPositional case)
 
-    /// Returns the positional arg separately.
-    let rec accumulatorsPos
-        (tree : ParseTree<HasPositional>)
-        : ParseFunctionNonPositional list * ParseFunctionPositional
-        =
-        match tree with
-        | ParseTree.PositionalLeaf (pf, _) -> [], pf
-        | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
-        | ParseTree.Branch (_, _, teq) -> exFalso' teq
-        | ParseTree.Sum (_, _, _, teq) -> exFalso' teq
-        | ParseTree.BranchPos (_, tree, trees, _, _) ->
-            let nonPos = trees |> List.collect (snd >> accumulatorsNonPos)
+    /// The `Ident` here is the field name. Moves the positional-claiming field (at most one
+    /// is permitted) after its siblings.
+    let branch (assemble : Map<string, SynExpr> -> SynExpr) (subs : (Ident * ParseTree) list) : ParseTree =
+        let nonPos, pos =
+            subs |> List.partition (fun (_, tree) -> not (containsPositional tree))
 
-            let nonPos2, pos = accumulatorsPos tree
-            nonPos @ nonPos2, pos
+        match pos with
+        | []
+        | [ _ ] -> ParseTree.Branch (nonPos @ pos, assemble)
+        | (first, _) :: (second, _) :: _ ->
+            failwith $"Multiple entries tried to claim positional args! %s{first.idText} and %s{second.idText}"
 
     /// Collect all the ParseFunctions which are necessary to define variables, throwing away
     /// all information relevant to composing the resulting variables into records.
-    /// Returns the list of non-positional parsers, and any positional parser that exists.
-    let accumulators<'a> (tree : ParseTree<'a>) : ParseFunctionNonPositional list * ParseFunctionPositional option =
-        // Sad duplication of some code here, but it was the easiest way to make it type-safe :(
-        match tree with
-        | ParseTree.PositionalLeaf (pf, _) -> [], Some pf
-        | ParseTree.NonPositionalLeaf (pf, _) -> [ pf ], None
-        | ParseTree.Branch (trees, _, _) -> trees |> List.collect (snd >> accumulatorsNonPos) |> (fun i -> i, None)
-        | ParseTree.Sum (_, cases, _, _) -> cases |> List.collect (snd >> accumulatorsNonPos) |> (fun i -> i, None)
-        | ParseTree.BranchPos (_, tree, trees, _, _) ->
-            let nonPos = trees |> List.collect (snd >> accumulatorsNonPos)
-
-            let nonPos2, pos = accumulatorsPos tree
-            nonPos @ nonPos2, Some pos
-
-        |> fun (nonPos, pos) ->
-            // Reject argument names which could collide at parse time. The scanner matches names
-            // case-insensitively, so this validation must use the same equality; and a name can
-            // collide with the `--no-` variant of a negatable argument as well as with another
-            // name directly. Only literal forms are checkable here: a form supplied via e.g. a
-            // [<Literal>] constant is invisible to the untyped AST, so the generated code
-            // re-checks the assembled schema at runtime (WellFormedSchema.checkOrFail).
-            let literalForms (exprs : SynExpr list) : string list =
-                exprs
-                |> List.choose (fun expr ->
-                    match expr |> SynExpr.stripOptionalParen with
-                    | SynExpr.Const (SynConst.String (s, _, _), _) -> Some s
-                    | _ -> None
+    /// Returns the non-positional parsers and the positional parsers, each in tree order.
+    let accumulators (tree : ParseTree) : ParseFunctionNonPositional list * ParseFunctionPositional list =
+        let rec go (tree : ParseTree) : ParseFunctionNonPositional list * ParseFunctionPositional list =
+            match tree with
+            | ParseTree.NonPositionalLeaf pf -> [ pf ], []
+            | ParseTree.PositionalLeaf pf -> [], [ pf ]
+            | ParseTree.Branch (fields, _) ->
+                (([], []), fields)
+                ||> List.fold (fun (nonPos, pos) (_, child) ->
+                    let childNonPos, childPos = go child
+                    nonPos @ childNonPos, pos @ childPos
+                )
+            | ParseTree.Sum (_, cases, _) ->
+                (([], []), cases)
+                ||> List.fold (fun (nonPos, pos) (_, case) ->
+                    let caseNonPos, casePos = go case
+                    nonPos @ caseNonPos, pos @ casePos
                 )
 
-            // Reject names no token could ever address, given how the scanner tokenises.
-            let malformed =
-                (nonPos
-                 |> List.collect (fun pf ->
-                     literalForms pf.ArgForm
-                     |> List.choose (fun form ->
-                         if form = "" then
-                             Some
-                                 $"Invalid argument name for field '%s{pf.FieldName.idText}': an empty name's token would be '--', which is the positional separator."
-                         elif form.Contains "=" then
-                             Some
-                                 $"Invalid argument name '%s{form}' for field '%s{pf.FieldName.idText}': a --key=value token splits at its first '=', so this argument could never be addressed."
-                         else
-                             None
-                     )
-                 ))
-                @ (pos
-                   |> Option.toList
-                   |> List.collect (fun pf ->
-                       literalForms pf.ArgForm
-                       |> List.choose (fun form ->
-                           if form = "" then
-                               Some
-                                   $"Invalid argument name for the positional args (field '%s{pf.FieldName.idText}'): an empty name's token would be '--', which is the positional separator."
-                           elif form.Contains "=" then
-                               Some
-                                   $"Invalid argument name '%s{form}' for the positional args (field '%s{pf.FieldName.idText}'): a --key=value token splits at its first '=', so this argument could never be addressed."
-                           else
-                               None
-                       )
-                   ))
+        let nonPos, pos = go tree
 
-            match malformed with
-            | [] -> ()
-            | malformed -> failwith (String.concat "\n" malformed)
+        // Reject argument names which could collide at parse time. The scanner matches names
+        // case-insensitively, so this validation must use the same equality; and a name can
+        // collide with the `--no-` variant of a negatable argument as well as with another
+        // name directly. Only literal forms are checkable here: a form supplied via e.g. a
+        // [<Literal>] constant is invisible to the untyped AST, so the generated code
+        // re-checks the assembled schema at runtime (WellFormedSchema.checkOrFail).
+        let literalForms (exprs : SynExpr list) : string list =
+            exprs
+            |> List.choose (fun expr ->
+                match expr |> SynExpr.stripOptionalParen with
+                | SynExpr.Const (SynConst.String (s, _, _), _) -> Some s
+                | _ -> None
+            )
 
-            // `--help` always means help (case-insensitively), so no argument may claim it.
-            let allLiteralForms =
-                (pos |> Option.toList |> List.collect (fun pf -> literalForms pf.ArgForm))
-                @ (nonPos |> List.collect (fun pf -> literalForms pf.ArgForm))
+        // Reject names no token could ever address, given how the scanner tokenises.
+        let malformed =
+            (nonPos
+             |> List.collect (fun pf ->
+                 literalForms pf.ArgForm
+                 |> List.choose (fun form ->
+                     if form = "" then
+                         Some
+                             $"Invalid argument name for field '%s{pf.FieldName.idText}': an empty name's token would be '--', which is the positional separator."
+                     elif form.Contains "=" then
+                         Some
+                             $"Invalid argument name '%s{form}' for field '%s{pf.FieldName.idText}': a --key=value token splits at its first '=', so this argument could never be addressed."
+                     else
+                         None
+                 )
+             ))
+            @ (pos
+               |> List.collect (fun pf ->
+                   literalForms pf.ArgForm
+                   |> List.choose (fun form ->
+                       if form = "" then
+                           Some
+                               $"Invalid argument name for the positional args (field '%s{pf.FieldName.idText}'): an empty name's token would be '--', which is the positional separator."
+                       elif form.Contains "=" then
+                           Some
+                               $"Invalid argument name '%s{form}' for the positional args (field '%s{pf.FieldName.idText}'): a --key=value token splits at its first '=', so this argument could never be addressed."
+                       else
+                           None
+                   )
+               ))
 
-            let helpClaims =
-                allLiteralForms
-                |> List.filter (fun form ->
-                    System.String.Equals (form, "help", System.StringComparison.OrdinalIgnoreCase)
-                )
+        match malformed with
+        | [] -> ()
+        | malformed -> failwith (String.concat "\n" malformed)
 
-            match helpClaims with
-            | [] -> ()
-            | _ -> failwith "The argument name 'help' is reserved: --help always displays the help text."
+        // `--help` always means help (case-insensitively), so no argument may claim it.
+        let allLiteralForms =
+            (pos |> List.collect (fun pf -> literalForms pf.ArgForm))
+            @ (nonPos |> List.collect (fun pf -> literalForms pf.ArgForm))
 
-            // Every name a `--token` could address, with a description of its claimant, in
-            // declaration order.
-            let claims : (string * string) list =
-                (nonPos
-                 |> List.collect (fun pf ->
-                     let forms = literalForms pf.ArgForm
+        let helpClaims =
+            allLiteralForms
+            |> List.filter (fun form -> System.String.Equals (form, "help", System.StringComparison.OrdinalIgnoreCase))
 
-                     let plain =
+        match helpClaims with
+        | [] -> ()
+        | _ -> failwith "The argument name 'help' is reserved: --help always displays the help text."
+
+        // Every name a `--token` could address, with a description of its claimant, in
+        // declaration order.
+        let claims : (string * string) list =
+            (nonPos
+             |> List.collect (fun pf ->
+                 let forms = literalForms pf.ArgForm
+
+                 let plain =
+                     forms
+                     |> List.map (fun form -> form, $"'--%s{form}' (field '%s{pf.FieldName.idText}')")
+
+                 let negated =
+                     if pf.AcceptsNegation then
                          forms
-                         |> List.map (fun form -> form, $"'--%s{form}' (field '%s{pf.FieldName.idText}')")
+                         |> List.map (fun form ->
+                             $"no-%s{form}",
+                             $"the --no- variant of field '%s{pf.FieldName.idText}' (which has [<ArgumentNegateWithPrefix>])"
+                         )
+                     else
+                         []
 
-                     let negated =
-                         if pf.AcceptsNegation then
-                             forms
-                             |> List.map (fun form ->
-                                 $"no-%s{form}",
-                                 $"the --no- variant of field '%s{pf.FieldName.idText}' (which has [<ArgumentNegateWithPrefix>])"
-                             )
-                         else
-                             []
+                 plain @ negated
+             ))
+            @ (pos
+               |> List.collect (fun pf ->
+                   literalForms pf.ArgForm
+                   |> List.map (fun form -> form, $"'--%s{form}' (the positional args)")
+               ))
 
-                     plain @ negated
-                 ))
-                @ (pos
-                   |> Option.toList
-                   |> List.collect (fun pf ->
-                       literalForms pf.ArgForm
-                       |> List.map (fun form -> form, $"'--%s{form}' (the positional args)")
-                   ))
+        // Group under the scanner's own equality (OrdinalIgnoreCase), preserving
+        // declaration order. This is deliberately not ToUpperInvariant keying, which is a
+        // strictly coarser relation: e.g. "s" and "ſ" (long s) uppercase to the same string,
+        // but the scanner considers them distinct, so they do not collide.
+        let conflicts =
+            let indexOf =
+                System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
 
-            // Group under the scanner's own equality (OrdinalIgnoreCase), preserving
-            // declaration order. This is deliberately not ToUpperInvariant keying, which is a
-            // strictly coarser relation: e.g. "s" and "ſ" (long s) uppercase to the same string,
-            // but the scanner considers them distinct, so they do not collide.
-            let conflicts =
-                let indexOf =
-                    System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
+            let buckets = ResizeArray<ResizeArray<string * string>> ()
 
-                let buckets = ResizeArray<ResizeArray<string * string>> ()
+            for form, claimant in claims do
+                match indexOf.TryGetValue form with
+                | true, index -> buckets.[index].Add ((form, claimant))
+                | false, _ ->
+                    indexOf.[form] <- buckets.Count
+                    let bucket = ResizeArray ()
+                    bucket.Add ((form, claimant))
+                    buckets.Add bucket
 
-                for form, claimant in claims do
-                    match indexOf.TryGetValue form with
-                    | true, index -> buckets.[index].Add ((form, claimant))
-                    | false, _ ->
-                        indexOf.[form] <- buckets.Count
-                        let bucket = ResizeArray ()
-                        bucket.Add ((form, claimant))
-                        buckets.Add bucket
+            buckets
+            |> Seq.choose (fun bucket ->
+                if bucket.Count < 2 then
+                    None
+                else
+                    let form, _ = bucket.[0]
 
-                buckets
-                |> Seq.choose (fun bucket ->
-                    if bucket.Count < 2 then
-                        None
-                    else
-                        let form, _ = bucket.[0]
+                    bucket
+                    |> Seq.map snd
+                    |> String.concat "; "
+                    |> sprintf "The argument name '--%s' is claimed by: %s" form
+                    |> Some
+            )
+            |> List.ofSeq
 
-                        bucket
-                        |> Seq.map snd
-                        |> String.concat "; "
-                        |> sprintf "The argument name '--%s' is claimed by: %s" form
-                        |> Some
-                )
-                |> List.ofSeq
+        match conflicts with
+        | [] -> ()
+        | conflicts ->
+            let conflictMessages = conflicts |> String.concat "\n"
 
-            match conflicts with
-            | [] -> ()
-            | conflicts ->
-                let conflictMessages = conflicts |> String.concat "\n"
+            failwith
+                $"Conflicting argument names detected (names are matched case-insensitively):\n%s{conflictMessages}"
 
-                failwith
-                    $"Conflicting argument names detected (names are matched case-insensitively):\n%s{conflictMessages}"
-
-            nonPos, pos
-
-    /// Assert that this tree contains no positional leaves, so that it can inhabit a union
-    /// case; fails with `message` otherwise.
-    let assertNoPositional (message : string) (crate : ParseTreeCrate) : ParseTree<HasNoPositional> =
-        { new ParseTreeEval<_> with
-            member _.Eval (t : ParseTree<'a>) =
-                match t with
-                | ParseTree.NonPositionalLeaf (_, teq)
-                | ParseTree.Branch (_, _, teq)
-                | ParseTree.Sum (_, _, _, teq) -> Teq.cast (cast teq) t
-                | ParseTree.PositionalLeaf _
-                | ParseTree.BranchPos _ -> failwith message
-        }
-        |> crate.Apply
+        nonPos, pos
 
     /// Does this tree contain any discriminated-union node?
-    let rec containsSum<'a> (tree : ParseTree<'a>) : bool =
+    let rec containsSum (tree : ParseTree) : bool =
         match tree with
         | ParseTree.NonPositionalLeaf _
         | ParseTree.PositionalLeaf _ -> false
         | ParseTree.Sum _ -> true
-        | ParseTree.Branch (fields, _, _) -> fields |> List.exists (snd >> containsSum)
-        | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-            containsSum posTree || (fields |> List.exists (snd >> containsSum))
+        | ParseTree.Branch (fields, _) -> fields |> List.exists (fun (_, child) -> containsSum child)
 
     /// Can this tree be satisfied by supplying no arguments at all? (Defaulted and optional
-    /// leaves need nothing; a union needs nothing iff some case needs nothing.)
-    let rec emptySatisfiable<'a> (tree : ParseTree<'a>) : bool =
+    /// leaves need nothing, as do positional args; a union needs nothing iff some case needs
+    /// nothing.)
+    let rec emptySatisfiable (tree : ParseTree) : bool =
         match tree with
-        | ParseTree.NonPositionalLeaf (pf, _) ->
+        | ParseTree.NonPositionalLeaf pf ->
             match pf.Accumulation with
             | Accumulation.Required -> false
             | Accumulation.Optional
             | Accumulation.Choice _
             | Accumulation.List _ -> true
         | ParseTree.PositionalLeaf _ -> true
-        | ParseTree.Branch (fields, _, _) -> fields |> List.forall (snd >> emptySatisfiable)
-        | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-            emptySatisfiable posTree && (fields |> List.forall (snd >> emptySatisfiable))
-        | ParseTree.Sum (_, cases, _, _) -> cases |> List.exists (snd >> emptySatisfiable)
+        | ParseTree.Branch (fields, _) -> fields |> List.forall (fun (_, child) -> emptySatisfiable child)
+        | ParseTree.Sum (_, cases, _) -> cases |> List.exists (fun (_, case) -> emptySatisfiable case)
 
     /// For every union node in the tree, at most one case may be satisfiable with no arguments:
     /// were two cases so satisfiable, an empty command line could not choose between them.
-    let rec checkSumAmbiguity<'a> (tree : ParseTree<'a>) : unit =
+    let rec checkSumAmbiguity (tree : ParseTree) : unit =
         match tree with
         | ParseTree.NonPositionalLeaf _
         | ParseTree.PositionalLeaf _ -> ()
-        | ParseTree.Branch (fields, _, _) -> fields |> List.iter (snd >> checkSumAmbiguity)
-        | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-            checkSumAmbiguity posTree
-            fields |> List.iter (snd >> checkSumAmbiguity)
-        | ParseTree.Sum (_, cases, _, _) ->
-            cases |> List.iter (snd >> checkSumAmbiguity)
+        | ParseTree.Branch (fields, _) -> fields |> List.iter (fun (_, child) -> checkSumAmbiguity child)
+        | ParseTree.Sum (_, cases, _) ->
+            cases |> List.iter (fun (_, case) -> checkSumAmbiguity case)
 
-            match cases |> List.filter (snd >> emptySatisfiable) with
+            match cases |> List.filter (fun (_, case) -> emptySatisfiable case) with
             | []
             | [ _ ] -> ()
             | ambiguous ->
@@ -461,15 +358,16 @@ module private ParseTree =
                     $"Cases %s{names} can all be satisfied without supplying any arguments, so an empty command line cannot choose between them. Make an argument in all but one of them mandatory."
 
     /// Build the expression for the erased-schema tree mirroring this parse tree. Named-leaf
-    /// ids are assigned in `accumulators` order, which is exactly this walk's traversal order;
-    /// the positional sink (at most one today) has its own id space and always gets id 0. `rt`
-    /// resolves a path inside the embedded runtime module; `listOf` builds a list literal
-    /// (with the empty list handled).
-    let rec toErasedTreeExpr<'a>
+    /// ids are assigned in `accumulators` order, which is exactly this walk's traversal
+    /// order; positional-sink ids likewise, in their own id space. `rt` resolves a path
+    /// inside the embedded runtime module; `listOf` builds a list literal (with the empty
+    /// list handled).
+    let rec toErasedTreeExpr
         (rt : string list -> SynExpr)
         (listOf : SynExpr list -> SynExpr)
         (counter : int ref)
-        (tree : ParseTree<'a>)
+        (posCounter : int ref)
+        (tree : ParseTree)
         : SynExpr
         =
         let product (children : SynExpr list) : SynExpr =
@@ -482,16 +380,19 @@ module private ParseTree =
 
             SynExpr.applyFunction (rt [ "ErasedTree" ; "Leaf" ]) (SynExpr.CreateConst index)
         | ParseTree.PositionalLeaf _ ->
-            SynExpr.applyFunction (rt [ "ErasedTree" ; "PositionalLeaf" ]) (SynExpr.CreateConst 0)
-        | ParseTree.Branch (fields, _, _) ->
+            let index = posCounter.Value
+            posCounter.Value <- posCounter.Value + 1
+
+            SynExpr.applyFunction (rt [ "ErasedTree" ; "PositionalLeaf" ]) (SynExpr.CreateConst index)
+        | ParseTree.Branch (fields, _) ->
             fields
-            |> List.map (fun (_, child) -> toErasedTreeExpr rt listOf counter child)
+            |> List.map (fun (_, child) -> toErasedTreeExpr rt listOf counter posCounter child)
             |> product
-        | ParseTree.Sum (sumId, cases, _, _) ->
+        | ParseTree.Sum (sumId, cases, _) ->
             let caseExprs =
                 cases
                 |> List.map (fun (caseName, payload) ->
-                    let payloadExpr = toErasedTreeExpr rt listOf counter payload
+                    let payloadExpr = toErasedTreeExpr rt listOf counter posCounter payload
 
                     SynExpr.tuple [ SynExpr.CreateConst caseName.idText ; payloadExpr ]
                 )
@@ -499,17 +400,10 @@ module private ParseTree =
             SynExpr.applyFunction
                 (rt [ "ErasedTree" ; "Sum" ])
                 (SynExpr.paren (SynExpr.tuple [ SynExpr.CreateConst sumId ; listOf caseExprs ]))
-        | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-            // Ordering matches `accumulators`: the sibling fields first, then the positional
-            // subtree (whose own named leaves come after the siblings').
-            let siblings =
-                fields |> List.map (fun (_, child) -> toErasedTreeExpr rt listOf counter child)
-
-            product (siblings @ [ toErasedTreeExpr rt listOf counter posTree ])
 
     /// Build the return value. (References the `parser_selection` binding which the generated
     /// code brings into scope on the success path, to choose among Sum cases.)
-    let rec instantiate<'a> (tree : ParseTree<'a>) : SynExpr =
+    let rec instantiate (tree : ParseTree) : SynExpr =
         let unwrapRequired (targetVariable : Ident) : SynExpr =
             SynExpr.createMatch
                 (SynExpr.createIdent' targetVariable)
@@ -525,7 +419,7 @@ module private ParseTree =
             |> SynExpr.paren
 
         match tree with
-        | ParseTree.NonPositionalLeaf (pf, _) ->
+        | ParseTree.NonPositionalLeaf pf ->
             // The unwrap happens here, at the use site, rather than eagerly for every slot: the
             // slots of a union's unselected cases are legitimately unpopulated and must never be
             // read.
@@ -537,11 +431,11 @@ module private ParseTree =
                 SynExpr.createIdent' pf.TargetVariable
                 |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
                 |> SynExpr.paren
-        | ParseTree.PositionalLeaf (pf, _) ->
+        | ParseTree.PositionalLeaf pf ->
             SynExpr.createIdent' pf.TargetVariable
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
             |> SynExpr.paren
-        | ParseTree.Sum (sumId, cases, assemble, _) ->
+        | ParseTree.Sum (sumId, cases, assemble) ->
             let scrutinee =
                 SynExpr.createLongIdent [ "Map" ; "tryFind" ]
                 |> SynExpr.applyTo (SynExpr.CreateConst sumId)
@@ -564,24 +458,13 @@ module private ParseTree =
                             "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"))
 
             SynExpr.createMatch scrutinee (clauses @ [ fallthrough ])
-        | ParseTree.Branch (trees, assemble, _) ->
-            trees
+        | ParseTree.Branch (fields, assemble) ->
+            fields
             |> List.map (fun (fieldName, contents) ->
                 let instantiated = instantiate contents
                 fieldName.idText, instantiated
             )
             |> Map.ofList
-            |> assemble
-        | ParseTree.BranchPos (posField, tree, trees, assemble, _) ->
-            let withPos = instantiate tree
-
-            trees
-            |> List.map (fun (fieldName, contents) ->
-                let instantiated = instantiate contents
-                fieldName.idText, instantiated
-            )
-            |> Map.ofList
-            |> Map.add posField.idText withPos
             |> assemble
 
 [<RequireQualifiedAccess>]
@@ -830,7 +713,7 @@ module internal ArgParserGenerator =
         (ambientUnions : UnionType list)
         (ambientRecords : RecordType list)
         (finalRecord : RecordType)
-        : ParseTreeCrate * int
+        : ParseTree * int
         =
         let ancestors = pushSchemaType ancestors finalRecord.Name
 
@@ -997,7 +880,7 @@ module internal ArgParserGenerator =
                             BoolCases = isBoolLike
                             AcceptsNegation = false
                         }
-                        |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
+                        |> ParseTree.PositionalLeaf
                     | Accumulation.List Accumulation.Required ->
                         {
                             FieldName = ident
@@ -1010,12 +893,11 @@ module internal ArgParserGenerator =
                             BoolCases = isBoolLike
                             AcceptsNegation = false
                         }
-                        |> fun t -> ParseTree.PositionalLeaf (t, Teq.refl)
+                        |> ParseTree.PositionalLeaf
                     | Accumulation.Choice _
                     | Accumulation.Optional
                     | Accumulation.Required ->
                         failwith $"Expected positional arg accumulation type to be List, but it was %O{fieldType}"
-                    |> ParseTreeCrate.make
                 | None ->
                     let getChoice (spec : ArgumentDefaultSpec option) : ArgumentDefaultSpec =
                         match spec with
@@ -1065,8 +947,7 @@ module internal ArgParserGenerator =
                         BoolCases = isBoolLike
                         AcceptsNegation = acceptsNegation
                     }
-                    |> fun t -> ParseTree.NonPositionalLeaf (t, Teq.refl)
-                    |> ParseTreeCrate.make
+                    |> ParseTree.NonPositionalLeaf
                 |> fun tree -> counter + 1, (ident, tree) :: acc
             )
 
@@ -1093,7 +974,7 @@ module internal ArgParserGenerator =
         (ambientUnions : UnionType list)
         (ambientRecords : RecordType list)
         (union : UnionType)
-        : ParseTreeCrate * int
+        : ParseTree * int
         =
         let ancestors = pushSchemaType ancestors union.Name
 
@@ -1123,10 +1004,11 @@ module internal ArgParserGenerator =
                 let spec, counter =
                     toParseSpec ancestors counter flagDus ambientUnions ambientRecords payloadRecord
 
-                let tree =
-                    ParseTree.assertNoPositional
+                if ParseTree.containsPositional spec then
+                    failwith
                         $"Positional args are not permitted inside cases of the [<ArgParser>] union %s{union.Name.idText}: the parser could not tell which alternative a positional arg belongs to."
-                        spec
+
+                let tree = spec
 
                 counter, (case.Name, tree) :: acc
             )
@@ -1136,9 +1018,9 @@ module internal ArgParserGenerator =
         let assemble (caseName : Ident) (payload : SynExpr) : SynExpr =
             SynExpr.applyFunction (SynExpr.createLongIdent' [ union.Name ; caseName ]) payload
 
-        ParseTree.Sum (sumId, cases, assemble, Teq.refl) |> ParseTreeCrate.make, counter
+        ParseTree.Sum (sumId, cases, assemble), counter
 
-    let private helpText<'hasPositional> (typeHelp : SynExpr option) (tree : ParseTree<'hasPositional>) : SynBinding =
+    let private helpText (typeHelp : SynExpr option) (tree : ParseTree) : SynBinding =
         let describeNonPositional
             (acc : Accumulation<ArgumentDefaultSpec>)
             (flagCases : Choice<FlagDu, unit> option)
@@ -1225,50 +1107,28 @@ module internal ArgParserGenerator =
 
         // Walk the tree so that a union's alternatives are *grouped* in the help, not flattened
         // into one undifferentiated list: the user must be able to see which arguments go
-        // together. Non-positional lines appear in declaration order; the positional-args line,
-        // if any, comes last, as it always has (a sink beside a union is shared by every
-        // alternative, so it stays outside the case groups).
-        let rec fieldHelpNonPos (depth : int) (tree : ParseTree<HasNoPositional>) : SynExpr list =
+        // together. Non-positional lines appear in declaration order; the positional-args
+        // line, if any, comes last, as it always has (ParseTree.branch keeps the
+        // positional-claiming field after its siblings, and a sink beside a union is shared
+        // by every alternative, so it stays outside the case groups).
+        let rec fieldHelp (depth : int) (tree : ParseTree) : SynExpr list =
             match tree with
-            | ParseTree.NonPositionalLeaf (pf, _) -> [ toPrintable depth describeNonPositional pf ]
-            | ParseTree.PositionalLeaf (_, teq) -> exFalso teq
-            | ParseTree.Branch (fields, _, _) -> fields |> List.collect (fun (_, child) -> fieldHelpNonPos depth child)
-            | ParseTree.BranchPos (_, _, _, _, teq) -> exFalso teq
-            | ParseTree.Sum (_, cases, _, _) -> sumHelp depth cases
+            | ParseTree.NonPositionalLeaf pf -> [ toPrintable depth describeNonPositional pf ]
+            | ParseTree.PositionalLeaf pf -> [ toPrintable depth describePositional pf ]
+            | ParseTree.Branch (fields, _) -> fields |> List.collect (fun (_, child) -> fieldHelp depth child)
+            | ParseTree.Sum (_, cases, _) -> sumHelp depth cases
 
-        and sumHelp (depth : int) (cases : (Ident * ParseTree<HasNoPositional>) list) : SynExpr list =
+        and sumHelp (depth : int) (cases : (Ident * ParseTree) list) : SynExpr list =
             let indent = String.replicate depth "  "
 
             SynExpr.CreateConst (indent + "exactly one of the following sets of arguments:")
             :: (cases
                 |> List.collect (fun (caseName, case) ->
                     SynExpr.CreateConst (indent + caseName.idText + ":")
-                    :: fieldHelpNonPos (depth + 1) case
+                    :: fieldHelp (depth + 1) case
                 ))
 
-        let rec fieldHelpPos (tree : ParseTree<HasPositional>) : SynExpr list * SynExpr =
-            match tree with
-            | ParseTree.PositionalLeaf (pf, _) -> [], toPrintable 0 describePositional pf
-            | ParseTree.NonPositionalLeaf (_, teq) -> exFalso' teq
-            | ParseTree.Branch (_, _, teq) -> exFalso' teq
-            | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-                let nonPos = fields |> List.collect (fun (_, child) -> fieldHelpNonPos 0 child)
-
-                let nonPos2, pos = fieldHelpPos posTree
-                nonPos @ nonPos2, pos
-            | ParseTree.Sum (_, _, _, teq) -> exFalso' teq
-
-        let fieldHelp =
-            match tree with
-            | ParseTree.NonPositionalLeaf (pf, _) -> [ toPrintable 0 describeNonPositional pf ]
-            | ParseTree.PositionalLeaf (pf, _) -> [ toPrintable 0 describePositional pf ]
-            | ParseTree.Branch (fields, _, _) -> fields |> List.collect (fun (_, child) -> fieldHelpNonPos 0 child)
-            | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-                let nonPos = fields |> List.collect (fun (_, child) -> fieldHelpNonPos 0 child)
-
-                let nonPos2, pos = fieldHelpPos posTree
-                nonPos @ nonPos2 @ [ pos ]
-            | ParseTree.Sum (_, cases, _, _) -> sumHelp 0 cases
+        let fieldHelp = fieldHelp 0 tree
 
         let allHelp =
             match typeHelp with
@@ -1326,18 +1186,14 @@ module internal ArgParserGenerator =
         (runtimeModule : Ident)
         (typeHelpText : SynExpr option)
         (typeName : Ident)
-        (spec : ParseTreeCrate)
+        (spec : ParseTree)
         : SynExpr
         =
         // For each argument (positional and non-positional), create an accumulator for it; also
         // check the structural constraints which the runtime's selection semantics rely on.
-        let (nonPos, pos), hasSum =
-            { new ParseTreeEval<_> with
-                member _.Eval tree =
-                    ParseTree.checkSumAmbiguity tree
-                    ParseTree.accumulators tree, ParseTree.containsSum tree
-            }
-            |> spec.Apply
+        ParseTree.checkSumAmbiguity spec
+        let nonPos, pos = ParseTree.accumulators spec
+        let hasSum = ParseTree.containsSum spec
 
         // A positional sink may sit beside a union only when the scanner's treatment of an
         // unrecognised `--key`-shaped token is provably Reject (fatal). A Collect-mode sink
@@ -1346,7 +1202,7 @@ module internal ArgParserGenerator =
         // chosen. Bare positional tokens are sound beside a union: they are routed to the sink
         // and never influence case selection.
         match pos with
-        | Some pf when hasSum ->
+        | [ pf ] when hasSum ->
             let includeFlagLike =
                 match pf.Accumulation with
                 | ChoicePositional.Normal fl
@@ -1398,33 +1254,36 @@ module internal ArgParserGenerator =
                     |> SynBinding.withReturnAnnotation (SynType.appPostfix "ResizeArray" pf.TargetType)
             )
 
-        let bindings, leftoverArgsName, leftoverArgsParser =
-            let bindingName, leftoverArgsParser, leftoverArgsType =
+        let bindings =
+            // One accumulator per positional sink (or the legacy leftover-args accumulator
+            // when there is none, kept so that the no-sink shape of the generated code stays
+            // stable).
+            let sinkBindings =
                 match pos with
-                | None ->
-                    Ident.create "parser_LeftoverArgs",
-                    (SynExpr.createLambda "x" (SynExpr.createIdent "x")),
-                    SynType.string
-                | Some pf ->
-                    match pf.Accumulation with
-                    | ChoicePositional.Choice _ ->
-                        pf.TargetVariable, pf.Parser, SynType.app "Choice" [ pf.TargetType ; pf.TargetType ]
-                    | ChoicePositional.Normal _ -> pf.TargetVariable, pf.Parser, pf.TargetType
+                | [] ->
+                    [
+                        SynExpr.createIdent "ResizeArray"
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        |> SynBinding.basic [ Ident.create "parser_LeftoverArgs" ] []
+                        |> SynBinding.withReturnAnnotation (SynType.appPostfix "ResizeArray" SynType.string)
+                    ]
+                | pos ->
+                    pos
+                    |> List.map (fun pf ->
+                        let elementType =
+                            match pf.Accumulation with
+                            | ChoicePositional.Choice _ -> SynType.app "Choice" [ pf.TargetType ; pf.TargetType ]
+                            | ChoicePositional.Normal _ -> pf.TargetType
 
-            let bindings =
-                SynExpr.createIdent "ResizeArray"
-                |> SynExpr.applyTo (SynExpr.CreateConst ())
-                |> SynBinding.basic [ bindingName ] []
-                |> SynBinding.withReturnAnnotation (SynType.appPostfix "ResizeArray" leftoverArgsType)
-                |> fun b -> b :: bindings
+                        SynExpr.createIdent "ResizeArray"
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        |> SynBinding.basic [ pf.TargetVariable ] []
+                        |> SynBinding.withReturnAnnotation (SynType.appPostfix "ResizeArray" elementType)
+                    )
 
-            bindings, bindingName, leftoverArgsParser
+            sinkBindings @ bindings
 
-        let helpText =
-            { new ParseTreeEval<_> with
-                member _.Eval tree = helpText typeHelpText tree
-            }
-            |> spec.Apply
+        let helpText = helpText typeHelpText spec
 
         let bindings = helpText :: bindings
 
@@ -1498,18 +1357,13 @@ module internal ArgParserGenerator =
 
             let tree =
                 let counter = ref 0
+                let posCounter = ref 0
 
-                { new ParseTreeEval<_> with
-                    member _.Eval tree =
-                        ParseTree.toErasedTreeExpr rt listOf counter tree
-                }
-                |> spec.Apply
-                |> SynExpr.paren
+                ParseTree.toErasedTreeExpr rt listOf counter posCounter spec |> SynExpr.paren
 
             let positionals =
-                match pos with
-                | None -> []
-                | Some pf ->
+                pos
+                |> List.mapi (fun index pf ->
                     let flagLike =
                         let includeFlagLike =
                             match pf.Accumulation with
@@ -1526,15 +1380,14 @@ module internal ArgParserGenerator =
                             |> SynExpr.paren
 
                     [
-                        [
-                            field "Id" (SynExpr.CreateConst 0)
-                            field "Forms" (listOf pf.ArgForm)
-                            field "FlagLike" flagLike
-                            field "TypeDescription" (SynExpr.CreateConst "")
-                            field "Help" (SynExpr.createIdent "None")
-                        ]
-                        |> SynExpr.createRecord None
+                        field "Id" (SynExpr.CreateConst index)
+                        field "Forms" (listOf pf.ArgForm)
+                        field "FlagLike" flagLike
+                        field "TypeDescription" (SynExpr.CreateConst "")
+                        field "Help" (SynExpr.createIdent "None")
                     ]
+                    |> SynExpr.createRecord None
+                )
 
             [
                 field "Leaves" leaves
@@ -1698,35 +1551,42 @@ module internal ArgParserGenerator =
         let storePositionalBinding : SynBinding =
             let body =
                 match pos with
-                | None ->
+                | [] ->
                     // Never called: the runtime routes positional values only when the schema
                     // has a sink.
                     internalError "no positional sink exists"
-                | Some pf ->
-                    let converted =
-                        let plain = SynExpr.createIdent "value" |> SynExpr.pipeThroughFunction pf.Parser
+                | pos ->
+                    // Dispatch on the sink id like storeOccurrence dispatches on the leaf id.
+                    let branches =
+                        pos
+                        |> List.mapi (fun index pf ->
+                            let converted =
+                                let plain = SynExpr.createIdent "value" |> SynExpr.pipeThroughFunction pf.Parser
 
-                        match pf.Accumulation with
-                        | ChoicePositional.Normal _ -> plain
-                        | ChoicePositional.Choice _ ->
-                            SynExpr.ifThenElse
-                                (SynExpr.createIdent "afterSeparator")
-                                (SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") (SynExpr.paren plain))
-                                (SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2") (SynExpr.paren plain))
+                                match pf.Accumulation with
+                                | ChoicePositional.Normal _ -> plain
+                                | ChoicePositional.Choice _ ->
+                                    SynExpr.ifThenElse
+                                        (SynExpr.createIdent "afterSeparator")
+                                        (SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") (SynExpr.paren plain))
+                                        (SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2") (SynExpr.paren plain))
 
-                    let store =
-                        SynExpr.paren converted
-                        |> SynExpr.applyFunction (SynExpr.createLongIdent' [ leftoverArgsName ; Ident.create "Add" ])
-                        |> tryStore (SynExpr.createIdent "value")
+                            let store =
+                                SynExpr.paren converted
+                                |> SynExpr.applyFunction (
+                                    SynExpr.createLongIdent' [ pf.TargetVariable ; Ident.create "Add" ]
+                                )
+                                |> tryStore (SynExpr.createIdent "value")
 
-                    // Dispatch on the sink id like storeOccurrence dispatches on the leaf id;
-                    // there is only one sink today.
+                            SynMatchClause.create (SynPat.createConst (SynConst.Int32 index)) store
+                        )
+
                     SynExpr.createMatch
                         (SynExpr.createIdent "positionalId")
-                        [
-                            SynMatchClause.create (SynPat.createConst (SynConst.Int32 0)) store
-                            SynMatchClause.create SynPat.anon (internalError "unknown positional sink id")
-                        ]
+                        (branches
+                         @ [
+                             SynMatchClause.create SynPat.anon (internalError "unknown positional sink id")
+                         ])
 
             body
             |> SynBinding.basic
@@ -1908,11 +1768,7 @@ module internal ArgParserGenerator =
         // Slot unwrapping happens inside `instantiate` at each use site (rather than eagerly
         // for every slot), because the slots of a union's unselected cases are legitimately
         // unpopulated on the success path.
-        let successExpr : SynExpr =
-            { new ParseTreeEval<_> with
-                member _.Eval tree = ParseTree.instantiate tree
-            }
-            |> spec.Apply
+        let successExpr : SynExpr = ParseTree.instantiate spec
 
         let runOutcome : SynExpr =
             SynExpr.createMatch
