@@ -1698,7 +1698,10 @@ module internal ArgParserGenerator =
         let storePositionalBinding : SynBinding =
             let body =
                 match pos with
-                | None -> SynExpr.createIdent "None"
+                | None ->
+                    // Never called: the runtime routes positional values only when the schema
+                    // has a sink.
+                    internalError "no positional sink exists"
                 | Some pf ->
                     let converted =
                         let plain = SynExpr.createIdent "value" |> SynExpr.pipeThroughFunction pf.Parser
@@ -1711,14 +1714,25 @@ module internal ArgParserGenerator =
                                 (SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") (SynExpr.paren plain))
                                 (SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2") (SynExpr.paren plain))
 
-                    SynExpr.paren converted
-                    |> SynExpr.applyFunction (SynExpr.createLongIdent' [ leftoverArgsName ; Ident.create "Add" ])
-                    |> tryStore (SynExpr.createIdent "value")
+                    let store =
+                        SynExpr.paren converted
+                        |> SynExpr.applyFunction (SynExpr.createLongIdent' [ leftoverArgsName ; Ident.create "Add" ])
+                        |> tryStore (SynExpr.createIdent "value")
+
+                    // Dispatch on the sink id like storeOccurrence dispatches on the leaf id;
+                    // there is only one sink today.
+                    SynExpr.createMatch
+                        (SynExpr.createIdent "positionalId")
+                        [
+                            SynMatchClause.create (SynPat.createConst (SynConst.Int32 0)) store
+                            SynMatchClause.create SynPat.anon (internalError "unknown positional sink id")
+                        ]
 
             body
             |> SynBinding.basic
                 [ Ident.create "parser_storePositional" ]
                 [
+                    SynPat.named "positionalId" |> SynPat.annotateType SynType.int
                     SynPat.named "value" |> SynPat.annotateType SynType.string
                     SynPat.named "afterSeparator" |> SynPat.annotateType SynType.bool
                 ]

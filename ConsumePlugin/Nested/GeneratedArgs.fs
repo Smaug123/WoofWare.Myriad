@@ -1209,10 +1209,12 @@ module private ArgParserRuntime_SameBaseNameArgs =
             /// which is already populated must be left alone (first occurrence wins); duplicate
             /// errors are reported by the runtime, not by this callback.
             StoreOccurrence : ErasedOccurrence -> string option
-            /// Convert a positional token (true = it appeared after the `--` separator) and store
-            /// it in the positional sink, returning a conversion-error message on failure. Only
-            /// called when the schema has a positional sink.
-            StorePositional : string -> bool -> string option
+            /// Convert a positional token (the bool is true when it appeared after the `--`
+            /// separator) and store it in the sink with the given id, returning a
+            /// conversion-error message on failure. Only called once structural resolution has
+            /// routed the positional stream: the id is always the selected interpretation's
+            /// sink, and it never changes as a result of conversion failures.
+            StorePositional : int -> string -> bool -> string option
             /// Render the help text (used in fatal unknown-key messages).
             HelpText : unit -> string
             /// Render the already-stored first value of the given leaf, for duplicate-argument
@@ -1237,20 +1239,23 @@ module private ArgParserRuntime_SameBaseNameArgs =
 
         String.concat " / " all
 
-    /// Drive a full parse: scan, route occurrences into the typed layer's slots (in argv order,
-    /// so conversion errors interleave faithfully), select union cases, validate, render every
+    /// Drive a full parse: scan, structurally resolve (case selection and positional routing,
+    /// before any conversion), then convert in argv order (so conversion errors interleave
+    /// faithfully with duplicate and trailing-key diagnostics), validate, render every
     /// structural error, and apply defaults (only when the parse is otherwise clean).
+    ///
+    /// The phase order makes the separation guarantee literal: by the time any converter runs,
+    /// every union case has been chosen and the positional stream routed, so a conversion
+    /// failure can never change either. In particular, when structural resolution fails,
+    /// positional converters are never tried at all.
     let runParse (schema : WellFormedSchema) (callbacks : TypedCallbacks) (args : string list) : ParseOutcome =
         let schema = WellFormedSchema.schema schema
         let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
         let events = scan schema args
-        let errors = ResizeArray<string> ()
-        let stored = System.Collections.Generic.HashSet<int> ()
 
-        let rec consume (events : ScanEvent list) : ParseOutcome option =
-            match events with
-            | [] -> None
-            | event :: rest ->
+        let aborted =
+            events
+            |> List.tryPick (fun event ->
                 match event with
                 | ScanEvent.Help _ -> Some ParseOutcome.HelpRequested
                 | ScanEvent.Error (ScanError.UnknownKeyEqualsValue (key, value)) ->
@@ -1265,13 +1270,46 @@ module private ArgParserRuntime_SameBaseNameArgs =
                         (callbacks.HelpText ())
                     |> ParseOutcome.Fatal
                     |> Some
+                | _ -> None
+            )
+
+        match aborted with
+        | Some outcome -> outcome
+        | None ->
+            let observed =
+                (Map.empty, events)
+                ||> List.fold (fun observed event ->
+                    match event with
+                    | ScanEvent.Occurrence occurrence ->
+                        if Map.containsKey occurrence.LeafId observed then
+                            observed
+                        else
+                            Map.add occurrence.LeafId occurrence.Source observed
+                    | _ -> observed
+                )
+
+            let positionalEvents =
+                events
+                |> List.choose (fun event ->
+                    match event with
+                    | ScanEvent.Positional positional -> Some positional
+                    | _ -> None
+                )
+
+            let selection = resolve schema observed positionalEvents
+            let errors = ResizeArray<string> ()
+            let stored = System.Collections.Generic.HashSet<int> ()
+
+            for event in events do
+                match event with
+                | ScanEvent.Help _ -> ()
+                | ScanEvent.Error (ScanError.UnknownKeyEqualsValue _)
+                | ScanEvent.Error (ScanError.UnknownKey _) -> ()
                 | ScanEvent.Error (ScanError.TrailingKeyNoValue source) ->
                     sprintf
                         "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
                         source
                     |> errors.Add
-
-                    consume rest
                 | ScanEvent.Occurrence occurrence ->
                     let leaf = Map.find occurrence.LeafId leavesById
 
@@ -1291,35 +1329,15 @@ module private ArgParserRuntime_SameBaseNameArgs =
                         match callbacks.StoreOccurrence occurrence with
                         | Some error -> errors.Add error
                         | None -> stored.Add occurrence.LeafId |> ignore<bool>
-
-                    consume rest
                 | ScanEvent.Positional positional ->
-                    match schema.Positionals with
-                    | [] -> consume rest
-                    | _ :: _ ->
-                        match callbacks.StorePositional positional.Value positional.AfterSeparator with
+                    match selection.ActivePositional with
+                    | Some active when List.isEmpty selection.Errors && Set.contains active positional.Candidates ->
+                        match callbacks.StorePositional active positional.Value positional.AfterSeparator with
                         | Some error -> errors.Add error
                         | None -> ()
+                    | _ -> ()
+                | ScanEvent.Separator -> ()
 
-                        consume rest
-                | ScanEvent.Separator -> consume rest
-
-        match consume events with
-        | Some outcome -> outcome
-        | None ->
-            let observed =
-                (Map.empty, events)
-                ||> List.fold (fun observed event ->
-                    match event with
-                    | ScanEvent.Occurrence occurrence ->
-                        if Map.containsKey occurrence.LeafId observed then
-                            observed
-                        else
-                            Map.add occurrence.LeafId occurrence.Source observed
-                    | _ -> observed
-                )
-
-            let selection = select schema observed
             let validationErrors, needsDefault = validate schema selection events
 
             for selectionError in selection.Errors do
@@ -1358,7 +1376,7 @@ module private ArgParserRuntime_SameBaseNameArgs =
                     sprintf
                         "Positional args (e.g. '%s') could belong to more than one alternative (%s); supply an argument which distinguishes them"
                         source
-                        (sinkIds |> List.map describeSink |> String.concat ", ")
+                        (sinkIds |> List.map describeSink |> List.distinct |> String.concat ", ")
                     |> errors.Add
 
             for validationError in validationErrors do
@@ -1468,12 +1486,15 @@ module SameBaseNameArgs =
                             "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
             | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
-        let parser_storePositional (value : string) (afterSeparator : bool) : string option =
-            try
-                arg_1.Add (value |> (fun x -> x))
-                None
-            with _ as exc ->
-                (sprintf "%s (at arg %s)" exc.Message value) |> Some
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            match positionalId with
+            | 0 ->
+                try
+                    arg_1.Add (value |> (fun x -> x))
+                    None
+                with _ as exc ->
+                    (sprintf "%s (at arg %s)" exc.Message value) |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
 
         let parser_renderStored (leafId : int) : string =
             match leafId with
