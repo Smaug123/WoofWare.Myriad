@@ -247,7 +247,8 @@ You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<Pa
 You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
 
 You can collect leftover args as positional args, with `[<PositionalArgs>]`; this respects a trailing `--` so that you can specify positional args which look like flags.
-The positional args feature is currently *not* supported simultaneously with DUs, though: the generator will fail at build time.
+Positional args compose with discriminated unions: a `[<PositionalArgs>]` field may sit beside a DU field (the stream is shared by every alternative), or inside the cases' records (each alternative converts the stream with its own field's type, and the parse first selects the case using the named arguments alone, then converts).
+The one restriction is `[<PositionalArgs true>]` (collecting unrecognised `--flag`-like tokens as positional args): that cannot be combined with a DU, because a mistyped case-selecting argument would be silently collected instead of reported.
 
 If `--help` appears in a position where the parser is expecting a key (e.g. in the first position, or after a `--foo=bar`), the parser fails with help text.
 The parser also makes a limited effort to supply help text when encountering an invalid parse.
@@ -274,7 +275,6 @@ This is very bare-bones, but do raise GitHub issues if you like (or if you find 
 * I don't handle very many types at the leaves. You may find yourself needing to write wrapper types to contain the leaf values, if you want to parse them correctly.
 * I don't try very hard to find a valid parse. It may well be possible to find a case where I fail to parse despite there existing a valid parse.
 * There's no subcommand support (you'll have to do that yourself).
-* Discriminated unions can't currently be specified in a type that contains positional args. This is a limitation I hope to relax soon.
 
 It should work fine if you just want to compose a few primitive types, though.
 
