@@ -1986,3 +1986,283 @@ module TestArgParserRuntime =
         Check.One (config, Prop.forAll (Arb.fromGen cases) property)
 
         positionalEvents |> shouldBeGreaterThan 1000
+
+    // ----------------------------------------------------------------------------------------
+    // The resolver: structural resolution of named observations *and* positional routing.
+    // Its definition is the exhaustive reference semantics; the property at the end pins the
+    // equivalence.
+
+    module Ref = TestArgParserPositionalReference
+
+    let rec private refToErasedTree (tree : Ref.RefTree) : ErasedTree =
+        match tree with
+        | Ref.RefTree.Named leaf -> ErasedTree.Leaf leaf.Id
+        | Ref.RefTree.Positional p -> ErasedTree.PositionalLeaf p.Id
+        | Ref.RefTree.Product children -> ErasedTree.Product (children |> List.map refToErasedTree)
+        | Ref.RefTree.Sum (sumId, cases) ->
+            ErasedTree.Sum (sumId, cases |> List.map (fun (name, case) -> name, refToErasedTree case))
+
+    let rec private refNamedLeaves (tree : Ref.RefTree) : Ref.RefNamedLeaf list =
+        match tree with
+        | Ref.RefTree.Named leaf -> [ leaf ]
+        | Ref.RefTree.Positional _ -> []
+        | Ref.RefTree.Product children -> children |> List.collect refNamedLeaves
+        | Ref.RefTree.Sum (_, cases) -> cases |> List.collect (fun (_, case) -> refNamedLeaves case)
+
+    let private toErasedSchema (tree : Ref.RefTree) : ErasedSchema =
+        {
+            Leaves =
+                refNamedLeaves tree
+                |> List.map (fun namedLeaf ->
+                    { leaf namedLeaf.Id (sprintf "arg%i" namedLeaf.Id) ErasedArity.One ErasedRequirement.Required with
+                        Requirement =
+                            match namedLeaf.Requirement with
+                            | Ref.RefRequirement.Required -> ErasedRequirement.Required
+                            | Ref.RefRequirement.Optional -> ErasedRequirement.Optional
+                    }
+                )
+            Tree = refToErasedTree tree
+            Positionals =
+                Ref.positionalLeaves tree
+                |> List.map (fun p -> sink' p.Id p.Forms ErasedFlagLikeBehaviour.Reject)
+        }
+
+    let private toPositionalEvent (sinks : Ref.RefPositionalLeaf list) (spelling : Ref.RefSpelling) : PositionalEvent =
+        {
+            Value = "v"
+            AfterSeparator = false
+            Form =
+                match spelling with
+                | Ref.RefSpelling.Bare -> PositionalForm.Bare
+                | Ref.RefSpelling.Keyed form -> PositionalForm.KeyEquals ("--" + form)
+            Candidates = Ref.candidates sinks spelling
+        }
+
+    /// Scan real argv and feed the resolver, as the orchestrator will.
+    let private resolveArgs (schema : ErasedSchema) (args : string list) : Selection =
+        let events = scan schema args
+
+        let observed =
+            (Map.empty, events)
+            ||> List.fold (fun observed event ->
+                match event with
+                | ScanEvent.Occurrence occurrence ->
+                    if Map.containsKey occurrence.LeafId observed then
+                        observed
+                    else
+                        Map.add occurrence.LeafId occurrence.Source observed
+                | _ -> observed
+            )
+
+        let positionals =
+            events
+            |> List.choose (fun event ->
+                match event with
+                | ScanEvent.Positional positional -> Some positional
+                | _ -> None
+            )
+
+        resolve schema observed positionals
+
+    /// (A × P) + (B × Q): the canonical per-case-sink schema.
+    let private perCaseSinks
+        (aReq : ErasedRequirement)
+        (bReq : ErasedRequirement)
+        (pForms : string list)
+        (qForms : string list)
+        : ErasedSchema
+        =
+        {
+            Leaves = [ leaf 0 "foo" ErasedArity.One aReq ; leaf 1 "bar" ErasedArity.One bReq ]
+            Tree =
+                ErasedTree.Sum (
+                    0,
+                    [
+                        "A", ErasedTree.Product [ ErasedTree.Leaf 0 ; ErasedTree.PositionalLeaf 10 ]
+                        "B", ErasedTree.Product [ ErasedTree.Leaf 1 ; ErasedTree.PositionalLeaf 11 ]
+                    ]
+                )
+            Positionals =
+                [
+                    sink' 10 pForms ErasedFlagLikeBehaviour.Reject
+                    sink' 11 qForms ErasedFlagLikeBehaviour.Reject
+                ]
+        }
+
+    [<Test>]
+    let ``Resolver: a named discriminator routes the stream to its case's sink`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "rest" ] [ "rest" ]
+
+        let selection = resolveArgs schema [ "--foo=1" ; "2" ; "3" ]
+        selection.Errors |> shouldEqual []
+        selection.Choices |> shouldEqual (Map.ofList [ 0, 0 ])
+        selection.ActivePositional |> shouldEqual (Some 10)
+
+        let selection = resolveArgs schema [ "--bar=1" ; "--rest=2" ]
+        selection.Errors |> shouldEqual []
+        selection.Choices |> shouldEqual (Map.ofList [ 0, 1 ])
+        selection.ActivePositional |> shouldEqual (Some 11)
+
+    [<Test>]
+    let ``Resolver: bare tokens alone fall back to the named-only diagnosis`` () =
+        // The plan's example: `2 3` selects nothing, in the friendliest vocabulary available.
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "rest" ] [ "rest" ]
+
+        let selection = resolveArgs schema [ "2" ; "3" ]
+
+        selection.Errors
+        |> shouldEqual [ SelectionError.NoCaseSelected (0, [ "A" ; "B" ]) ]
+
+    [<Test>]
+    let ``Resolver: a keyed form unique to one alternative is a structural discriminator`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Optional ErasedRequirement.Required [ "files" ] [ "nums" ]
+
+        let selection = resolveArgs schema [ "--files=x" ]
+        selection.Errors |> shouldEqual []
+        selection.Choices |> shouldEqual (Map.ofList [ 0, 0 ])
+        selection.ActivePositional |> shouldEqual (Some 10)
+
+    [<Test>]
+    let ``Resolver: a keyed form of an unselected alternative is unroutable`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "files" ] [ "nums" ]
+
+        let selection = resolveArgs schema [ "--foo=1" ; "--nums=4" ]
+
+        selection.Errors
+        |> shouldEqual [ SelectionError.UnroutablePositional "--nums=4" ]
+
+        // Two keyed forms which no single sink claims are likewise unroutable; the routing
+        // contradiction is reported alongside the named-only diagnosis.
+        let selection = resolveArgs schema [ "--files=3" ; "--nums=4" ]
+
+        selection.Errors
+        |> shouldEqual
+            [
+                SelectionError.NoCaseSelected (0, [ "A" ; "B" ])
+                SelectionError.UnroutablePositional "--files=3"
+            ]
+
+    [<Test>]
+    let ``Resolver: a shared keyed form between indistinguishable alternatives is ambiguous`` () =
+        // Both cases are satisfiable with no arguments, so this schema would already be
+        // rejected at generation time; the resolver's runtime safety net still reports the
+        // ambiguity rather than picking a case silently.
+        let schema =
+            perCaseSinks ErasedRequirement.Optional ErasedRequirement.Optional [ "rest" ] [ "rest" ]
+
+        let selection = resolveArgs schema [ "--rest=4" ]
+
+        selection.Errors
+        |> shouldEqual [ SelectionError.AmbiguousPositionalRouting ("--rest=4", [ 10 ; 11 ]) ]
+
+    [<Test>]
+    let ``Resolver: missing required arguments do not disturb unique routing`` () =
+        // B is pinned by its keyed form; its missing required argument is reported through
+        // the ordinary channel (validation), not as a routing failure.
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "files" ] [ "nums" ]
+
+        let selection = resolveArgs schema [ "--nums=4" ]
+        selection.Errors |> shouldEqual []
+        selection.Choices |> shouldEqual (Map.ofList [ 0, 1 ])
+        selection.ActivePositional |> shouldEqual (Some 11)
+
+    [<Test>]
+    let ``The resolver is equivalent to the exhaustive reference semantics`` () =
+        let mutable uniqueCount = 0
+        let mutable rejectedCount = 0
+        let mutable ambiguousCount = 0
+        let mutable withEvents = 0
+
+        let cases =
+            gen {
+                let! sumBias = Gen.elements [ 20 ; 50 ; 80 ]
+                let! tree = Ref.genTree sumBias
+                let! dropPct = Gen.elements [ 0 ; 0 ; 20 ]
+                let! optionalPct = Gen.elements [ 0 ; 50 ; 100 ]
+                let! noisePct = Gen.elements [ 0 ; 10 ; 40 ]
+                let! input = Ref.genInput dropPct optionalPct noisePct tree
+                return tree, input
+            }
+
+        let property (tree : Ref.RefTree, input : Ref.RefInput) : unit =
+            let schema = toErasedSchema tree
+            let sinks = Ref.positionalLeaves tree
+
+            let observed =
+                input.ObservedNamed
+                |> Set.toList
+                |> List.map (fun id -> id, sprintf "--arg%i" id)
+                |> Map.ofList
+
+            let events = input.PositionalEvents |> List.map (toPositionalEvent sinks)
+
+            if not (List.isEmpty events) then
+                withEvents <- withEvents + 1
+
+            let selection = resolve schema observed events
+
+            // Feed the selection through validation with a synthetic event log (one
+            // occurrence per observed leaf, plus the positional events), to surface
+            // missing-required and no-sink errors exactly as the orchestrator will.
+            let syntheticEvents =
+                (observed
+                 |> Map.toList
+                 |> List.map (fun (id, source) ->
+                     ScanEvent.Occurrence
+                         {
+                             LeafId = id
+                             Value = Some "v"
+                             Negated = false
+                             Source = source
+                         }
+                 ))
+                @ (events |> List.map ScanEvent.Positional)
+
+            let validationErrors, _ = validate schema selection syntheticEvents
+
+            let accepts = List.isEmpty selection.Errors && List.isEmpty validationErrors
+
+            match Ref.exhaustiveSelect tree input with
+            | Ref.RefOutcome.Unique interp ->
+                uniqueCount <- uniqueCount + 1
+                accepts |> shouldEqual true
+                selection.Choices |> shouldEqual interp.Choices
+                selection.ActiveLeaves |> shouldEqual interp.Named
+
+                selection.ActivePositional
+                |> shouldEqual (
+                    match Set.toList interp.Positionals with
+                    | [] -> None
+                    | [ p ] -> Some p
+                    | _ -> failwith "reference interpretation held two sinks"
+                )
+            | Ref.RefOutcome.NoInterpretation ->
+                rejectedCount <- rejectedCount + 1
+                accepts |> shouldEqual false
+            | Ref.RefOutcome.Ambiguous _ ->
+                ambiguousCount <- ambiguousCount + 1
+                accepts |> shouldEqual false
+
+                // Ambiguity must be reported as such, through one channel or the other.
+                selection.Errors
+                |> List.exists (fun error ->
+                    match error with
+                    | SelectionError.AmbiguousEmptyCases _ -> true
+                    | SelectionError.AmbiguousPositionalRouting _ -> true
+                    | _ -> false
+                )
+                |> shouldEqual true
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 3000
+        Check.One (config, Prop.forAll (Arb.fromGen cases) property)
+
+        // The generator must explore all the regimes, or this test is not testing anything.
+        uniqueCount |> shouldBeGreaterThan 300
+        rejectedCount |> shouldBeGreaterThan 200
+        ambiguousCount |> shouldBeGreaterThan 20
+        withEvents |> shouldBeGreaterThan 500
