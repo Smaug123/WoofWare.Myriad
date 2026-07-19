@@ -63,37 +63,49 @@ module private ArgParserRuntime_BasicNoPositionals =
         /// Reject the parse (`[<PositionalArgs false>]` / `[<PositionalArgs>]`).
         | Reject
 
-    /// The positional-argument sink, if the schema has one.
+    /// A positional-argument sink: a consumer of the positional-token stream.
     type ErasedPositional =
         {
-            /// Index into the typed layer's converter table.
+            /// Index into the typed layer's positional converter table. Ids live in their own
+            /// space, independent of ErasedLeaf ids.
             Id : int
             /// The forms under which the sink itself can be addressed as `--form value` /
             /// `--form=value` (the field name argified, plus any explicit long forms); the head
-            /// is used in help text.
+            /// is used in help text. Two sinks in mutually exclusive Sum cases may share a
+            /// form: all keyed positional forms have the same arity, and the capacity rule
+            /// means the sinks can never both be active.
             Forms : string list
+            /// The flag-like policy is lexical (it controls tokenization, which happens before
+            /// any case is selected), so every sink in a schema must agree on it;
+            /// WellFormedSchema enforces the agreement.
             FlagLike : ErasedFlagLikeBehaviour
             TypeDescription : string
             Help : string option
         }
 
     /// The shape of a parser: a tree of products (records), sums (discriminated unions) and
-    /// leaves (actual arguments). Leaves are referred to by id; the flat leaf table plus this
-    /// tree fully describe the schema.
+    /// leaves (actual arguments, named or positional). Leaves are referred to by id; the flat
+    /// leaf tables plus this tree fully describe the schema.
     [<RequireQualifiedAccess>]
     type ErasedTree =
         | Leaf of leafId : int
+        /// A positional-stream consumer. At most one may appear in any complete
+        /// interpretation of the tree (one case chosen for every reachable Sum): argv holds a
+        /// single positional stream, and two unbounded consumers would admit no canonical
+        /// partition of it. WellFormedSchema enforces this capacity rule.
+        | PositionalLeaf of positionalId : int
         | Product of children : ErasedTree list
         /// Cases are in declaration order; the string is the case name, for messages.
         | Sum of sumId : int * cases : (string * ErasedTree) list
 
     type ErasedSchema =
         {
-            /// All leaves reachable in the tree, in field declaration order (the order in which
-            /// "missing required argument" errors are reported).
+            /// All named leaves reachable in the tree, in field declaration order (the order
+            /// in which "missing required argument" errors are reported).
             Leaves : ErasedLeaf list
             Tree : ErasedTree
-            Positional : ErasedPositional option
+            /// All positional sinks reachable in the tree, in declaration order.
+            Positionals : ErasedPositional list
         }
 
     /// One observed occurrence of a named argument.
@@ -214,20 +226,23 @@ module private ArgParserRuntime_BasicNoPositionals =
     /// - Any other token in key position is positional.
     let scan (schema : ErasedSchema) (args : string list) : ScanEvent list =
         let collectFlagLike =
-            match schema.Positional with
-            | Some p ->
-                match p.FlagLike with
-                | ErasedFlagLikeBehaviour.Collect -> true
-                | ErasedFlagLikeBehaviour.Reject -> false
-            | None -> false
+            match schema.Positionals with
+            | [] -> false
+            | positionals ->
+                positionals
+                |> List.forall (fun p ->
+                    match p.FlagLike with
+                    | ErasedFlagLikeBehaviour.Collect -> true
+                    | ErasedFlagLikeBehaviour.Reject -> false
+                )
 
-        /// Does this full `--key` token (value part already split off) name the positional sink?
+        /// Does this full `--key` token (value part already split off) name a positional sink?
         let isPositionalKey (key : string) : bool =
-            match schema.Positional with
-            | None -> false
-            | Some p ->
+            schema.Positionals
+            |> List.exists (fun p ->
                 p.Forms
                 |> List.exists (fun form -> String.Equals (key, "--" + form, StringComparison.OrdinalIgnoreCase))
+            )
 
         /// Resolve a pending key which will receive no value (end of input, or `--` next).
         let resolvePending (state : ScanState) : ScanEvent list =
@@ -368,13 +383,17 @@ module private ArgParserRuntime_BasicNoPositionals =
     type Selection =
         {
             Choices : Map<int, int>
-            /// Ids of leaves which are part of the selected interpretation.
+            /// Ids of named leaves which are part of the selected interpretation.
             ActiveLeaves : Set<int>
+            /// The positional sink which is part of the selected interpretation, if any. The
+            /// capacity rule (enforced by WellFormedSchema) guarantees there is at most one.
+            ActivePositional : int option
             Errors : SelectionError list
         }
 
-    /// Can this subtree be satisfied with zero occurrences? A leaf can iff it is not required; a
-    /// product can iff all its children can; a sum can iff some case can.
+    /// Can this subtree be satisfied with zero occurrences? A named leaf can iff it is not
+    /// required; a positional leaf always can (an empty stream is fine); a product can iff all
+    /// its children can; a sum can iff some case can.
     let rec private emptyOk (leaves : Map<int, ErasedLeaf>) (tree : ErasedTree) : bool =
         match tree with
         | ErasedTree.Leaf leafId ->
@@ -382,15 +401,38 @@ module private ArgParserRuntime_BasicNoPositionals =
             | ErasedRequirement.Required -> false
             | ErasedRequirement.Optional
             | ErasedRequirement.HasDefault -> true
+        | ErasedTree.PositionalLeaf _ -> true
         | ErasedTree.Product children -> children |> List.forall (emptyOk leaves)
         | ErasedTree.Sum (_, cases) -> cases |> List.exists (fun (_, case) -> emptyOk leaves case)
 
-    /// All leaf ids under a subtree, in declaration order.
+    /// All named-leaf ids under a subtree, in declaration order.
     let rec leafIds (tree : ErasedTree) : int list =
         match tree with
         | ErasedTree.Leaf leafId -> [ leafId ]
+        | ErasedTree.PositionalLeaf _ -> []
         | ErasedTree.Product children -> children |> List.collect leafIds
         | ErasedTree.Sum (_, cases) -> cases |> List.collect (fun (_, case) -> leafIds case)
+
+    /// All positional-sink ids under a subtree, in declaration order.
+    let rec positionalIds (tree : ErasedTree) : int list =
+        match tree with
+        | ErasedTree.Leaf _ -> []
+        | ErasedTree.PositionalLeaf positionalId -> [ positionalId ]
+        | ErasedTree.Product children -> children |> List.collect positionalIds
+        | ErasedTree.Sum (_, cases) -> cases |> List.collect (fun (_, case) -> positionalIds case)
+
+    /// The maximum number of positional sinks any complete interpretation of the tree can
+    /// contain: a product's interpretations combine its children's, a sum's take the maximum
+    /// over its cases.
+    let rec maxPositionals (tree : ErasedTree) : int =
+        match tree with
+        | ErasedTree.Leaf _ -> 0
+        | ErasedTree.PositionalLeaf _ -> 1
+        | ErasedTree.Product children -> children |> List.sumBy maxPositionals
+        | ErasedTree.Sum (_, cases) ->
+            match cases with
+            | [] -> 0
+            | cases -> cases |> List.map (fun (_, case) -> maxPositionals case) |> List.max
 
     /// Select a case for every Sum node reachable in the selected interpretation, given a witness
     /// (an example source token) for every leaf which received an occurrence.
@@ -402,15 +444,16 @@ module private ArgParserRuntime_BasicNoPositionals =
     let select (schema : ErasedSchema) (observed : Map<int, string>) : Selection =
         let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
 
-        let rec go (tree : ErasedTree) : Map<int, int> * Set<int> * SelectionError list =
+        let rec go (tree : ErasedTree) : Map<int, int> * Set<int> * Set<int> * SelectionError list =
             match tree with
-            | ErasedTree.Leaf leafId -> Map.empty, Set.singleton leafId, []
+            | ErasedTree.Leaf leafId -> Map.empty, Set.singleton leafId, Set.empty, []
+            | ErasedTree.PositionalLeaf positionalId -> Map.empty, Set.empty, Set.singleton positionalId, []
             | ErasedTree.Product children ->
-                ((Map.empty, Set.empty, []), children)
-                ||> List.fold (fun (choices, active, errors) child ->
-                    let childChoices, childActive, childErrors = go child
+                ((Map.empty, Set.empty, Set.empty, []), children)
+                ||> List.fold (fun (choices, active, activePos, errors) child ->
+                    let childChoices, childActive, childActivePos, childErrors = go child
                     let choices = (choices, childChoices) ||> Map.fold (fun m k v -> Map.add k v m)
-                    choices, Set.union active childActive, errors @ childErrors
+                    choices, Set.union active childActive, Set.union activePos childActivePos, errors @ childErrors
                 )
             | ErasedTree.Sum (sumId, cases) ->
                 let touched =
@@ -428,8 +471,8 @@ module private ArgParserRuntime_BasicNoPositionals =
                 match touched with
                 | [ (index, _, _) ] ->
                     let _, case = List.item index cases
-                    let childChoices, childActive, childErrors = go case
-                    Map.add sumId index childChoices, childActive, childErrors
+                    let childChoices, childActive, childActivePos, childErrors = go case
+                    Map.add sumId index childChoices, childActive, childActivePos, childErrors
                 | [] ->
                     let satisfiable =
                         cases
@@ -438,23 +481,30 @@ module private ArgParserRuntime_BasicNoPositionals =
 
                     match satisfiable with
                     | [ (index, (_, case)) ] ->
-                        let childChoices, childActive, childErrors = go case
-                        Map.add sumId index childChoices, childActive, childErrors
+                        let childChoices, childActive, childActivePos, childErrors = go case
+                        Map.add sumId index childChoices, childActive, childActivePos, childErrors
                     | [] ->
                         let names = cases |> List.map fst
-                        Map.empty, Set.empty, [ SelectionError.NoCaseSelected (sumId, names) ]
+                        Map.empty, Set.empty, Set.empty, [ SelectionError.NoCaseSelected (sumId, names) ]
                     | multiple ->
                         let names = multiple |> List.map (fun (_, (name, _)) -> name)
-                        Map.empty, Set.empty, [ SelectionError.AmbiguousEmptyCases (sumId, names) ]
+                        Map.empty, Set.empty, Set.empty, [ SelectionError.AmbiguousEmptyCases (sumId, names) ]
                 | multiple ->
                     let witnesses = multiple |> List.map (fun (_, name, source) -> name, source)
-                    Map.empty, Set.empty, [ SelectionError.ConflictingCases (sumId, witnesses) ]
+                    Map.empty, Set.empty, Set.empty, [ SelectionError.ConflictingCases (sumId, witnesses) ]
 
-        let choices, active, errors = go schema.Tree
+        let choices, active, activePos, errors = go schema.Tree
 
         {
             Choices = choices
             ActiveLeaves = active
+            ActivePositional =
+                match Set.toList activePos with
+                | [] -> None
+                | [ p ] -> Some p
+                | _ ->
+                    failwith
+                        "WoofWare.Myriad internal error: two positional sinks were active at once; the schema was not validated"
             Errors = errors
         }
 
@@ -537,9 +587,9 @@ module private ArgParserRuntime_BasicNoPositionals =
             )
 
         let noSink =
-            match schema.Positional with
-            | Some _ -> []
-            | None ->
+            match schema.Positionals with
+            | _ :: _ -> []
+            | [] ->
                 let tokens =
                     events
                     |> List.choose (fun event ->
@@ -603,8 +653,26 @@ module private ArgParserRuntime_BasicNoPositionals =
         /// case-insensitive matching (so e.g. forms `foo` and `FOO` collide, as do a literal
         /// form `no-foo` and the negated variant of a negatable `foo`). The token is reported
         /// in the first claimant's spelling; the claimant descriptions are human-readable, in
-        /// declaration order.
+        /// declaration order. Positional sinks *may* share forms with each other (a keyed
+        /// positional form always has the same meaning whichever sink wins), so a collision
+        /// is only reported when at least one claimant is not a sink.
         | TokenCollision of token : string * claimants : string list
+        /// Two positional sinks in the table share an id.
+        | DuplicatePositionalId of positionalId : int
+        /// The tree refers to this positional sink more than once.
+        | PositionalRepeatedInTree of positionalId : int
+        /// The tree refers to a positional-sink id which is not in the table.
+        | PositionalNotInTable of positionalId : int
+        /// A positional sink in the table is not reachable in the tree.
+        | PositionalNotInTree of positionalId : int
+        /// Some complete interpretation of the tree contains more than one positional sink.
+        /// argv holds a single positional stream, and two unbounded consumers would admit no
+        /// canonical partition of it: `P × Q` is malformed, while `(A × P) + (B × Q)` is fine.
+        | PositionalCapacityExceeded of maximum : int
+        /// Positional sinks disagree on the treatment of unrecognised flag-like tokens. The
+        /// policy is lexical — it controls tokenization, which happens before any case is
+        /// selected — so it must be schema-global.
+        | FlagLikePolicyDisagreement
 
     [<RequireQualifiedAccess>]
     module SchemaError =
@@ -634,6 +702,20 @@ module private ArgParserRuntime_BasicNoPositionals =
                     "the token '%s' is claimed by: %s (argument names are matched case-insensitively)"
                     token
                     (String.concat "; " claimants)
+            | SchemaError.DuplicatePositionalId positionalId ->
+                sprintf "two positional-args sinks share the id %i" positionalId
+            | SchemaError.PositionalRepeatedInTree positionalId ->
+                sprintf "the schema tree refers to positional-args sink id %i more than once" positionalId
+            | SchemaError.PositionalNotInTable positionalId ->
+                sprintf "the schema tree refers to positional-args sink id %i, which does not exist" positionalId
+            | SchemaError.PositionalNotInTree positionalId ->
+                sprintf "positional-args sink id %i is not reachable in the schema tree" positionalId
+            | SchemaError.PositionalCapacityExceeded maximum ->
+                sprintf
+                    "some alternative of the schema contains %i positional-args sinks; at most one may be active, because argv holds a single stream of positional args"
+                    maximum
+            | SchemaError.FlagLikePolicyDisagreement ->
+                "positional-args sinks disagree on whether to collect unrecognised flag-like tokens; that choice affects tokenization, which happens before alternatives are chosen between, so all sinks must agree"
 
     /// An ErasedSchema which has passed the structural checks in WellFormedSchema.check.
     ///
@@ -677,10 +759,63 @@ module private ArgParserRuntime_BasicNoPositionals =
                 |> List.filter (fun leafId -> not (Set.contains leafId treeIdSet))
                 |> List.map SchemaError.LeafNotInTree
 
+            let positionalTreeIds = positionalIds schema.Tree
+            let positionalTableIds = schema.Positionals |> List.map (fun p -> p.Id)
+            let positionalTreeIdSet = Set.ofList positionalTreeIds
+            let positionalTableIdSet = Set.ofList positionalTableIds
+
+            let duplicatePositionalIds =
+                positionalTableIds
+                |> List.countBy (fun positionalId -> positionalId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (positionalId, _) -> SchemaError.DuplicatePositionalId positionalId)
+
+            let positionalRepeatedInTree =
+                positionalTreeIds
+                |> List.countBy (fun positionalId -> positionalId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (positionalId, _) -> SchemaError.PositionalRepeatedInTree positionalId)
+
+            let positionalNotInTable =
+                positionalTreeIds
+                |> List.distinct
+                |> List.filter (fun positionalId -> not (Set.contains positionalId positionalTableIdSet))
+                |> List.map SchemaError.PositionalNotInTable
+
+            let positionalNotInTree =
+                positionalTableIds
+                |> List.distinct
+                |> List.filter (fun positionalId -> not (Set.contains positionalId positionalTreeIdSet))
+                |> List.map SchemaError.PositionalNotInTree
+
+            let capacityExceeded =
+                let maximum = maxPositionals schema.Tree
+
+                if maximum > 1 then
+                    [ SchemaError.PositionalCapacityExceeded maximum ]
+                else
+                    []
+
+            let policyDisagreement =
+                let policies =
+                    schema.Positionals
+                    |> List.map (fun p ->
+                        match p.FlagLike with
+                        | ErasedFlagLikeBehaviour.Collect -> true
+                        | ErasedFlagLikeBehaviour.Reject -> false
+                    )
+                    |> List.distinct
+
+                match policies with
+                | []
+                | [ _ ] -> []
+                | _ -> [ SchemaError.FlagLikePolicyDisagreement ]
+
             let duplicateSumIds =
                 let rec sumIds (tree : ErasedTree) : int list =
                     match tree with
                     | ErasedTree.Leaf _ -> []
+                    | ErasedTree.PositionalLeaf _ -> []
                     | ErasedTree.Product children -> children |> List.collect sumIds
                     | ErasedTree.Sum (sumId, cases) -> sumId :: (cases |> List.collect (fun (_, case) -> sumIds case))
 
@@ -710,48 +845,57 @@ module private ArgParserRuntime_BasicNoPositionals =
                 (schema.Leaves
                  |> List.collect (fun leaf ->
                      let plain =
-                         leaf.Forms |> List.map (fun form -> "--" + form, sprintf "argument '--%s'" form)
+                         leaf.Forms
+                         |> List.map (fun form -> "--" + form, sprintf "argument '--%s'" form, false)
 
                      let negated =
                          if leaf.AcceptsNegation then
                              leaf.Forms
-                             |> List.map (fun form -> "--no-" + form, sprintf "the --no- form of argument '--%s'" form)
+                             |> List.map (fun form ->
+                                 "--no-" + form, sprintf "the --no- form of argument '--%s'" form, false
+                             )
                          else
                              []
 
                      plain @ negated
                  ))
-                @ (
-                    match schema.Positional with
-                    | None -> []
-                    | Some positional ->
-                        positional.Forms
-                        |> List.map (fun form -> "--" + form, sprintf "the positional-args sink '--%s'" form)
-                )
-                @ [ "--help", "the built-in help flag" ]
+                @ (schema.Positionals
+                   |> List.collect (fun positional ->
+                       positional.Forms
+                       |> List.map (fun form -> "--" + form, sprintf "the positional-args sink '--%s'" form, true)
+                   ))
+                @ [ "--help", "the built-in help flag", false ]
 
             let collisions =
                 let indexOf =
                     System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
 
-                let buckets = ResizeArray<ResizeArray<string * string>> ()
+                let buckets = ResizeArray<ResizeArray<string * string * bool>> ()
 
-                for token, claimant in claims do
+                for token, claimant, isSink in claims do
                     match indexOf.TryGetValue token with
-                    | true, index -> buckets.[index].Add ((token, claimant))
+                    | true, index -> buckets.[index].Add ((token, claimant, isSink))
                     | false, _ ->
                         indexOf.[token] <- buckets.Count
                         let bucket = ResizeArray ()
-                        bucket.Add ((token, claimant))
+                        bucket.Add ((token, claimant, isSink))
                         buckets.Add bucket
 
                 buckets
                 |> Seq.choose (fun bucket ->
-                    if bucket.Count < 2 then
+                    let allSinks = bucket |> Seq.forall (fun (_, _, isSink) -> isSink)
+
+                    if bucket.Count < 2 || allSinks then
                         None
                     else
-                        let token, _ = bucket.[0]
-                        Some (SchemaError.TokenCollision (token, bucket |> Seq.map snd |> List.ofSeq))
+                        let token, _, _ = bucket.[0]
+
+                        Some (
+                            SchemaError.TokenCollision (
+                                token,
+                                bucket |> Seq.map (fun (_, claimant, _) -> claimant) |> List.ofSeq
+                            )
+                        )
                 )
                 |> List.ofSeq
 
@@ -770,27 +914,31 @@ module private ArgParserRuntime_BasicNoPositionals =
                              []
                      )
                  ))
-                @ (
-                    match schema.Positional with
-                    | None -> []
-                    | Some positional ->
-                        let claimant = "the positional-args sink"
+                @ (schema.Positionals
+                   |> List.collect (fun positional ->
+                       let claimant = sprintf "positional-args sink id %i" positional.Id
 
-                        positional.Forms
-                        |> List.collect (fun form ->
-                            if form = "" then
-                                [ SchemaError.EmptyForm claimant ]
-                            elif form.Contains "=" then
-                                [ SchemaError.FormContainsEquals (claimant, form) ]
-                            else
-                                []
-                        )
-                )
+                       positional.Forms
+                       |> List.collect (fun form ->
+                           if form = "" then
+                               [ SchemaError.EmptyForm claimant ]
+                           elif form.Contains "=" then
+                               [ SchemaError.FormContainsEquals (claimant, form) ]
+                           else
+                               []
+                       )
+                   ))
 
             duplicateLeafIds
             @ repeatedInTree
             @ notInTable
             @ notInTree
+            @ duplicatePositionalIds
+            @ positionalRepeatedInTree
+            @ positionalNotInTable
+            @ positionalNotInTree
+            @ capacityExceeded
+            @ policyDisagreement
             @ duplicateSumIds
             @ noForms
             @ negationOnNonBool
@@ -936,9 +1084,9 @@ module private ArgParserRuntime_BasicNoPositionals =
 
                     consume rest
                 | ScanEvent.Positional (value, afterSeparator, _) ->
-                    match schema.Positional with
-                    | None -> consume rest
-                    | Some _ ->
+                    match schema.Positionals with
+                    | [] -> consume rest
+                    | _ :: _ ->
                         match callbacks.StorePositional value afterSeparator with
                         | Some error -> errors.Add error
                         | None -> ()
@@ -1096,7 +1244,7 @@ module BasicNoPositionals =
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
                         ]
                     ))
-                Positional = None
+                Positionals = List.empty
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -1294,18 +1442,19 @@ module Basic =
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
                         ]
                     ))
-                Positional =
-                    ({
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 3
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "rest" ]
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                            ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                    })
-                    |> Some
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "rest" ]
+                            FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -1494,18 +1643,19 @@ module BasicWithIntPositionals =
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
                         ]
                     ))
-                Positional =
-                    ({
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 3
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "rest" ]
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                            ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                    })
-                    |> Some
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "rest" ]
+                            FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -1811,18 +1961,19 @@ module LoadsOfTypes =
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 7
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 8
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 9
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
                         ]
                     ))
-                Positional =
-                    ({
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 10
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "positionals" ]
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                            ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                        ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                    })
-                    |> Some
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "positionals" ]
+                            FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -2304,7 +2455,7 @@ module LoadsOfTypesNoPositionals =
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 9
                         ]
                     ))
-                Positional = None
+                Positionals = List.empty
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -2690,7 +2841,7 @@ module DatesAndTimesArgParse =
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
                             ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -2938,7 +3089,7 @@ module ParentRecordArgParse =
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
                             ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -3129,7 +3280,7 @@ module ParentRecordChildDefaultArgParse =
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                             ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -3291,20 +3442,23 @@ module ParentRecordChildPosArgParse =
                             [
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                                    [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1 ]
+                                    [
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                                    ]
                                 )
                             ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 2
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "thing2" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "thing2" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -3472,18 +3626,19 @@ module ParentRecordSelfPosArgParse =
                                         ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                                     ]
                                 )
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
                             ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 2
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "and-another" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "and-another" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -3614,17 +3769,20 @@ module ChoicePositionalsArgParse =
             let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
                     Leaves = List.empty
-                    Tree = (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (List.empty))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 0
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "args" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0 ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "args" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -3731,7 +3889,7 @@ module ContainsBoolEnvVarArgParse =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
                             [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -3871,7 +4029,7 @@ module WithFlagDuArgParse =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
                             [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -4013,7 +4171,7 @@ module ContainsFlagEnvVarArgParse =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
                             [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -4204,7 +4362,7 @@ module ContainsFlagDefaultValueArgParse =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
                             [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -4361,7 +4519,7 @@ module ManyLongFormsArgParse =
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                             ]
                         ))
-                    Positional = None
+                    Positionals = List.empty
                 }
 
             let parser_storeOccurrence
@@ -4505,18 +4663,21 @@ module AliasedPositionalsArgParse =
                         ]
                     Tree =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "rest" ; "remainder" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "rest" ; "remainder" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -4640,21 +4801,25 @@ module FlagsIntoPositionalArgsArgParse =
                         ]
                     Tree =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "grab-everything" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                (if true then
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
-                                 else
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -4778,21 +4943,25 @@ module FlagsIntoPositionalArgsChoiceArgParse =
                         ]
                     Tree =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "grab-everything" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                (if true then
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
-                                 else
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -4922,21 +5091,25 @@ module FlagsIntoPositionalArgsIntArgParse =
                         ]
                     Tree =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "grab-everything" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                (if true then
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
-                                 else
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -5060,21 +5233,25 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
                         ]
                     Tree =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "grab-everything" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                (if true then
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
-                                 else
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -5204,21 +5381,25 @@ module FlagsIntoPositionalArgs'ArgParse =
                         ]
                     Tree =
                         (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
-                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
                         ))
-                    Positional =
-                        ({
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Id = 1
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Forms = [ "dont-grab-everything" ]
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.FlagLike =
-                                (if false then
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
-                                 else
-                                     ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.TypeDescription = ""
-                            ArgParserRuntime_BasicNoPositionals.ErasedPositional.Help = None
-                        })
-                        |> Some
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "dont-grab-everything" ]
+                                FlagLike =
+                                    (if false then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
 
             let parser_storeOccurrence
@@ -5369,7 +5550,7 @@ module WithTypeHelp =
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
                         ]
                     ))
-                Positional = None
+                Positionals = List.empty
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -5558,7 +5739,7 @@ You can use this to provide detailed documentation for your argument parser."
                             ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
                         ]
                     ))
-                Positional = None
+                Positionals = List.empty
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
@@ -5711,7 +5892,7 @@ module NonPositionalBoolList =
                     (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
                         [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
                     ))
-                Positional = None
+                Positionals = List.empty
             }
 
         let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
