@@ -438,15 +438,19 @@ type AmbiguousEmptyCases =
         |> shouldRejectWith
             "Cases CaseA, CaseB can all be satisfied without supplying any arguments, so an empty command line cannot choose between them. Make an argument in all but one of them mandatory."
 
-    [<Test>]
-    let ``Positional args are rejected inside a union case`` () =
-        """namespace TestMe
+    /// A union one of whose cases holds a positional sink, wrapped in a record; the sink's
+    /// attribute is rendered from the given text.
+    let private positionalInsideUnionSource (positionalAttr : string) : string =
+        sprintf
+            """namespace TestMe
 
 open WoofWare.Myriad.Plugins
 
 type SomePositionals =
     {
-        [<PositionalArgs>]
+        A : int
+
+        [<%s>]
         Rest : string list
     }
 
@@ -465,8 +469,138 @@ type PositionalInsideUnion =
         Choice : PositionalOrNot
     }
 """
+            positionalAttr
+
+    [<Test>]
+    let ``Reject-mode positional args are permitted inside a union case`` () =
+        for attr in [ "PositionalArgs" ; "PositionalArgs false" ] do
+            // One namespace for the embedded runtime module, one for the generated parser module.
+            generateFromSource (positionalInsideUnionSource attr)
+            |> List.length
+            |> shouldEqual 2
+
+    [<Test>]
+    let ``Collect-mode positional args are rejected inside a union case`` () =
+        positionalInsideUnionSource "PositionalArgs true"
         |> shouldRejectWith
-            "Positional args are not permitted inside cases of the [<ArgParser>] union PositionalOrNot: the parser could not tell which alternative a positional arg belongs to."
+            "Positional args which collect unrecognised flag-like tokens ([<PositionalArgs true>]) cannot be combined with a discriminated-union arg: a mistyped case-selecting argument would be collected as a positional arg instead of being reported."
+
+    [<Test>]
+    let ``A sink inside a union case cannot coexist with a sink beside the union`` () =
+        // Some complete alternative would contain two positional sinks, and argv holds a
+        // single positional stream.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type SomePositionals =
+    {
+        A : int
+
+        [<PositionalArgs>]
+        Rest : string list
+    }
+
+type NotPositional =
+    {
+        C : int
+    }
+
+type PositionalOrNot =
+    | Pos of SomePositionals
+    | NotPos of NotPositional
+
+[<ArgParser>]
+type PositionalInsideUnion =
+    {
+        Choice : PositionalOrNot
+
+        [<PositionalArgs>]
+        Extra : string list
+    }
+"""
+        |> shouldRejectWith "Multiple entries tried to claim positional args! Choice and Extra"
+
+    [<Test>]
+    let ``Two positional fields in one record are rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type TwoSinks =
+    {
+        [<PositionalArgs>]
+        First : string list
+
+        [<PositionalArgs>]
+        Second : string list
+    }
+"""
+        |> shouldRejectWith "Multiple entries tried to claim positional args! First and Second"
+
+    [<Test>]
+    let ``Sinks in mutually exclusive cases may share their forms`` () =
+        // Both cases' sinks are addressable as --rest; a keyed --rest token has the same
+        // meaning whichever case wins, so this must generate successfully.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+
+        [<PositionalArgs>]
+        Rest : int list
+    }
+
+type BarArgs =
+    {
+        Bar : int
+
+        [<PositionalArgs>]
+        Rest : string list
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``A sink's form still may not collide with a named argument across cases`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+
+        [<PositionalArgs>]
+        [<ArgumentLongForm "target">]
+        Rest : int list
+    }
+
+type BarArgs =
+    {
+        Target : string
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--target' is claimed by: '--target' (field 'Target'); '--target' (the positional args, field 'Rest')"
 
     /// A record holding a union-typed field and a positional sink, with the sink's
     /// [<PositionalArgs>] attribute rendered from the given text.
