@@ -242,22 +242,25 @@ module private ParseTree =
         | _ -> failwith "The argument name 'help' is reserved: --help always displays the help text."
 
         // Every name a `--token` could address, with a description of its claimant, in
-        // declaration order.
-        let claims : (string * string) list =
+        // declaration order. The boolean marks positional-args claimants: sinks in mutually
+        // exclusive union cases may share forms with each other (a keyed positional token
+        // means the same thing whichever sink is active), but not with anything else.
+        let claims : (string * string * bool) list =
             (nonPos
              |> List.collect (fun pf ->
                  let forms = literalForms pf.ArgForm
 
                  let plain =
                      forms
-                     |> List.map (fun form -> form, $"'--%s{form}' (field '%s{pf.FieldName.idText}')")
+                     |> List.map (fun form -> form, $"'--%s{form}' (field '%s{pf.FieldName.idText}')", false)
 
                  let negated =
                      if pf.AcceptsNegation then
                          forms
                          |> List.map (fun form ->
                              $"no-%s{form}",
-                             $"the --no- variant of field '%s{pf.FieldName.idText}' (which has [<ArgumentNegateWithPrefix>])"
+                             $"the --no- variant of field '%s{pf.FieldName.idText}' (which has [<ArgumentNegateWithPrefix>])",
+                             false
                          )
                      else
                          []
@@ -267,7 +270,9 @@ module private ParseTree =
             @ (pos
                |> List.collect (fun pf ->
                    literalForms pf.ArgForm
-                   |> List.map (fun form -> form, $"'--%s{form}' (the positional args)")
+                   |> List.map (fun form ->
+                       form, $"'--%s{form}' (the positional args, field '%s{pf.FieldName.idText}')", true
+                   )
                ))
 
         // Group under the scanner's own equality (OrdinalIgnoreCase), preserving
@@ -278,26 +283,28 @@ module private ParseTree =
             let indexOf =
                 System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
 
-            let buckets = ResizeArray<ResizeArray<string * string>> ()
+            let buckets = ResizeArray<ResizeArray<string * string * bool>> ()
 
-            for form, claimant in claims do
+            for form, claimant, isPositional in claims do
                 match indexOf.TryGetValue form with
-                | true, index -> buckets.[index].Add ((form, claimant))
+                | true, index -> buckets.[index].Add ((form, claimant, isPositional))
                 | false, _ ->
                     indexOf.[form] <- buckets.Count
                     let bucket = ResizeArray ()
-                    bucket.Add ((form, claimant))
+                    bucket.Add ((form, claimant, isPositional))
                     buckets.Add bucket
 
             buckets
             |> Seq.choose (fun bucket ->
-                if bucket.Count < 2 then
+                let allPositional = bucket |> Seq.forall (fun (_, _, isPositional) -> isPositional)
+
+                if bucket.Count < 2 || allPositional then
                     None
                 else
-                    let form, _ = bucket.[0]
+                    let form, _, _ = bucket.[0]
 
                     bucket
-                    |> Seq.map snd
+                    |> Seq.map (fun (_, claimant, _) -> claimant)
                     |> String.concat "; "
                     |> sprintf "The argument name '--%s' is claimed by: %s" form
                     |> Some
@@ -1004,13 +1011,7 @@ module internal ArgParserGenerator =
                 let spec, counter =
                     toParseSpec ancestors counter flagDus ambientUnions ambientRecords payloadRecord
 
-                if ParseTree.containsPositional spec then
-                    failwith
-                        $"Positional args are not permitted inside cases of the [<ArgParser>] union %s{union.Name.idText}: the parser could not tell which alternative a positional arg belongs to."
-
-                let tree = spec
-
-                counter, (case.Name, tree) :: acc
+                counter, (case.Name, spec) :: acc
             )
 
         let cases = List.rev cases
@@ -1195,33 +1196,32 @@ module internal ArgParserGenerator =
         let nonPos, pos = ParseTree.accumulators spec
         let hasSum = ParseTree.containsSum spec
 
-        // A positional sink may sit beside a union only when the scanner's treatment of an
-        // unrecognised `--key`-shaped token is provably Reject (fatal). A Collect-mode sink
-        // treats such a token as a positional arg, so a typo of a case-selecting argument would
-        // be silently collected — with a union in play, silently changing which alternative is
-        // chosen. Bare positional tokens are sound beside a union: they are routed to the sink
-        // and never influence case selection.
-        match pos with
-        | [ pf ] when hasSum ->
-            let includeFlagLike =
-                match pf.Accumulation with
-                | ChoicePositional.Normal fl
-                | ChoicePositional.Choice fl -> fl
+        // Positional args may live beside a union, or inside its cases, only when the
+        // scanner's treatment of an unrecognised `--key`-shaped token is provably Reject
+        // (fatal). A Collect-mode sink treats such a token as a positional arg, so a typo of a
+        // case-selecting argument would be silently collected — with a union in play, silently
+        // changing which alternative is chosen. Bare positional tokens are sound: they are
+        // routed to a sink only after case selection, and never influence it.
+        if hasSum then
+            for pf in pos do
+                let includeFlagLike =
+                    match pf.Accumulation with
+                    | ChoicePositional.Normal fl
+                    | ChoicePositional.Choice fl -> fl
 
-            match includeFlagLike with
-            // The default [<PositionalArgs>] is Reject.
-            | None -> ()
-            | Some expr ->
-                match SynExpr.stripOptionalParen expr with
-                | SynExpr.Const (SynConst.Bool false, _) -> ()
-                | SynExpr.Const (SynConst.Bool true, _) ->
-                    failwith
-                        "Positional args which collect unrecognised flag-like tokens ([<PositionalArgs true>]) cannot be combined with a discriminated-union arg: a mistyped case-selecting argument would be collected as a positional arg instead of being reported."
-                | _ ->
-                    // E.g. a [<Literal>] constant, which the untyped AST does not resolve.
-                    failwith
-                        "Positional args combined with a discriminated-union arg must provably reject unrecognised flag-like tokens: use [<PositionalArgs>] or a literal [<PositionalArgs false>]."
-        | _ -> ()
+                match includeFlagLike with
+                // The default [<PositionalArgs>] is Reject.
+                | None -> ()
+                | Some expr ->
+                    match SynExpr.stripOptionalParen expr with
+                    | SynExpr.Const (SynConst.Bool false, _) -> ()
+                    | SynExpr.Const (SynConst.Bool true, _) ->
+                        failwith
+                            "Positional args which collect unrecognised flag-like tokens ([<PositionalArgs true>]) cannot be combined with a discriminated-union arg: a mistyped case-selecting argument would be collected as a positional arg instead of being reported."
+                    | _ ->
+                        // E.g. a [<Literal>] constant, which the untyped AST does not resolve.
+                        failwith
+                            "Positional args combined with a discriminated-union arg must provably reject unrecognised flag-like tokens: use [<PositionalArgs>] or a literal [<PositionalArgs false>]."
 
         let bindings =
             nonPos

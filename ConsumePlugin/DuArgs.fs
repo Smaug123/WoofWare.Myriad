@@ -105,3 +105,50 @@ type CommandAndPositionals =
         [<PositionalArgs false>]
         Paths : string list
     }
+
+type FooModeArgs =
+    {
+        Foo : int
+
+        [<PositionalArgs>]
+        Rest : int list
+    }
+
+type BarModeArgs =
+    {
+        Bar : int
+
+        [<PositionalArgs>]
+        Rest : string list
+    }
+
+/// The motivating example of per-case positional args: both cases collect the positional
+/// stream (addressable under the same default `--rest` form, which is fine because the cases
+/// are mutually exclusive), but convert it at different types. Selection happens before any
+/// conversion, so whether a token parses as int never influences which case wins.
+[<ArgParser>]
+type FooBarMode =
+    | FooMode of FooModeArgs
+    | BarMode of BarModeArgs
+
+type PullArgs =
+    {
+        [<ArgumentLongForm "source">]
+        From : string
+
+        [<PositionalArgs>]
+        Refs : string list
+    }
+
+type StatusArgs =
+    {
+        Verbose : bool option
+    }
+
+/// Positional args in only one case: the other (all-optional) case is the empty command
+/// line's fallback, and a bare token structurally selects Pull because only Pull can consume
+/// it.
+[<ArgParser>]
+type GitLike =
+    | Pull of PullArgs
+    | Status of StatusArgs
