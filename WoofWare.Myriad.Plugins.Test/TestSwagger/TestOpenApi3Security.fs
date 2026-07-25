@@ -267,6 +267,54 @@ module TestOpenApi3Security =
         (operation plan "thing").Security |> shouldEqual []
         plan.Credentials |> shouldEqual Map.empty
 
+    // A single request cannot carry two Authorization values: HttpRequestHeaders.Add throws. An
+    // alternative demanding both would generate a client that failed on every call.
+    [<Test>]
+    let ``Schemes which compete for one header cannot be satisfied together`` () =
+        let source =
+            securityDocument
+                [ "bearerAuth", httpScheme "bearer" ; "oauth", oauth2Scheme () ]
+                None
+                [ "thing", Some [ requirement [ "bearerAuth" ; "oauth" ] ] ]
+
+        diagnostics config source
+        |> List.exists (fun diagnostic ->
+            diagnostic.Code = OpenApiGenerationDiagnosticCode.UnsupportedSecurity
+            && diagnostic.Message.Contains ("'Authorization' header", StringComparison.Ordinal)
+        )
+        |> shouldEqual true
+
+    [<Test>]
+    let ``A header collision doesn't stop a later alternative being chosen`` () =
+        let source =
+            securityDocument
+                [
+                    "bearerAuth", httpScheme "bearer"
+                    "oauth", oauth2Scheme ()
+                    "apiKeyAuth", apiKeyHeaderScheme "X-API-Key"
+                ]
+                None
+                [
+                    "thing", Some [ requirement [ "bearerAuth" ; "oauth" ] ; requirement [ "apiKeyAuth" ] ]
+                ]
+
+        (operation (plan config source) "thing").Security
+        |> shouldEqual [ "apiKeyAuth" ]
+
+    [<Test>]
+    let ``Schemes with distinct headers can be satisfied together`` () =
+        let source =
+            securityDocument
+                [
+                    "bearerAuth", httpScheme "bearer"
+                    "apiKeyAuth", apiKeyHeaderScheme "X-API-Key"
+                ]
+                None
+                [ "thing", Some [ requirement [ "bearerAuth" ; "apiKeyAuth" ] ] ]
+
+        (operation (plan config source) "thing").Security
+        |> shouldEqual [ "apiKeyAuth" ; "bearerAuth" ]
+
     [<Test>]
     let ``An unsatisfiable security requirement fails the build rather than authenticating nothing`` () =
         for location in [ "query" ; "cookie" ] do
@@ -393,27 +441,28 @@ module TestOpenApi3Security =
         | ApiKeyQuery
         | ApiKeyCookie
 
-    /// A scheme as the generated document declares it, paired with whether the planner can carry it.
+    /// A scheme as the generated document declares it, paired with the header it would occupy
+    /// (`None` if the planner can't carry it at all).
     type private GeneratedScheme =
         {
             Name : string
             Json : JsonNode
-            Representable : bool
+            Header : string option
         }
 
     let private generatedScheme (index : int) (kind : GeneratedSchemeKind) : GeneratedScheme =
-        let json, representable =
+        let json, header =
             match kind with
-            | Bearer -> httpScheme "bearer", true
-            | ApiKeyHeader -> apiKeyHeaderScheme $"X-Key-%i{index}", true
-            | OAuth2 -> oauth2Scheme (), true
-            | ApiKeyQuery -> apiKeyElsewhereScheme "query", false
-            | ApiKeyCookie -> apiKeyElsewhereScheme "cookie", false
+            | Bearer -> httpScheme "bearer", Some "Authorization"
+            | ApiKeyHeader -> apiKeyHeaderScheme $"X-Key-%i{index}", Some $"X-Key-%i{index}"
+            | OAuth2 -> oauth2Scheme (), Some "Authorization"
+            | ApiKeyQuery -> apiKeyElsewhereScheme "query", None
+            | ApiKeyCookie -> apiKeyElsewhereScheme "cookie", None
 
         {
             Name = $"scheme%i{index}"
             Json = json
-            Representable = representable
+            Header = header
         }
 
     /// A document's schemes, plus one operation's alternatives as indices into them.
@@ -444,19 +493,22 @@ module TestOpenApi3Security =
     [<Test>]
     let ``The applied requirement is always the document's first satisfiable alternative`` () =
         let property (schemes : GeneratedScheme list, alternatives : int list list) =
-            let representable =
-                schemes
-                |> List.mapi (fun index scheme -> index, scheme.Representable)
-                |> Map.ofList
+            // The oracle: the first alternative all of whose schemes we can carry, and no two of
+            // whose schemes want the same header (one request can't carry two Authorization values).
+            // An absent alternative list is not a failure; it means "this operation needs no
+            // credentials".
+            let satisfiable (alternative : int list) =
+                let headers = alternative |> List.map (fun index -> schemes.[index].Header)
 
-            // The oracle: the first alternative all of whose schemes we can carry. An absent
-            // alternative list is not a failure; it means "this operation needs no credentials".
+                List.forall Option.isSome headers
+                && List.length (List.distinct headers) = List.length headers
+
             let expected =
                 if List.isEmpty alternatives then
                     Some []
                 else
                     alternatives
-                    |> List.tryFind (fun alternative -> alternative |> List.forall (fun index -> representable.[index]))
+                    |> List.tryFind satisfiable
                     |> Option.map (fun alternative ->
                         alternative
                         |> List.map (fun index -> schemes.[index].Name)

@@ -98,3 +98,13 @@ module TestPerEndpointHeader =
             api.Authorized("param").Result |> ignore<string>
 
         bearerReads.Value |> shouldEqual 3
+
+    /// The generated `make` takes one argument per property and an HttpClient of its own; a property
+    /// named `Client` claims the name the HttpClient would otherwise have had, so the generator has
+    /// to rename its own argument. If it didn't, the generated source wouldn't compile at all.
+    [<Test>]
+    let ``A property named Client does not collide with the generated HttpClient argument`` () =
+        use client = HttpClientMock.make (Uri "https://example.com") echoHeaders
+        let api = ApiWithClientProperty.make (fun () -> "clash") client
+
+        api.Get().Result.Split "\n" |> shouldEqual [| "X-Client: clash" |]

@@ -259,7 +259,10 @@ module internal HttpClientGenerator =
 
     /// constantHeaders are a list of (headerName, headerValue)
     /// variableHeaders are a list of (headerName, selfPropertyToGetValueOf)
+    /// `clientName` is the name we gave the HttpClient argument of the generated `make`; it isn't
+    /// always "client", because an interface property may already have claimed that name.
     let constructMember
+        (clientName : string)
         (constantHeaders : (SynExpr * SynExpr) list)
         (variableHeaders : (SynExpr * Ident) list)
         (info : MemberInfo)
@@ -471,7 +474,7 @@ module internal HttpClientGenerator =
         let requestUri =
             let uriIdent = SynExpr.createLongIdent [ "System" ; "Uri" ]
 
-            let baseAddress = SynExpr.createLongIdent [ "client" ; "BaseAddress" ]
+            let baseAddress = SynExpr.createLongIdent [ clientName ; "BaseAddress" ]
 
             let baseAddress =
                 [
@@ -891,7 +894,7 @@ module internal HttpClientGenerator =
                         "response",
                         SynExpr.awaitTask (
                             SynExpr.applyFunction
-                                (SynExpr.createLongIdent [ "client" ; "SendAsync" ])
+                                (SynExpr.createLongIdent [ clientName ; "SendAsync" ])
                                 (SynExpr.tuple [ SynExpr.createIdent "httpMessage" ; SynExpr.createIdent "ct" ])
                         )
                     )
@@ -1087,6 +1090,14 @@ module internal HttpClientGenerator =
                 headerInfo, pi
             )
 
+        // Every property becomes a `unit -> _` argument of `make`, named by lowercasing it; the
+        // HttpClient argument we add alongside them must not collide with any of those.
+        let clientName =
+            properties
+            |> List.map (fun (_, pi) -> (Ident.lowerFirstLetter pi.Identifier).idText)
+            |> Set.ofList
+            |> freshName "client"
+
         /// The properties which a member may name in a HeaderFromProperty attribute: that is, all
         /// the properties which don't already stamp their header onto every request.
         let addressableProperties =
@@ -1174,7 +1185,7 @@ module internal HttpClientGenerator =
                     PropertyHeaders = propertyHeaders
                 }
             )
-            |> List.map (constructMember constantHeaders properties)
+            |> List.map (constructMember clientName constantHeaders properties)
 
         let propertyMembers =
             properties
@@ -1218,7 +1229,7 @@ module internal HttpClientGenerator =
             )
 
         let clientCreationArg =
-            SynPat.named "client"
+            SynPat.named clientName
             |> SynPat.annotateType (SynType.createLongIdent' [ "System" ; "Net" ; "Http" ; "HttpClient" ])
 
         let xmlDoc =
@@ -1227,8 +1238,6 @@ module internal HttpClientGenerator =
             else
                 "Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties."
             |> PreXmlDoc.create
-
-        let functionName = Ident.create "client"
 
         let pattern = SynLongIdent.createS "make"
 

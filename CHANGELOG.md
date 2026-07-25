@@ -12,6 +12,8 @@ Supported schemes are the header-carried ones: `apiKey` in a header, `http` of a
 Where an operation offers alternative requirements, the first satisfiable one is used; the new `SecuritySchemes` Myriad parameter restricts which schemes may be chosen.
 An operation with no satisfiable requirement is now a build failure rather than a silently unauthenticated client.
 
+Fixes a latent bug in the `HttpClient` generator: an interface property named `Client` collided with the `HttpClient` argument of the generated `make`, so the generated source did not compile.
+
 Adds the `[<HeaderFromProperty(header, propertyName)>]` attribute for the `HttpClient` generator, which sets a header on one member's requests, taking its value from a property of the same interface.
 (`[<RestEase.Header>]` on a property continues to set its header on every member's requests.)
 The property may be named either by a string literal or by `nameof Unchecked.defaultof<IMyApi>.TheProperty`.

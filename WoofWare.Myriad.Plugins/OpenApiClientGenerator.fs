@@ -1383,12 +1383,40 @@ module internal OpenApiClientGenerator =
                     Some $"'%s{schemeName}' was not listed in the SecuritySchemes Myriad parameter"
                 | _ -> None
 
+        /// Schemes which must be satisfied *together* must each contribute a distinct header: a
+        /// single request cannot carry two `Authorization` values (the BCL throws when you try), so
+        /// a requirement pairing, say, an http scheme with an oauth2 one is not one we can send.
+        let collidingHeaders (alternativeSchemes : string list) : string option =
+            let collisions =
+                alternativeSchemes
+                |> List.choose (fun schemeName ->
+                    match Map.tryFind schemeName schemes with
+                    | Some (SecurityScheme.Representable (headerName, _, _)) -> Some (headerName, schemeName)
+                    | _ -> None
+                )
+                |> List.groupBy fst
+                |> List.filter (fun (_, users) -> List.length users > 1)
+
+            match collisions with
+            | [] -> None
+            | collisions ->
+                collisions
+                |> List.map (fun (headerName, users) ->
+                    let users = users |> List.map snd |> String.concat " and "
+                    $"%s{users} would all have to set the '%s{headerName}' header, which can only carry one value"
+                )
+                |> String.concat "; "
+                |> Some
+
         let rec go (rejections : (string * string) list) (alternatives : SecurityRequirement list) =
             match alternatives with
             | [] -> Error (List.rev rejections)
             | alternative :: rest ->
                 match alternative.Schemes |> List.choose rejection with
-                | [] -> Ok alternative.Schemes
+                | [] ->
+                    match collidingHeaders alternative.Schemes with
+                    | None -> Ok alternative.Schemes
+                    | Some reason -> go ((alternative.Location, reason) :: rejections) rest
                 | reasons -> go ((alternative.Location, String.concat "; " reasons) :: rejections) rest
 
         // No alternatives at all is not a failure to satisfy anything: it is the statement that this

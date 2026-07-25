@@ -239,6 +239,16 @@ type IApiWithPerEndpointHeaders =
     [<Get "anonymous/{param}">]
     abstract Anonymous : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
+/// Regression test: the generated `make` takes one argument per property plus an HttpClient of its
+/// own, so a property named `Client` would collide with it and fail to compile.
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IApiWithClientProperty =
+    [<Header "X-Client">]
+    abstract Client : string
+
+    [<Get "endpoint">]
+    abstract Get : ?ct : CancellationToken -> Task<string>
+
 [<WoofWare.Myriad.Plugins.HttpClient>]
 type IClientWithJsonBody =
     // As a POST request of a JSON-serialised body, we automatically set Content-Type: application/json.

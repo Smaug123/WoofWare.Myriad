@@ -2130,6 +2130,57 @@ open RestEase
 
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithClientProperty =
+    /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
+    let make (client : unit -> string) (client1 : System.Net.Http.HttpClient) : IApiWithClientProperty =
+        { new IApiWithClientProperty with
+            member _.Client : string = client ()
+
+            member this.Get (ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client1.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client1.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri ("endpoint", System.UriKind.Relative)
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    do httpMessage.Headers.Add ("X-Client", this.Client.ToString ())
+                    let! response = client1.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ClientWithJsonBody =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IClientWithJsonBody =
