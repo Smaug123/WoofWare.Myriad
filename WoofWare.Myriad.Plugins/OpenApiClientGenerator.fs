@@ -19,6 +19,7 @@ type internal OpenApiGenerationDiagnosticCode =
     | UnsupportedSchema
     | UnsupportedParameter
     | UnsupportedOperation
+    | UnsupportedSecurity
     | AmbiguousSuccessResponse
 
 type internal OpenApiGenerationDiagnostic =
@@ -81,6 +82,33 @@ type internal OpenApiPlannedParameter =
         Required : bool
     }
 
+/// The kind of an OpenAPI security scheme. Every kind we support is carried in a request header
+/// whose entire value the caller supplies; we perform no token acquisition of any sort.
+type internal OpenApiSecuritySchemeKind =
+    /// `type: apiKey`, `in: header`.
+    | ApiKey
+    /// `type: http`; the argument is the `scheme`, e.g. "bearer" or "basic". The credential is the
+    /// whole `Authorization` header value, scheme name and all.
+    | Http of scheme : string
+    /// `type: oauth2`. We run no OAuth flow: the caller supplies an `Authorization` header value.
+    | OAuth2
+    /// `type: openIdConnect`. As for `oauth2`, the caller supplies an `Authorization` header value.
+    | OpenIdConnect
+
+/// A credential which the generated client requires its caller to supply, because some operation's
+/// security requirement asks for it.
+type internal OpenApiPlannedCredential =
+    {
+        /// The name under which this scheme appears in `components.securitySchemes`.
+        SchemeName : string
+        /// The property on the generated interface which supplies this credential.
+        FSharpName : string
+        /// The header whose entire value this credential is.
+        HeaderName : string
+        Kind : OpenApiSecuritySchemeKind
+        Description : string option
+    }
+
 type internal OpenApiPlannedOperation =
     {
         OperationId : string
@@ -92,6 +120,9 @@ type internal OpenApiPlannedOperation =
         ReturnType : OpenApiPlannedType
         Accept : string option
         RequestContentType : string option
+        /// The security schemes whose credentials this operation sends, by `SchemeName`. Empty when
+        /// the operation requires no credentials. Every entry is a key of the plan's `Credentials`.
+        Security : string list
     }
 
 type internal OpenApiServerBase =
@@ -107,6 +138,9 @@ type internal OpenApiClientPlan =
         ServerBase : OpenApiServerBase
         Types : OpenApiPlannedTypeDefinition list
         Operations : OpenApiPlannedOperation list
+        /// The credentials the generated client's operations require, keyed by scheme name. Only the
+        /// schemes some operation actually uses appear here.
+        Credentials : Map<string, OpenApiPlannedCredential>
     }
 
 [<RequireQualifiedAccess>]
@@ -1171,6 +1205,199 @@ module internal OpenApiClientGenerator =
                 | true, _ -> OpenApiServerBase.BaseAddress url
                 | false, _ -> OpenApiServerBase.BasePath url
 
+    /// A security scheme from `components.securitySchemes`, as far as the generated client is
+    /// concerned: either a header whose entire value the caller supplies, or a reason we can't
+    /// carry it at all.
+    type private SecurityScheme =
+        | Representable of headerName : string * kind : OpenApiSecuritySchemeKind * description : string option
+        | Unrepresentable of reason : string
+
+    /// One entry of a `security` array: the schemes which must *all* be satisfied together, sorted
+    /// for determinism. The empty list is the OpenAPI empty requirement `{}`, i.e. "no credentials".
+    type private SecurityRequirement =
+        {
+            Schemes : string list
+            Location : string
+        }
+
+    /// The `security` of an operation or of the document root: an ordered list of alternatives, any
+    /// one of which suffices. `None` means the key was absent (so the root's value is inherited);
+    /// `Some []` means it was present and empty, which explicitly demands no credentials.
+    type private SecurityRequirements = SecurityRequirement list option
+
+    let private parseSecuritySchemes
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (components : LocatedObject option)
+        : Map<string, SecurityScheme>
+        =
+        let report = report diagnostics
+        let requiredString = requiredString diagnostics
+        let optionalString = optionalString diagnostics
+        let optionalObject = optionalObject diagnostics
+
+        let declared = componentMap diagnostics components "securitySchemes"
+
+        declared
+        |> Map.map (fun _ scheme ->
+            match
+                resolveComponentReference
+                    diagnostics
+                    UnresolvedReference
+                    "#/components/securitySchemes/"
+                    declared
+                    Set.empty
+                    scheme
+            with
+            | None -> SecurityScheme.Unrepresentable "the security scheme's reference could not be resolved"
+            | Some scheme ->
+
+            let description = optionalString scheme.Location scheme.Value "description"
+
+            match requiredString scheme.Location scheme.Value "type" with
+            | None -> SecurityScheme.Unrepresentable "the security scheme has no type"
+            | Some "apiKey" ->
+                let name = requiredString scheme.Location scheme.Value "name"
+
+                match requiredString scheme.Location scheme.Value "in" with
+                | None -> SecurityScheme.Unrepresentable "the apiKey security scheme does not say where the key goes"
+                | Some "header" ->
+                    match name with
+                    | None -> SecurityScheme.Unrepresentable "the apiKey security scheme names no header"
+                    | Some name -> SecurityScheme.Representable (name, OpenApiSecuritySchemeKind.ApiKey, description)
+                | Some ("query" | "cookie" as location) ->
+                    SecurityScheme.Unrepresentable
+                        $"apiKey credentials carried in the %s{location} are not representable by the generated HTTP client, which can only set headers"
+                | Some other ->
+                    report
+                        InvalidDocument
+                        ($"%s{scheme.Location}/in")
+                        $"An apiKey security scheme's 'in' must be one of header, query, or cookie, but got '%s{other}'."
+
+                    SecurityScheme.Unrepresentable
+                        $"the apiKey security scheme has an unrecognised location '%s{other}'"
+            | Some "http" ->
+                match requiredString scheme.Location scheme.Value "scheme" with
+                | None -> SecurityScheme.Unrepresentable "the http security scheme names no authentication scheme"
+                | Some httpScheme ->
+                    SecurityScheme.Representable (
+                        "Authorization",
+                        OpenApiSecuritySchemeKind.Http httpScheme,
+                        description
+                    )
+            | Some "oauth2" ->
+                match optionalObject scheme.Location scheme.Value "flows" with
+                | None ->
+                    report InvalidDocument scheme.Location "An oauth2 security scheme must have a 'flows' object."
+                    SecurityScheme.Unrepresentable "the oauth2 security scheme has no flows"
+                | Some _ ->
+                    SecurityScheme.Representable ("Authorization", OpenApiSecuritySchemeKind.OAuth2, description)
+            | Some "openIdConnect" ->
+                match requiredString scheme.Location scheme.Value "openIdConnectUrl" with
+                | None -> SecurityScheme.Unrepresentable "the openIdConnect security scheme has no discovery URL"
+                | Some _ ->
+                    SecurityScheme.Representable (
+                        "Authorization",
+                        OpenApiSecuritySchemeKind.OpenIdConnect,
+                        description
+                    )
+            | Some other ->
+                report
+                    InvalidDocument
+                    ($"%s{scheme.Location}/type")
+                    $"Security scheme type '%s{other}' is not one of apiKey, http, oauth2, openIdConnect."
+
+                SecurityScheme.Unrepresentable $"'%s{other}' is not a security scheme type defined by OpenAPI 3.0"
+        )
+
+    /// Parse the `security` of a document root or an operation. Scheme names which no security
+    /// scheme defines are a document error, and are reported here however the requirement is later
+    /// used: a dangling reference is a bug in the document even if we don't happen to need it.
+    let private parseSecurityRequirements
+        (diagnostics : ResizeArray<OpenApiGenerationDiagnostic>)
+        (schemes : Map<string, SecurityScheme>)
+        (owner : LocatedObject)
+        : SecurityRequirements
+        =
+        let report = report diagnostics
+        let optionalArray = optionalArray diagnostics
+        let tryObject = tryObject diagnostics
+        let tryArray = tryArray diagnostics
+
+        match optionalArray owner.Location owner.Value "security" with
+        | None -> None
+        | Some requirements ->
+
+        let location = $"%s{owner.Location}/security"
+
+        requirements
+        |> Seq.mapi (fun index requirement ->
+            let location = $"%s{location}/%i{index}"
+
+            match tryObject location requirement with
+            | None -> None
+            | Some requirement ->
+                let schemeNames =
+                    requirement.Value
+                    |> Seq.map (fun (KeyValue (name, scopes)) -> name, scopes)
+                    |> Seq.sortBy fst
+                    |> Seq.toList
+
+                for name, scopes in schemeNames do
+                    let schemeLocation = $"%s{location}/%s{pointerToken name}"
+                    // The scopes carry no information the generated client can act on, but a
+                    // non-array here means the document doesn't say what it thinks it says.
+                    tryArray schemeLocation scopes |> ignore
+
+                    if not (Map.containsKey name schemes) then
+                        report
+                            UnresolvedReference
+                            schemeLocation
+                            $"Security requirement names scheme '%s{name}', which no security scheme defines."
+
+                {
+                    Schemes = schemeNames |> List.map fst
+                    Location = location
+                }
+                |> Some
+        )
+        |> Seq.toList
+        |> List.choose id
+        |> Some
+
+    /// Choose the credentials an operation sends: the first alternative, in document order, all of
+    /// whose schemes we can represent and the caller permitted. `Ok []` means "send none", which is
+    /// what an absent or empty `security` demands. `Error` lists why each alternative was rejected.
+    let private selectSecurityRequirement
+        (permitted : Set<string> option)
+        (schemes : Map<string, SecurityScheme>)
+        (alternatives : SecurityRequirement list)
+        : Result<string list, (string * string) list>
+        =
+        let rejection (schemeName : string) : string option =
+            match Map.tryFind schemeName schemes with
+            | None -> Some $"'%s{schemeName}' is not defined by any security scheme"
+            | Some (SecurityScheme.Unrepresentable reason) -> Some $"'%s{schemeName}' is unsupported: %s{reason}"
+            | Some (SecurityScheme.Representable _) ->
+                match permitted with
+                | Some permitted when not (Set.contains schemeName permitted) ->
+                    Some $"'%s{schemeName}' was not listed in the SecuritySchemes Myriad parameter"
+                | _ -> None
+
+        let rec go (rejections : (string * string) list) (alternatives : SecurityRequirement list) =
+            match alternatives with
+            | [] -> Error (List.rev rejections)
+            | alternative :: rest ->
+                match alternative.Schemes |> List.choose rejection with
+                | [] -> Ok alternative.Schemes
+                | reasons -> go ((alternative.Location, String.concat "; " reasons) :: rejections) rest
+
+        // No alternatives at all is not a failure to satisfy anything: it is the statement that this
+        // operation needs no credentials.
+        if List.isEmpty alternatives then
+            Ok []
+        else
+            go [] alternatives
+
     type private OperationPlanningContext =
         {
             Diagnostics : ResizeArray<OpenApiGenerationDiagnostic>
@@ -1179,6 +1406,13 @@ module internal OpenApiClientGenerator =
             ParameterComponents : Map<string, LocatedObject>
             RequestBodyComponents : Map<string, LocatedObject>
             ResponseComponents : Map<string, LocatedObject>
+            SecuritySchemes : Map<string, SecurityScheme>
+            /// The schemes the caller is willing to have the generated client use, if they restricted
+            /// them; `None` permits every scheme the document defines.
+            PermittedSecuritySchemes : Set<string> option
+            /// Names already taken by members of the generated interface. Shared with the credential
+            /// properties, which live in the same scope as the operation methods.
+            UsedMemberNames : HashSet<string>
         }
 
     let private parseParameter (context : OperationPlanningContext) (value : LocatedObject) : ResolvedParameter option =
@@ -1692,7 +1926,17 @@ module internal OpenApiClientGenerator =
         let paths = optionalObject "#" root "paths"
         let operations = ResizeArray<OpenApiPlannedOperation> ()
         let usedOperationIds = HashSet<string> (StringComparer.Ordinal)
-        let usedMethodNames = HashSet<string> (StringComparer.Ordinal)
+        let usedMethodNames = context.UsedMemberNames
+
+        let rootSecurity =
+            parseSecurityRequirements
+                diagnostics
+                context.SecuritySchemes
+                {
+                    Location = "#"
+                    Value = root
+                }
+            |> Option.defaultValue []
 
         let methodEntries (pathItem : LocatedObject) =
             [
@@ -1766,6 +2010,33 @@ module internal OpenApiClientGenerator =
 
                         let operationFSharpName =
                             allocateUniqueName usedMethodNames "Operation" sanitiseTypeName operationId
+
+                        // An operation's own `security` replaces the root's entirely, including when it
+                        // is present and empty (which demands that we send no credentials at all).
+                        let security =
+                            let alternatives =
+                                parseSecurityRequirements diagnostics context.SecuritySchemes operation
+                                |> Option.defaultValue rootSecurity
+
+                            match
+                                selectSecurityRequirement
+                                    context.PermittedSecuritySchemes
+                                    context.SecuritySchemes
+                                    alternatives
+                            with
+                            | Ok schemes -> schemes
+                            | Error rejections ->
+                                let rejections =
+                                    rejections
+                                    |> List.map (fun (location, reason) -> $"%s{location}: %s{reason}")
+                                    |> String.concat Environment.NewLine
+
+                                report
+                                    UnsupportedSecurity
+                                    ($"%s{operation.Location}/security")
+                                    $"No security requirement of this operation can be satisfied by the generated client, so it would silently issue unauthenticated requests.%s{Environment.NewLine}%s{rejections}"
+
+                                []
 
                         let mergedParameters =
                             parseParameterList context operation |> mergeParameters inheritedParameters
@@ -1893,6 +2164,7 @@ module internal OpenApiClientGenerator =
                                 ReturnType = returnType
                                 Accept = accept
                                 RequestContentType = body |> Option.map snd
+                                Security = security
                             }
 
         operations |> Seq.sortBy _.FSharpName |> Seq.toList
@@ -2015,6 +2287,19 @@ module internal OpenApiClientGenerator =
 
                     None
 
+        // Restricting the schemes is how a caller resolves an operation's *alternative* security
+        // requirements at generation time: we take the first alternative the caller permitted, so
+        // the choice is visible in the generated source rather than made at runtime.
+        let permittedSecuritySchemes =
+            match Map.tryFind "SECURITYSCHEMES" parameters with
+            | None -> None
+            | Some value ->
+                value.Split ','
+                |> Seq.map _.Trim()
+                |> Seq.filter (fun value -> not (String.IsNullOrWhiteSpace value))
+                |> Set.ofSeq
+                |> Some
+
         let info = optionalObject "#" root "info"
 
         let description =
@@ -2035,6 +2320,17 @@ module internal OpenApiClientGenerator =
         let parameterComponents = componentMap components "parameters"
         let requestBodyComponents = componentMap components "requestBodies"
         let responseComponents = componentMap components "responses"
+        let securitySchemes = parseSecuritySchemes diagnostics components
+
+        match permittedSecuritySchemes with
+        | None -> ()
+        | Some permitted ->
+            for name in permitted do
+                if not (Map.containsKey name securitySchemes) then
+                    report
+                        InvalidDocument
+                        "#/$parameters/SecuritySchemes"
+                        $"The SecuritySchemes Myriad parameter names '%s{name}', which the document does not define."
 
         let schemaResolution =
             {
@@ -2092,6 +2388,8 @@ module internal OpenApiClientGenerator =
         for sourceName in objectComponentNames do
             addComponentDefinition schemaPlanning sourceName schemaComponents.[sourceName]
 
+        let usedMemberNames = HashSet<string> (StringComparer.Ordinal)
+
         let operationPlanning =
             {
                 Diagnostics = diagnostics
@@ -2100,11 +2398,39 @@ module internal OpenApiClientGenerator =
                 ParameterComponents = parameterComponents
                 RequestBodyComponents = requestBodyComponents
                 ResponseComponents = responseComponents
+                SecuritySchemes = securitySchemes
+                PermittedSecuritySchemes = permittedSecuritySchemes
+                UsedMemberNames = usedMemberNames
             }
 
         let serverBase = parseServerBase diagnostics root
         let operations = planOperations operationPlanning root
         let orderedDefinitions = orderDefinitions diagnostics definitions
+
+        // Only the schemes some operation actually sends become credentials the caller must supply.
+        let credentials =
+            operations
+            |> List.collect _.Security
+            |> Set.ofList
+            |> Seq.map (fun schemeName ->
+                match Map.tryFind schemeName securitySchemes with
+                | Some (SecurityScheme.Representable (headerName, kind, schemeDescription)) ->
+                    let credential =
+                        {
+                            SchemeName = schemeName
+                            FSharpName =
+                                allocateUniqueName usedMemberNames "SecurityScheme" sanitiseTypeName schemeName
+                            HeaderName = headerName
+                            Kind = kind
+                            Description = schemeDescription
+                        }
+
+                    schemeName, credential
+                | _ ->
+                    // selectSecurityRequirement only ever returns representable schemes.
+                    failwith $"Logic error: security scheme '%s{schemeName}' was selected but is not representable."
+            )
+            |> Map.ofSeq
 
         let plan =
             {
@@ -2115,6 +2441,7 @@ module internal OpenApiClientGenerator =
                 ServerBase = serverBase
                 Types = orderedDefinitions
                 Operations = operations
+                Credentials = credentials
             }
 
         if diagnostics.Count = 0 then
@@ -2232,7 +2559,58 @@ module internal OpenApiClientGenerator =
 
         fields |> SynTypeDefnRepr.record |> SynTypeDefn.create componentInfo
 
-    let private renderOperation (operation : OpenApiPlannedOperation) : SynMemberDefn =
+    /// The documentation of the property through which the caller supplies one credential. It has to
+    /// say exactly what string the client will send, because we send it verbatim.
+    let private credentialDoc (credential : OpenApiPlannedCredential) : string list =
+        [
+            match credential.Kind with
+            | OpenApiSecuritySchemeKind.ApiKey ->
+                yield
+                    $"The value of the '%s{credential.HeaderName}' header, which carries the API key of the '%s{credential.SchemeName}' security scheme."
+            | OpenApiSecuritySchemeKind.Http scheme ->
+                yield
+                    $"The complete value of the '%s{credential.HeaderName}' header for the '%s{credential.SchemeName}' security scheme, which is HTTP authentication scheme '%s{scheme}'."
+
+                yield $"The value must include the scheme name: for example, \"%s{scheme} &lt;credentials&gt;\"."
+            | OpenApiSecuritySchemeKind.OAuth2
+            | OpenApiSecuritySchemeKind.OpenIdConnect ->
+                let kind =
+                    match credential.Kind with
+                    | OpenApiSecuritySchemeKind.OpenIdConnect -> "OpenID Connect"
+                    | _ -> "OAuth 2.0"
+
+                yield
+                    $"The complete value of the '%s{credential.HeaderName}' header for the '%s{credential.SchemeName}' security scheme, which is %s{kind}."
+
+                yield
+                    "This client runs no token flow of its own: it sends exactly the value you return, so you must acquire and refresh the token yourself (the value is usually \"Bearer &lt;access token&gt;\")."
+
+            yield
+                "This function is called afresh on every request which requires this scheme, so it can return a token that has since been refreshed."
+
+            match credential.Description with
+            | None -> ()
+            | Some description -> yield description
+        ]
+
+    let private renderCredential (credential : OpenApiPlannedCredential) : SynMemberDefn =
+        SynType.string
+        |> SynMemberDefn.abstractMember
+            []
+            (SynIdent.createS credential.FSharpName)
+            None
+            SynValInfo.empty
+            // PreXmlDoc.create' emits each line verbatim, where PreXmlDoc.create inserts the space
+            // after the slashes for you.
+            (credentialDoc credential
+             |> List.map (fun line -> " " + line)
+             |> PreXmlDoc.create')
+
+    let private renderOperation
+        (credentials : Map<string, OpenApiPlannedCredential>)
+        (operation : OpenApiPlannedOperation)
+        : SynMemberDefn
+        =
         let cancellationToken =
             SynType.signatureParamOfType
                 []
@@ -2308,6 +2686,23 @@ module internal OpenApiClientGenerator =
                         SynAttribute.create
                             (SynLongIdent.createS' [ "RestEase" ; "Header" ])
                             (SynExpr.tuple [ SynExpr.CreateConst "Content-Type" ; SynExpr.CreateConst mediaType ])
+
+                // The property is named by a literal rather than the `nameof` the attribute also
+                // accepts: the only spelling F# accepts for a non-static member is the unbroken chain
+                // `nameof Unchecked.defaultof<IThing>.Prop`, which Fantomas cannot print from an AST
+                // whose ranges are synthetic. Both sides of this correspondence are generated from the
+                // same string anyway, so there is nothing here for `nameof` to catch.
+                for schemeName in operation.Security do
+                    let credential = credentials.[schemeName]
+
+                    yield
+                        SynAttribute.create
+                            (SynLongIdent.createS' [ "WoofWare" ; "Myriad" ; "Plugins" ; "HeaderFromProperty" ])
+                            (SynExpr.tuple
+                                [
+                                    SynExpr.CreateConst credential.HeaderName
+                                    SynExpr.CreateConst credential.FSharpName
+                                ])
             ]
 
         renderType operation.ReturnType
@@ -2327,8 +2722,10 @@ module internal OpenApiClientGenerator =
             plan.Types |> List.map renderRecord |> SynModuleDecl.createTypes
 
         let interfaceType =
-            plan.Operations
-            |> List.map renderOperation
+            // Credential properties come first, so that the generated `make` takes them before its
+            // HttpClient and in an order that doesn't shift when operations are added.
+            (plan.Credentials |> Map.toList |> List.map (snd >> renderCredential))
+            @ (plan.Operations |> List.map (renderOperation plan.Credentials))
             |> SynTypeDefnRepr.interfaceType
             |> SynTypeDefn.create (
                 let attributes =

@@ -85,15 +85,27 @@ type Pet =
 /// A compact OpenAPI 3 fixture used to compile the generated client.
 [<WoofWare.Myriad.Plugins.HttpClient false ; RestEase.BaseAddress "https://api.example.test/v1/public">]
 type IOpenApiPetstore =
+    /// The value of the 'X-API-Key' header, which carries the API key of the 'apiKeyAuth' security scheme.
+    /// This function is called afresh on every request which requires this scheme, so it can return a token that has since been refreshed.
+    /// Key issued from the pet store console.
+    abstract ApiKeyAuth : string
+    /// The complete value of the 'Authorization' header for the 'bearerAuth' security scheme, which is HTTP authentication scheme 'Bearer'.
+    /// The value must include the scheme name: for example, "Bearer &lt;credentials&gt;".
+    /// This function is called afresh on every request which requires this scheme, so it can return a token that has since been refreshed.
+    abstract BearerAuth : string
+
     /// Invoke the 'createPet' OpenAPI operation.
     [<RestEase.Post "pets">]
     [<RestEase.Header("Accept", "application/json")>]
     [<RestEase.Header("Content-Type", "application/json")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("Authorization", "BearerAuth")>]
     abstract CreatePet :
         [<RestEase.Body>] body : NewPet * ?ct : System.Threading.CancellationToken -> Pet System.Threading.Tasks.Task
 
     /// Invoke the 'deletePet' OpenAPI operation.
     [<RestEase.Delete "pets/{pet-id}">]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("Authorization", "BearerAuth")>]
     abstract DeletePet :
         [<RestEase.Path "pet-id">] pet_id : int64 * ?ct : System.Threading.CancellationToken ->
             unit System.Threading.Tasks.Task
@@ -101,12 +113,14 @@ type IOpenApiPetstore =
     /// Invoke the 'download' OpenAPI operation.
     [<RestEase.Get "download">]
     [<RestEase.Header("Accept", "application/octet-stream")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract Download : ?ct : System.Threading.CancellationToken -> System.IO.Stream System.Threading.Tasks.Task
 
     /// Invoke the 'echo' OpenAPI operation.
     [<RestEase.Post "echo">]
     [<RestEase.Header("Accept", "text/plain")>]
     [<RestEase.Header("Content-Type", "text/plain")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract Echo :
         [<RestEase.Body>] body : string * ?ct : System.Threading.CancellationToken -> string System.Threading.Tasks.Task
 
@@ -114,6 +128,7 @@ type IOpenApiPetstore =
     [<RestEase.Post "anything">]
     [<RestEase.Header("Accept", "application/json")>]
     [<RestEase.Header("Content-Type", "application/json")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract EchoAnything :
         [<RestEase.Body>] body : System.Text.Json.Nodes.JsonNode option * ?ct : System.Threading.CancellationToken ->
             System.Text.Json.Nodes.JsonNode option System.Threading.Tasks.Task
@@ -122,6 +137,7 @@ type IOpenApiPetstore =
     [<RestEase.Post "counter">]
     [<RestEase.Header("Accept", "application/json")>]
     [<RestEase.Header("Content-Type", "application/json")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract EchoCounter :
         [<RestEase.Body>] body : System.Numerics.BigInteger * ?ct : System.Threading.CancellationToken ->
             System.Numerics.BigInteger System.Threading.Tasks.Task
@@ -129,12 +145,14 @@ type IOpenApiPetstore =
     /// Invoke the 'getCounter' OpenAPI operation.
     [<RestEase.Get "counter">]
     [<RestEase.Header("Accept", "application/json")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract GetCounter :
         ?ct : System.Threading.CancellationToken -> System.Numerics.BigInteger System.Threading.Tasks.Task
 
     /// Invoke the 'getPet' OpenAPI operation.
     [<RestEase.Get "pets/{pet-id}">]
     [<RestEase.Header("Accept", "application/json")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract GetPet :
         [<RestEase.Path "pet-id">] pet_id : int64 * ?ct : System.Threading.CancellationToken ->
             Pet System.Threading.Tasks.Task
@@ -147,6 +165,7 @@ type IOpenApiPetstore =
     /// Invoke the 'listPets' OpenAPI operation.
     [<RestEase.Get "pets">]
     [<RestEase.Header("Accept", "application/json")>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-API-Key", "ApiKeyAuth")>]
     abstract ListPets :
         [<RestEase.Query "limit">] limit : int option * ?ct : System.Threading.CancellationToken ->
             Pet list System.Threading.Tasks.Task

@@ -1991,6 +1991,145 @@ open RestEase
 
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
+module ApiWithPerEndpointHeaders =
+    /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
+    let make
+        (bearerToken : unit -> string)
+        (apiKey : unit -> int)
+        (ubiquitous : unit -> string)
+        (client : System.Net.Http.HttpClient)
+        : IApiWithPerEndpointHeaders
+        =
+        { new IApiWithPerEndpointHeaders with
+            member _.BearerToken : string = bearerToken ()
+            member _.ApiKey : int = apiKey ()
+            member _.Ubiquitous : string = ubiquitous ()
+
+            member this.Authorized (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "authorized/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    do httpMessage.Headers.Add ("X-Everywhere", this.Ubiquitous.ToString ())
+                    do httpMessage.Headers.Add ("Authorization", this.BearerToken.ToString ())
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member this.Both (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "both/{param}".Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    do httpMessage.Headers.Add ("X-Everywhere", this.Ubiquitous.ToString ())
+                    do httpMessage.Headers.Add ("Authorization", this.BearerToken.ToString ())
+                    do httpMessage.Headers.Add ("X-Api-Key", this.ApiKey.ToString ())
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+
+            member this.Anonymous (parameter : string, ct : CancellationToken option) =
+                async {
+                    let! ct = Async.CancellationToken
+
+                    let uri =
+                        System.Uri (
+                            (match client.BaseAddress with
+                             | null ->
+                                 raise (
+                                     System.ArgumentNullException (
+                                         nameof (client.BaseAddress),
+                                         "No base address was supplied on the type, and no BaseAddress was on the HttpClient."
+                                     )
+                                 )
+                             | v -> v),
+                            System.Uri (
+                                "anonymous/{param}"
+                                    .Replace ("{param}", parameter.ToString () |> System.Uri.EscapeDataString),
+                                System.UriKind.Relative
+                            )
+                        )
+
+                    use httpMessage =
+                        new System.Net.Http.HttpRequestMessage (
+                            Method = System.Net.Http.HttpMethod.Get,
+                            RequestUri = uri
+                        )
+
+                    do httpMessage.Headers.Add ("X-Everywhere", this.Ubiquitous.ToString ())
+                    let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
+                    let response = response.EnsureSuccessStatusCode ()
+                    use response = response
+                    let! responseString = response.Content.ReadAsStringAsync ct |> Async.AwaitTask
+                    return responseString
+                }
+                |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
+        }
+namespace PureGym
+
+open System
+open System.Threading
+open System.Threading.Tasks
+open System.IO
+open System.Net
+open System.Net.Http
+open RestEase
+
+/// Module for constructing a REST client.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module ClientWithJsonBody =
     /// Create a REST client.
     let make (client : System.Net.Http.HttpClient) : IClientWithJsonBody =

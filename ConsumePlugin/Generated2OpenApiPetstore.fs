@@ -718,10 +718,18 @@ open WoofWare.Myriad.Plugins
 /// Module for constructing a REST client.
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix) ; RequireQualifiedAccess>]
 module OpenApiPetstore =
-    /// Create a REST client.
-    let make (client : System.Net.Http.HttpClient) : IOpenApiPetstore =
+    /// Create a REST client. The input functions will be re-evaluated on every HTTP request to obtain the required values for the corresponding header properties.
+    let make
+        (apiKeyAuth : unit -> string)
+        (bearerAuth : unit -> string)
+        (client : System.Net.Http.HttpClient)
+        : IOpenApiPetstore
+        =
         { new IOpenApiPetstore with
-            member _.CreatePet (body : NewPet, ct : System.Threading.CancellationToken option) =
+            member _.ApiKeyAuth : string = apiKeyAuth ()
+            member _.BearerAuth : string = bearerAuth ()
+
+            member this.CreatePet (body : NewPet, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -749,6 +757,8 @@ module OpenApiPetstore =
                             System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
+                    do httpMessage.Headers.Add ("Authorization", this.BearerAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -774,7 +784,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.DeletePet (pet_id : int64, ct : System.Threading.CancellationToken option) =
+            member this.DeletePet (pet_id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -795,6 +805,7 @@ module OpenApiPetstore =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("Authorization", this.BearerAuth.ToString ())
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
                     use response = response
@@ -802,7 +813,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.Download (ct : System.Threading.CancellationToken option) =
+            member this.Download (ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -820,6 +831,7 @@ module OpenApiPetstore =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/octet-stream")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -828,7 +840,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.Echo (body : string, ct : System.Threading.CancellationToken option) =
+            member this.Echo (body : string, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -853,6 +865,7 @@ module OpenApiPetstore =
                             System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("text/plain; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "text/plain")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -862,7 +875,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.EchoAnything
+            member this.EchoAnything
                 (body : System.Text.Json.Nodes.JsonNode option, ct : System.Threading.CancellationToken option)
                 =
                 async {
@@ -898,6 +911,7 @@ module OpenApiPetstore =
                             System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -917,7 +931,9 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.EchoCounter (body : System.Numerics.BigInteger, ct : System.Threading.CancellationToken option) =
+            member this.EchoCounter
+                (body : System.Numerics.BigInteger, ct : System.Threading.CancellationToken option)
+                =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -949,6 +965,7 @@ module OpenApiPetstore =
                             System.Net.Http.Headers.MediaTypeHeaderValue.Parse ("application/json; charset=utf-8")
 
                     do httpMessage.Content <- queryParams
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -979,7 +996,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetCounter (ct : System.Threading.CancellationToken option) =
+            member this.GetCounter (ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -997,6 +1014,7 @@ module OpenApiPetstore =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -1027,7 +1045,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.GetPet (pet_id : int64, ct : System.Threading.CancellationToken option) =
+            member this.GetPet (pet_id : int64, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -1048,6 +1066,7 @@ module OpenApiPetstore =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()
@@ -1100,7 +1119,7 @@ module OpenApiPetstore =
                 }
                 |> (fun a -> Async.StartAsTask (a, ?cancellationToken = ct))
 
-            member _.ListPets (limit : int option, ct : System.Threading.CancellationToken option) =
+            member this.ListPets (limit : int option, ct : System.Threading.CancellationToken option) =
                 async {
                     let! ct = Async.CancellationToken
 
@@ -1136,6 +1155,7 @@ module OpenApiPetstore =
                             RequestUri = uri
                         )
 
+                    do httpMessage.Headers.Add ("X-API-Key", this.ApiKeyAuth.ToString ())
                     do httpMessage.Headers.Add ("Accept", "application/json")
                     let! response = client.SendAsync (httpMessage, ct) |> Async.AwaitTask
                     let response = response.EnsureSuccessStatusCode ()

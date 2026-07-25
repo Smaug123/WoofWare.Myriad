@@ -55,7 +55,13 @@
           "201": {
             "$ref": "#/components/responses/PetResponse"
           }
-        }
+        },
+        "security": [
+          {
+            "apiKeyAuth": [],
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/pets/{pet-id}": {
@@ -78,7 +84,15 @@
           "204": {
             "description": "Deleted"
           }
-        }
+        },
+        "security": [
+          {
+            "legacyQueryKey": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/status": {
@@ -95,7 +109,8 @@
               }
             }
           }
-        }
+        },
+        "security": []
       }
     },
     "/download": {
@@ -323,6 +338,30 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "name": "X-API-Key",
+        "in": "header",
+        "description": "Key issued from the pet store console."
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "Bearer",
+        "bearerFormat": "JWT"
+      },
+      "legacyQueryKey": {
+        "type": "apiKey",
+        "name": "api_key",
+        "in": "query",
+        "description": "Deprecated: this client cannot carry a key in the query string."
+      }
     }
-  }
+  },
+  "security": [
+    {
+      "apiKeyAuth": []
+    }
+  ]
 }

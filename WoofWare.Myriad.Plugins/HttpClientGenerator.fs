@@ -64,6 +64,10 @@ module internal HttpClientGenerator =
             /// Headers which apply *only* to this endpoint.
             /// For example, SynConst "Authorization" and SynConst "token BLAH".
             Headers : (SynExpr * SynExpr) list
+            /// Headers which apply *only* to this endpoint, whose values come from a property of the
+            /// interface (and so are re-evaluated on every request).
+            /// For example, SynConst "Authorization" and the identifier `BearerToken`.
+            PropertyHeaders : (SynExpr * Ident) list
         }
 
     /// Allocate an identifier based on `desired` that does not clash with any name in `taken`.
@@ -203,6 +207,42 @@ module internal HttpClientGenerator =
                 | SynExpr.Paren (SynExpr.Tuple (_, [ v1 ; v2 ], _, _), _, _, _) ->
                     Some [ SynExpr.stripOptionalParen v1 ; SynExpr.stripOptionalParen v2 ]
                 | e -> Some [ SynExpr.stripOptionalParen e ]
+            | _ -> None
+        )
+
+    /// The property a HeaderFromProperty attribute names. The compiler only ever sees a string here,
+    /// but the source may spell it either as a literal or, so that a rename is a compile error rather
+    /// than a silent breakage, as `nameof Unchecked.defaultof<IThing>.TheProperty` (F#'s `nameof`
+    /// requires an instance for a non-static member, hence the dance). We read the syntax, not the
+    /// evaluated constant, so we take the last identifier of whatever `nameof` was applied to.
+    let private propertyNameOfAttributeArg (expr : SynExpr) : string =
+        match SynExpr.stripOptionalParen expr with
+        | SynExpr.Const (SynConst.String (property, SynStringKind.Regular, _), _) -> property
+        | SynExpr.App (_, _, SynExpr.Ident funcName, arg, _) when funcName.idText = "nameof" ->
+            match SynExpr.stripOptionalParen arg with
+            | SynExpr.DotGet (_, _, SynLongIdent (path, _, _), _)
+            | SynExpr.LongIdent (_, SynLongIdent (path, _, _), _, _) when not path.IsEmpty -> (List.last path).idText
+            | arg -> failwith $"Expected `nameof` to be applied to a property access, but got: %+A{arg}"
+        | expr ->
+            failwith
+                $"Expected the property in a HeaderFromProperty attribute to be a string literal or a `nameof`, but got: %+A{expr}"
+
+    /// Get the (header name, name of the property supplying its value) pairs associated with the
+    /// HeaderFromProperty attributes within the list.
+    let extractHeaderFromPropertyInformation (attrs : SynAttribute list) : (SynExpr * string) list =
+        attrs
+        |> List.choose (fun attr ->
+            match SynLongIdent.toString attr.TypeName with
+            | "HeaderFromProperty"
+            | "HeaderFromPropertyAttribute"
+            | "WoofWare.Myriad.Plugins.HeaderFromProperty"
+            | "WoofWare.Myriad.Plugins.HeaderFromPropertyAttribute" ->
+                match attr.ArgExpr with
+                | SynExpr.Paren (SynExpr.Tuple (_, [ header ; property ], _, _), _, _, _) ->
+                    Some (SynExpr.stripOptionalParen header, propertyNameOfAttributeArg property)
+                | e ->
+                    failwith
+                        $"Expected HeaderFromProperty attributes to be of the form [<HeaderFromProperty (header, propertyName)>], but got: %+A{e}"
             | _ -> None
         )
 
@@ -785,7 +825,7 @@ module internal HttpClientGenerator =
                     )
 
             let setVariableHeaders =
-                variableHeaders
+                variableHeaders @ info.PropertyHeaders
                 |> List.map (fun (headerName, callToGetValue) ->
                     [
                         headerName
@@ -899,7 +939,10 @@ module internal HttpClientGenerator =
             |> SynExpr.startAsTask cancellationTokenArg
 
         let thisIdent =
-            if variableHeaders.IsEmpty then "_" else "this"
+            if variableHeaders.IsEmpty && info.PropertyHeaders.IsEmpty then
+                "_"
+            else
+                "this"
             |> Ident.create
 
         let args = args |> List.map snd |> SynPat.tuple |> List.singleton
@@ -1028,24 +1071,37 @@ module internal HttpClientGenerator =
         let properties =
             interfaceType.Properties
             |> List.map (fun pi ->
+                // A property with no Header attribute supplies no header of its own; it's addressable
+                // by the members which name it in a HeaderFromProperty attribute.
                 let headerInfo =
                     match extractHeaderInformation pi.Attributes with
-                    | [ [ x ] ] -> x
+                    | [ [ x ] ] -> Some x
                     | [ _ ] ->
                         failwith
-                            "Expected exactly one Header parameter on the member, with exactly one arg; got one Header parameter with non-1-many args"
-                    | [] ->
-                        failwith
-                            "Expected exactly one Header parameter on the member, with exactly one arg; got no Header parameters"
+                            "Expected at most one Header parameter on the member, with exactly one arg; got one Header parameter with non-1-many args"
+                    | [] -> None
                     | _ ->
                         failwith
-                            "Expected exactly one Header parameter on the member, with exactly one arg; got multiple Header parameters"
+                            "Expected at most one Header parameter on the member, with exactly one arg; got multiple Header parameters"
 
                 headerInfo, pi
             )
 
+        /// The properties which a member may name in a HeaderFromProperty attribute: that is, all
+        /// the properties which don't already stamp their header onto every request.
+        let addressableProperties =
+            properties
+            |> List.choose (fun (header, pi) ->
+                match header with
+                | Some _ -> None
+                | None -> Some (pi.Identifier.idText, pi.Identifier)
+            )
+            |> Map.ofList
+
         let nonPropertyMembers =
-            let properties = properties |> List.map (fun (header, pi) -> header, pi.Identifier)
+            let properties =
+                properties
+                |> List.choose (fun (header, pi) -> header |> Option.map (fun header -> header, pi.Identifier))
 
             interfaceType.Members
             |> List.map (fun mem ->
@@ -1059,6 +1115,19 @@ module internal HttpClientGenerator =
                         | _ ->
                             failwith
                                 $"Expected Header attribute on member %s{mem.Identifier.idText} to have exactly two arguments."
+                    )
+
+                let propertyHeaders =
+                    extractHeaderFromPropertyInformation mem.Attributes
+                    |> List.map (fun (headerName, propertyName) ->
+                        match Map.tryFind propertyName addressableProperties with
+                        | Some identifier -> headerName, identifier
+                        | None ->
+                            let available =
+                                addressableProperties |> Map.toList |> List.map fst |> String.concat ", "
+
+                            failwith
+                                $"Member %s{mem.Identifier.idText} takes a header from property '%s{propertyName}', but the interface has no such property without a Header attribute of its own. Available: [%s{available}]"
                     )
 
                 let shouldEnsureSuccess = not (shouldAllowAnyStatusCode mem.Attributes)
@@ -1102,6 +1171,7 @@ module internal HttpClientGenerator =
                     BasePath = basePath
                     Accessibility = mem.Accessibility
                     Headers = specificHeaders
+                    PropertyHeaders = propertyHeaders
                 }
             )
             |> List.map (constructMember constantHeaders properties)

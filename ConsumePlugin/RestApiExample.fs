@@ -211,6 +211,34 @@ type IApiWithHeaders2 =
     abstract GetPathParam :
         [<WoofWare.Myriad.Plugins.RestEase.Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
 
+/// Different endpoints require different credentials, and one requires none at all: exactly the shape
+/// OpenAPI security requirements take.
+[<WoofWare.Myriad.Plugins.HttpClient>]
+type IApiWithPerEndpointHeaders =
+    abstract BearerToken : string
+
+    abstract ApiKey : int
+
+    /// Stamps a header onto every endpoint, to prove the two mechanisms compose.
+    [<Header "X-Everywhere">]
+    abstract Ubiquitous : string
+
+    // The property may be named by a literal, or (so that renaming it is a compile error rather than
+    // a header which silently stops being sent) by `nameof`, which is what the OpenAPI generator emits.
+    [<Get "authorized/{param}">]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("Authorization", "BearerToken")>]
+    abstract Authorized : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+    [<Get "both/{param}">]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("Authorization",
+                                                 nameof Unchecked.defaultof<IApiWithPerEndpointHeaders>.BearerToken)>]
+    [<WoofWare.Myriad.Plugins.HeaderFromProperty("X-Api-Key",
+                                                 nameof Unchecked.defaultof<IApiWithPerEndpointHeaders>.ApiKey)>]
+    abstract Both : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
+    [<Get "anonymous/{param}">]
+    abstract Anonymous : [<Path "param">] parameter : string * ?ct : CancellationToken -> Task<string>
+
 [<WoofWare.Myriad.Plugins.HttpClient>]
 type IClientWithJsonBody =
     // As a POST request of a JSON-serialised body, we automatically set Content-Type: application/json.

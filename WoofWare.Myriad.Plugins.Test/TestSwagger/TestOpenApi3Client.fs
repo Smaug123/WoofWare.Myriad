@@ -7,12 +7,33 @@ open System.Net
 open System.Net.Http
 open System.Numerics
 open System.Text.Json.Nodes
+open System.Threading
 open FsUnitTyped
 open NUnit.Framework
 open OpenApiPetstore
 
 [<TestFixture>]
 module TestOpenApi3Client =
+
+    /// The security schemes of the petstore document, whose credentials the generated client demands
+    /// of us before it will issue any request that needs them.
+    let private credentials () =
+        let apiKeyReads = ref 0
+        let bearerReads = ref 0
+
+        let client (httpClient : HttpClient) =
+            OpenApiPetstore.make
+                (fun () ->
+                    Interlocked.Increment apiKeyReads |> ignore
+                    "api-key-value"
+                )
+                (fun () ->
+                    Interlocked.Increment bearerReads |> ignore
+                    "Bearer token-value"
+                )
+                httpClient
+
+        client, apiKeyReads, bearerReads
 
     let private response (status : HttpStatusCode) (body : string option) =
         let result = new HttpResponseMessage (status)
@@ -118,7 +139,8 @@ module TestOpenApi3Client =
                 }
 
             use httpClient = HttpClientMock.makeNoUri handler
-            let client = OpenApiPetstore.make httpClient
+            let make, _, _ = credentials ()
+            let client = make httpClient
 
             let! fetched = client.GetPet 42L
             fetched.Id |> shouldEqual 42L
@@ -249,8 +271,75 @@ module TestOpenApi3Client =
                 }
 
             use httpClient = HttpClientMock.makeNoUri handler
-            let client = OpenApiPetstore.make httpClient
+            let make, _, _ = credentials ()
+            let client = make httpClient
 
             let! pets = client.ListPets (if supplied then Some 25 else None)
             pets |> shouldBeEmpty
+        }
+
+    /// The document's security requirements, as they reach the wire: the root requirement applies
+    /// everywhere it isn't overridden, `security: []` suppresses it, an operation naming two schemes
+    /// sends both, and the query-carried key we can't represent is passed over for the bearer token.
+    [<Test>]
+    let ``Each operation sends exactly the credentials its security requirement asks for`` () =
+        task {
+            let observed = ResizeArray<string * (string * string) list> ()
+
+            let handler (message : HttpRequestMessage) =
+                async {
+                    let credentialHeaders =
+                        [
+                            for header in message.Headers do
+                                if header.Key = "X-API-Key" || header.Key = "Authorization" then
+                                    yield header.Key, Seq.exactlyOne header.Value
+                        ]
+                        |> List.sortBy fst
+
+                    observed.Add (message.RequestUri.AbsolutePath, credentialHeaders)
+
+                    match message.Method.Method with
+                    | "DELETE" -> return response HttpStatusCode.NoContent None
+                    | "POST" -> return response HttpStatusCode.Created (Some """{"id":43,"name":"Ada"}""")
+                    | _ when message.RequestUri.AbsolutePath.EndsWith ("status", StringComparison.Ordinal) ->
+                        return response HttpStatusCode.OK (Some "healthy")
+                    | _ -> return response HttpStatusCode.OK (Some """{"id":42,"name":"Ada"}""")
+                }
+
+            use httpClient = HttpClientMock.makeNoUri handler
+            let make, apiKeyReads, bearerReads = credentials ()
+            let client = make httpClient
+
+            let! _ = client.GetPet 42L
+
+            let! _ =
+                client.CreatePet
+                    {
+                        AdditionalProperties = Dictionary<string, JsonNode option> ()
+                        Name = "Ada"
+                        Tag = None
+                    }
+
+            do! client.DeletePet 43L
+            let! _ = client.GetStatus ()
+
+            observed
+            |> List.ofSeq
+            |> shouldEqual
+                [
+                    // The root requirement: the API key alone.
+                    "/v1/public/pets/42", [ "X-API-Key", "api-key-value" ]
+                    // Two schemes in one requirement: both credentials go.
+                    "/v1/public/pets", [ "Authorization", "Bearer token-value" ; "X-API-Key", "api-key-value" ]
+                    // Alternatives: the legacy query-string key is unrepresentable, so we take the bearer.
+                    "/v1/public/pets/43", [ "Authorization", "Bearer token-value" ]
+                    // security: [] really does mean "send nothing".
+                    "/v1/public/status", []
+                ]
+
+            // A caller who has no bearer token can still call every operation which doesn't need one:
+            // the credential is fetched only where the document requires it, not merely dropped from
+            // the request afterwards.
+            apiKeyReads.Value |> shouldEqual 2
+            bearerReads.Value |> shouldEqual 2
         }

@@ -360,16 +360,49 @@ The OpenAPI 3.0 path supports:
 * primitive schemas and formats, arrays, objects, required properties, `nullable`, `additionalProperties`, compatible object `allOf` intersections, and self-recursive records;
 * inherited and operation-level path/query parameters, with operation-level overrides;
 * JSON and plain-text request bodies, successful JSON/plain-text/binary responses, and no-content responses;
-* root server URLs, including expansion of server-variable defaults; and
+* root server URLs, including expansion of server-variable defaults;
+* root and operation-level `security` requirements, for header-carried security schemes; and
 * deterministic sanitisation and collision handling for generated F# identifiers.
 
 The planner fails with a located diagnostic for structural constructs which the generated HTTP/JSON layer cannot represent.
 This currently includes OpenAPI 3.1, external references, `oneOf`/`anyOf`/`not`, optional-and-nullable three-state values, mutually recursive groups of records, header/cookie parameters, non-default parameter styles, optional or binary request bodies, and operations whose possible successful responses have incompatible body shapes.
 
+#### Security requirements
+
+Each security scheme some operation requires becomes an abstract property on the generated interface,
+and hence a `unit -> string` argument of the generated `make`, which is called afresh on every request
+that needs that credential (so a token can be refreshed between calls).
+Each operation sends exactly the credentials its own `security` demands: an operation with `security: []`
+sends none and doesn't even ask for them, and one whose requirement names several schemes sends all of them.
+An operation's `security` replaces the root's rather than adding to it, as the specification says.
+
+Supported schemes are the ones whose credential is a request header whose entire value the caller supplies:
+`apiKey` with `in: header`, `http` with any scheme (the value must include the scheme name, e.g. `"Bearer eyJ…"`),
+and `oauth2`/`openIdConnect` (which supply the `Authorization` header value: the generated client runs no
+token flow of its own, so you remain responsible for acquiring and refreshing tokens).
+`apiKey` with `in: query` or `in: cookie` is not supported.
+
+Where an operation offers *alternative* requirements, the first one the generated client can satisfy is
+applied, and which one that is is visible in the generated source.
+To choose a different one, restrict the schemes with the `SecuritySchemes` Myriad parameter, which takes a
+comma-separated list of scheme names:
+
+```xml
+<MyriadParams>
+  <ClassName>Petstore</ClassName>
+  <SecuritySchemes>bearerAuth,apiKeyAuth</SecuritySchemes>
+</MyriadParams>
+```
+
+An operation with no satisfiable requirement is a build failure, rather than a client which silently
+issues unauthenticated requests.
+If you would rather authenticate the `HttpClient` yourself (with a `DelegatingHandler`, say), the way to
+say so is `security: []`, or to remove the security schemes from the document you generate from.
+
 This is only a typed client generator, not a complete OpenAPI validator or policy engine:
 
 * schema validation keywords such as `enum`, patterns, and numeric bounds are not enforced by the generated F# types;
-* security requirements and schemes do not add authentication automatically: configure the caller-supplied `HttpClient` instead;
+* OAuth 2.0 and OpenID Connect flows, scopes, and token endpoints are not implemented: the generated client sends the `Authorization` header value you give it and nothing more;
 * the existing JSON codecs represent both an absent optional field and an explicit JSON `null` as `None`, and likewise cannot distinguish a missing required-nullable field from `null` (schemas which require all three states are rejected); and
 * optional query parameters are emitted as `option` arguments, with wire-level omission delegated to the chained `HttpClient` generator.
 
@@ -502,6 +535,19 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 
 * Variable and constant header values are supported:
   see [the definition of `IApiWithHeaders`](./ConsumePlugin/RestApiExample.fs).
+* A `[<Header>]` property sets its header on *every* request. To set one on only some of them,
+  declare a property with no `[<Header>]` attribute and name it from the members which want it:
+  `[<WoofWare.Myriad.Plugins.HeaderFromProperty("Authorization", "BearerToken")>]`.
+  The property still becomes a `unit -> _` argument of `make`, re-evaluated per request, but it is
+  only called by the members which name it.
+  You can name the property with `nameof` instead of a literal, so that renaming it is a compile
+  error rather than a header which silently stops being sent; since `nameof` needs an instance for a
+  non-static member, the spelling is
+  `[<HeaderFromProperty("Authorization", nameof Unchecked.defaultof<IMyApi>.BearerToken)>]`.
+  (The OpenAPI generator emits the literal form: Fantomas cannot print that chain from a generated
+  syntax tree, and there both sides come from the same string in any case.)
+  See [the definition of `IApiWithPerEndpointHeaders`](./ConsumePlugin/RestApiExample.fs);
+  this is what the OpenAPI generator emits for per-operation security requirements.
 
 ### Limitations
 
