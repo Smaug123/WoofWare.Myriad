@@ -107,6 +107,23 @@ type ParentRecord =
         AndAnother : bool
     }
 
+type ChildRecordWithDefault =
+    {
+        [<ArgumentDefaultFunction>]
+        FromFunction : Choice<int, int>
+    }
+
+    /// The default-function convention resolves against the record which declares the field,
+    /// not against the [<ArgParser>]-tagged root.
+    static member DefaultFromFunction () = 97
+
+[<ArgParser true>]
+type ParentRecordChildDefault =
+    {
+        Child : ChildRecordWithDefault
+        AndAnother : bool
+    }
+
 type ChildRecordWithPositional =
     {
         Thing1 : int
@@ -191,6 +208,17 @@ type ManyLongForms =
         SomeFlag : bool
     }
 
+[<ArgParser true>]
+type AliasedPositionals =
+    {
+        Count : int
+
+        [<PositionalArgs>]
+        [<ArgumentLongForm "rest">]
+        [<ArgumentLongForm "remainder">]
+        Others : string list
+    }
+
 [<RequireQualifiedAccess>]
 type private IrrelevantDu =
     | Foo
@@ -258,4 +286,12 @@ type WithMultilineTypeHelp =
         [<ArgumentHelpText "Output directory">]
         OutputDir : string
         Force : bool
+    }
+
+/// Regression test: the pre-rewrite generator produced uncompilable code for a non-positional
+/// list of booleans (its accumulator was a ResizeArray but the flag machinery assumed an option).
+[<ArgParser>]
+type NonPositionalBoolList =
+    {
+        Flags : bool list
     }

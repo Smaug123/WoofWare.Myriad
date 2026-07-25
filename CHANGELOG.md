@@ -6,6 +6,24 @@ The `swagger-client` generator now accepts OpenAPI 3.0 JSON documents as well as
 It generates DTO records and a chained `HttpClient` interface from component schemas, paths, parameters, request bodies, responses, and root server definitions.
 Unsupported or structurally ambiguous OpenAPI constructs fail with structured, JSON-pointer-located diagnostics; unconstrained JSON values preserve `null`, and unbounded integers use `BigInteger`.
 
+# WoofWare.Myriad.Plugins 10.3.1
+
+The `ArgParserGenerator` now supports positional args together with arbitrary discriminated-union args.
+(As in 10.2.3, the non-default `[<PositionalArgs true>]`, which collects into the positional args any unrecognised flag-like arguments such as `--foo`, remains banned in combination with a union.)
+
+# WoofWare.Myriad.Plugins 10.2.3
+
+The `ArgParserGenerator` now permits a `[<PositionalArgs>]` field at the top level alongside (though not within) a discriminated-union arg, as long as the positional sink rejects unrecognised flag-like tokens (the default; `[<PositionalArgs true>]` remains banned beside a union, because that would make it very confusing when you typo a DU-case-selecting flag).
+
+# WoofWare.Myriad.Plugins 10.2.1
+
+The `ArgParserGenerator` now ships with (limited) discriminated-union support: you can specify mutually exclusive sets of args and the parser will select the correct set.
+
+# WoofWare.Myriad.Plugins 10.1.1
+
+Fixes a number of bugs in the `ArgParserGenerator` by extracting the "untyped" logic into a standalone module.
+The generated code changes substantially, but the only behaviour changes you should observe are correctness fixes.
+
 # WoofWare.Myriad.Plugins 10.0.1
 
 The `JsonSerializeGenerator` now requires `System.Text.Json` at version at least 8, to accommodate `JsonNode.DeepClone`.

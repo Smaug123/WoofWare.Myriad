@@ -824,11 +824,11 @@ type JsonSerializeGenerator () =
                         | ty -> Some (ns, ty)
                 )
 
-            let opens = AstHelper.extractOpens ast
-
             let modules =
                 namespaceAndTypes
                 |> List.collect (fun (ns, types) ->
+                    let opens = AstHelper.extractOpensForNamespace ns ast
+
                     types
                     |> List.map (fun (ty, spec) -> JsonSerializeGenerator.createModule ns opens spec ty)
                 )

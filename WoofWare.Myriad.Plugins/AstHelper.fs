@@ -49,7 +49,7 @@ module internal AstHelper =
         |> SynTypeDefn.create name
         |> SynTypeDefn.withMemberDefns (defaultArg record.Members SynMemberDefns.Empty)
 
-    let rec private extractOpensFromDecl (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
+    let rec internal extractOpensFromDecl (moduleDecls : SynModuleDecl list) : SynOpenDeclTarget list =
         moduleDecls
         |> List.choose (fun moduleDecl ->
             match moduleDecl with
@@ -57,11 +57,41 @@ module internal AstHelper =
             | _ -> None
         )
 
-    let extractOpens (ast : ParsedInput) : SynOpenDeclTarget list =
+    /// Extract the `open` declarations which are in scope for generated code emitted into
+    /// namespace `ns`: the opens of every top-level namespace/module block of the file with
+    /// exactly that name.
+    ///
+    /// Opens from differently-named blocks must not leak in: a relative `open` which is valid in
+    /// one namespace block can be invalid (or resolve to something else) in another. Two blocks
+    /// with the same name share a resolution context, so it is sound to union their opens.
+    ///
+    /// This is the right lookup for generators whose type discovery only visits the top level of
+    /// each block (Whippet's `Ast.getTypes`): the reported namespace is always exactly a block
+    /// name. A generator which descends into nested modules (CataGenerator) must instead track
+    /// the opens which are lexically in scope at the point of the type; matching by name cannot
+    /// reconstruct that.
+    ///
+    /// (Note: this deliberately does not share a name with WoofWare.Whippet.Fantomas's
+    /// `AstHelper.extractOpens`, which shadows this module's members at generator call sites and
+    /// extracts opens from *every* block in the file.)
+    let extractOpensForNamespace (ns : LongIdent) (ast : ParsedInput) : SynOpenDeclTarget list =
+        let nsName = ns |> List.map _.idText
+
         match ast with
         | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, modules, _, _, _)) ->
             modules
-            |> List.collect (fun (SynModuleOrNamespace (_, _, _, decls, _, _, _, _, _)) -> extractOpensFromDecl decls)
+            |> List.collect (fun (SynModuleOrNamespace (longId, _, _, decls, _, _, _, _, _)) ->
+                let blockName = longId |> List.map _.idText
+
+                let sameName =
+                    List.length blockName = List.length nsName
+                    && List.forall2
+                        (fun (a : string) (b : string) -> System.String.Equals (a, b, System.StringComparison.Ordinal))
+                        blockName
+                        nsName
+
+                if sameName then extractOpensFromDecl decls else []
+            )
         | _ -> []
 
     let rec convertSigParam (ty : SynType) : ParameterInfo * bool =

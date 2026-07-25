@@ -1179,15 +1179,22 @@ module internal CataGenerator =
     /// A given module LongIdent may show up many times in the output: once for each recursive knot.
     // Function originally inspired by https://github.com/MoiraeSoftware/myriad/blob/3c9818faabf9d508c10c28d5ecd26e66fafb48a1/src/Myriad.Core/Ast.fs#L160
     // but there's really only one reasonable implementation of this type signature and semantics.
-    let groupedTypeDefns (ast : ParsedInput) : (LongIdent * SynTypeDefn list) list =
-        let rec extractTypes (decls : SynModuleDecl list) (ns : LongIdent) =
+    /// For each group of types in the file: the namespace it is reported under (the containing
+    /// block's name plus any nested-module path), the `open` declarations lexically in scope at
+    /// that point (the block's top-level opens plus those of each nested module on the path), and
+    /// the types themselves. Unlike a lookup by namespace *name*, tracking the opens during the
+    /// descent cannot confuse blocks which merely share a name prefix.
+    let groupedTypeDefns (ast : ParsedInput) : (LongIdent * SynOpenDeclTarget list * SynTypeDefn list) list =
+        let rec extractTypes (decls : SynModuleDecl list) (ns : LongIdent) (opens : SynOpenDeclTarget list) =
+            let opens = opens @ AstHelper.extractOpensFromDecl decls
+
             decls
             |> List.collect (fun moduleDecl ->
                 match moduleDecl with
-                | SynModuleDecl.Types (types, _) -> [ ns, types ]
+                | SynModuleDecl.Types (types, _) -> [ ns, opens, types ]
                 | SynModuleDecl.NestedModule (SynComponentInfo (_, _, _, longId, _, _, _, _), _, decls, _, _, _) ->
                     let combined = longId |> List.append ns
-                    extractTypes decls combined
+                    extractTypes decls combined opens
                 | _ -> []
             )
 
@@ -1195,7 +1202,7 @@ module internal CataGenerator =
         | ParsedInput.ImplFile (ParsedImplFileInput (_, _, _, _, _, contents, _, _, _)) ->
             contents
             |> List.collect (fun (SynModuleOrNamespace (namespaceId, _, _, moduleDecls, _, _, _, _, _)) ->
-                extractTypes moduleDecls namespaceId
+                extractTypes moduleDecls namespaceId []
             )
         | _ -> []
 
@@ -1218,11 +1225,9 @@ type CreateCatamorphismGenerator () =
 
             let types = CataGenerator.groupedTypeDefns ast
 
-            let opens = AstHelper.extractOpens ast
-
             let namespaceAndTypes =
                 types
-                |> List.collect (fun (ns, types) ->
+                |> List.collect (fun (ns, opens, types) ->
                     types
                     |> List.choose (fun typeDef ->
                         match SynTypeDefn.getAttribute typeof<CreateCatamorphismAttribute>.Name typeDef with
@@ -1259,13 +1264,13 @@ type CreateCatamorphismGenerator () =
                             failwith
                                 $"Error: all types recursively defined together with a CreateCatamorphism type must be discriminated unions or records. %+A{others}"
 
-                        (ns, (typeName, taggedType), unions, records)
+                        (ns, opens, (typeName, taggedType), unions, records)
                     )
                 )
 
             let modules =
                 namespaceAndTypes
-                |> List.map (fun (ns, taggedType, unions, records) ->
+                |> List.map (fun (ns, opens, taggedType, unions, records) ->
                     CataGenerator.createModule opens ns taggedType unions records
                 )
 

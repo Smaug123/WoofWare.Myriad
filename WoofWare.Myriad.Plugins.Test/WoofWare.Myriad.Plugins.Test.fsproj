@@ -44,6 +44,12 @@
     <Compile Include="TestCataGenerator\TestMyList2.fs" />
     <Compile Include="TestArgParser\TestArgParser.fs" />
     <Compile Include="TestArgParser\TestArgParserNegation.fs" />
+    <Compile Include="TestArgParser\TestArgParserEdgeCases.fs" />
+    <Compile Include="TestArgParser\TestArgParserDu.fs" />
+    <Compile Include="TestArgParser\TestArgParserDuPositional.fs" />
+    <Compile Include="TestArgParser\TestArgParserDuCasePositional.fs" />
+    <Compile Include="TestArgParser\TestArgParserPositionalReference.fs" />
+    <Compile Include="TestArgParser\TestArgParserRuntime.fs" />
     <Compile Include="TestSwagger\TestSwaggerParse.fs" />
     <Compile Include="TestSwagger\TestSuccessResponse.fs" />
     <Compile Include="TestSwagger\TestSwaggerTypeRender.fs" />
@@ -61,18 +67,19 @@
     <EmbeddedResource Include="TestSwagger\uspto.json" />
     <EmbeddedResource Include="TestSwagger\webhook-example.json" />
     <Compile Include="TestRemoveOptions.fs" />
+    <Compile Include="TestAstHelper.fs" />
     <Compile Include="TestSurface.fs" />
     <None Include="../.github/workflows/dotnet.yaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ApiSurface" Version="5.0.7" />
+    <PackageReference Include="ApiSurface" Version="5.0.8" />
     <PackageReference Include="FsCheck" Version="3.3.3" />
     <PackageReference Include="FsUnit" Version="7.1.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="NUnit" Version="4.5.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
-    <PackageReference Include="WoofWare.Expect" Version="0.8.5" />
+    <PackageReference Include="WoofWare.Expect" Version="0.8.6" />
   </ItemGroup>
 
   <ItemGroup>

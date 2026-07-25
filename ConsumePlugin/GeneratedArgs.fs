@@ -11,6 +11,1409 @@
 
 namespace ConsumePlugin
 
+/// The WoofWare.Myriad argument-parser runtime, embedded verbatim into this generated file.
+module private ArgParserRuntime_BasicNoPositionals =
+    open System
+
+    /// How many value tokens does one occurrence of a key consume?
+    [<RequireQualifiedAccess>]
+    type ErasedArity =
+        /// Consumes exactly one value token: `--foo bar` or `--foo=bar`.
+        | One
+        /// Boolean-like (a `bool` field or a two-case flag DU): consumes a following token only if
+        /// that token is a boolean literal; otherwise the occurrence alone means "true".
+        | BoolLike
+
+    /// What happens if an argument receives no occurrence at all?
+    [<RequireQualifiedAccess>]
+    type ErasedRequirement =
+        /// The parse fails.
+        | Required
+        /// The argument is absent (an `option`-typed field, or a list which may be empty).
+        | Optional
+        /// The typed layer falls back to a default source (environment variable or user function).
+        | HasDefault
+
+    /// One named (non-positional) argument, erased to its shape.
+    type ErasedLeaf =
+        {
+            /// Index into the typed layer's converter table.
+            Id : int
+            /// Long forms without the leading `--`, in declaration order; the head is the
+            /// canonical form used in messages.
+            Forms : string list
+            /// Whether `--no-<form>` is also accepted, negating the flag. Only meaningful for
+            /// boolean-like arguments.
+            AcceptsNegation : bool
+            Arity : ErasedArity
+            /// May this argument occur more than once (list accumulation)?
+            Repeatable : bool
+            Requirement : ErasedRequirement
+            /// Human-readable description of the target type, e.g. "int32", for help text.
+            TypeDescription : string
+            /// Help text for this argument, if any.
+            Help : string option
+        }
+
+    /// How does the positional sink treat an *unrecognised* `--key`-shaped token?
+    [<RequireQualifiedAccess>]
+    type ErasedFlagLikeBehaviour =
+        /// Collect it as a positional arg (`[<PositionalArgs true>]`).
+        | Collect
+        /// Reject the parse (`[<PositionalArgs false>]` / `[<PositionalArgs>]`).
+        | Reject
+
+    /// A positional-argument sink: a consumer of the positional-token stream.
+    type ErasedPositional =
+        {
+            /// Index into the typed layer's positional converter table. Ids live in their own
+            /// space, independent of ErasedLeaf ids.
+            Id : int
+            /// The forms under which the sink itself can be addressed as `--form value` /
+            /// `--form=value` (the field name argified, plus any explicit long forms); the head
+            /// is used in help text. Two sinks in mutually exclusive Sum cases may share a
+            /// form: all keyed positional forms have the same arity, and the capacity rule
+            /// means the sinks can never both be active.
+            Forms : string list
+            /// The flag-like policy is lexical (it controls tokenization, which happens before
+            /// any case is selected), so every sink in a schema must agree on it;
+            /// WellFormedSchema enforces the agreement.
+            FlagLike : ErasedFlagLikeBehaviour
+            TypeDescription : string
+            Help : string option
+        }
+
+    /// The shape of a parser: a tree of products (records), sums (discriminated unions) and
+    /// leaves (actual arguments, named or positional). Leaves are referred to by id; the flat
+    /// leaf tables plus this tree fully describe the schema.
+    [<RequireQualifiedAccess>]
+    type ErasedTree =
+        | Leaf of leafId : int
+        /// A positional-stream consumer. At most one may appear in any complete
+        /// interpretation of the tree (one case chosen for every reachable Sum): argv holds a
+        /// single positional stream, and two unbounded consumers would admit no canonical
+        /// partition of it. WellFormedSchema enforces this capacity rule.
+        | PositionalLeaf of positionalId : int
+        | Product of children : ErasedTree list
+        /// Cases are in declaration order; the string is the case name, for messages.
+        | Sum of sumId : int * cases : (string * ErasedTree) list
+
+    type ErasedSchema =
+        {
+            /// All named leaves reachable in the tree, in field declaration order (the order
+            /// in which "missing required argument" errors are reported).
+            Leaves : ErasedLeaf list
+            Tree : ErasedTree
+            /// All positional sinks reachable in the tree, in declaration order.
+            Positionals : ErasedPositional list
+        }
+
+    /// One observed occurrence of a named argument.
+    type ErasedOccurrence =
+        {
+            LeafId : int
+            /// The raw value token, if one was consumed. None for an arity-0 boolean occurrence
+            /// (which means "true", or "false" if negated).
+            Value : string option
+            /// Whether the occurrence arrived via a `--no-` form.
+            Negated : bool
+            /// The argv token which introduced this occurrence, e.g. "--foo" or "--foo=3", for
+            /// error messages. For a `--key=value` occurrence this is the whole token; for a
+            /// `--key value` occurrence it is just the key token.
+            Source : string
+        }
+
+    /// A structural (pre-conversion) parse error.
+    [<RequireQualifiedAccess>]
+    type ScanError =
+        /// A key which consumes a value was the last token (or the last before `--`).
+        | TrailingKeyNoValue of source : string
+        /// `--key=value` where the key is not recognised, and the schema does not collect
+        /// flag-like positionals. Aborts the parse.
+        | UnknownKeyEqualsValue of key : string * value : string
+        /// `--key` where the key is not recognised, and the schema does not collect flag-like
+        /// positionals. Aborts the parse.
+        | UnknownKey of source : string
+
+    /// How a positional value was spelled on the command line.
+    [<RequireQualifiedAccess>]
+    type PositionalForm =
+        /// The value stood alone as its own token.
+        | Bare
+        /// `--rest=value`, where `rest` is the positional sink's own name; the key text is
+        /// recorded as spelled (it matches case-insensitively).
+        | KeyEquals of key : string
+        /// `--rest value`; the key text is recorded as spelled.
+        | KeySpaced of key : string
+
+    /// One value belonging to the positional stream. Scanning does not decide which sink
+    /// receives it: the token's spelling determines only the *candidate* sinks, and the actual
+    /// consumer is resolved after case selection. (For today's schemas, with at most one sink,
+    /// the candidate set is that sink alone.)
+    type PositionalEvent =
+        {
+            Value : string
+            /// True for tokens which appeared after the `--` separator.
+            AfterSeparator : bool
+            /// How the value was spelled; preserved exactly, for diagnostics and lossless
+            /// reconstruction of argv.
+            Form : PositionalForm
+            /// The sinks which could consume this token: every sink for a bare token
+            /// (including everything after `--`, and flag-like tokens collected in Collect
+            /// mode), the claimants of the key for a keyed one.
+            Candidates : Set<int>
+        }
+
+    /// The scan phase emits an ordered log of these; the typed layer folds over the log in order,
+    /// so that e.g. conversion errors interleave with structural errors in argv order.
+    [<RequireQualifiedAccess>]
+    type ScanEvent =
+        | Occurrence of ErasedOccurrence
+        /// A value belonging to the positional stream (or to the leftover-args accumulator,
+        /// for a schema with no sink).
+        | Positional of PositionalEvent
+        | Error of ScanError
+        /// A `--help`-shaped token was seen in key position; the token itself is recorded (the
+        /// match is case-insensitive, so it may be e.g. "--HELP").
+        | Help of source : string
+        /// The literal `--` separator token.
+        | Separator
+
+    [<RequireQualifiedAccess>]
+    module ScanError =
+        /// True if this error means "stop the parse immediately".
+        let isFatal (e : ScanError) : bool =
+            match e with
+            | ScanError.TrailingKeyNoValue _ -> false
+            | ScanError.UnknownKeyEqualsValue _ -> true
+            | ScanError.UnknownKey _ -> true
+
+    /// What the scanner is waiting for.
+    /// The leaf is None when the pending key was unrecognised: such a key is held back because
+    /// its fate (collected as a flag-like positional, or a hard error) is only known once we see
+    /// whether any token follows it.
+    [<RequireQualifiedAccess>]
+    type private ScanState =
+        | AwaitingKey
+        | AwaitingValue of leaf : (ErasedLeaf * bool) option * source : string
+        /// A positional sink's own key (`--rest`) was seen; the next token is its value,
+        /// consumed greedily (keyed positionals always take exactly one value). `candidates`
+        /// are the sinks claiming the key.
+        | AwaitingPositionalValue of candidates : Set<int> * source : string
+
+    /// Match a full `--key` token (value part already split off) against the leaf table.
+    /// Returns the leaf and whether the match was via the negated `--no-` form.
+    let matchLeaf (leaves : ErasedLeaf list) (key : string) : (ErasedLeaf * bool) option =
+        leaves
+        |> List.tryPick (fun leaf ->
+            leaf.Forms
+            |> List.tryPick (fun form ->
+                if String.Equals (key, "--" + form, StringComparison.OrdinalIgnoreCase) then
+                    Some (leaf, false)
+                elif
+                    leaf.AcceptsNegation
+                    && String.Equals (key, "--no-" + form, StringComparison.OrdinalIgnoreCase)
+                then
+                    Some (leaf, true)
+                else
+                    None
+            )
+        )
+
+    /// Is this token a boolean literal, in the sense the scanner uses to decide whether a
+    /// boolean-like key consumes it as a value?
+    let isBoolLiteral (token : string) : bool =
+        let mutable ignored = false
+        Boolean.TryParse (token, &ignored)
+
+    /// Scan argv into an ordered event log. Pure: performs no conversion, throws no exceptions.
+    ///
+    /// The grammar:
+    /// - `--` ends key processing; every subsequent token is positional. A key pending a value at
+    ///   the separator is resolved exactly as at end-of-input: boolean-like keys become an
+    ///   arity-0 occurrence, anything else is a trailing-key error.
+    /// - `--help` (case-insensitive) in key position requests help.
+    /// - A recognised key consumes the next token as its value, greedily: `--a --b=false` gives
+    ///   `a` the value `--b=false` if `a` is not boolean-like. Boolean-like keys consume the next
+    ///   token only if it is a boolean literal.
+    /// - An unrecognised `--key` is held pending: if a token follows, the key is collected as a
+    ///   flag-like positional (where the schema allows) and the following token is re-processed
+    ///   in key position; at end-of-input it is a trailing-key error; where flag-like collection
+    ///   is not allowed, it is a fatal unknown-key error.
+    /// - The positional sink's own name is a key too: `--rest=value` and `--rest value` route
+    ///   `value` to the sink (always consuming exactly one value, greedily).
+    /// - Any other token in key position is positional.
+    let scan (schema : ErasedSchema) (args : string list) : ScanEvent list =
+        let collectFlagLike =
+            match schema.Positionals with
+            | [] -> false
+            | positionals ->
+                positionals
+                |> List.forall (fun p ->
+                    match p.FlagLike with
+                    | ErasedFlagLikeBehaviour.Collect -> true
+                    | ErasedFlagLikeBehaviour.Reject -> false
+                )
+
+        /// Every sink: the candidate set of a bare positional token.
+        let allSinks : Set<int> =
+            schema.Positionals |> List.map (fun p -> p.Id) |> Set.ofList
+
+        /// The sinks claiming this full `--key` token (value part already split off); empty
+        /// when the token does not name a positional sink at all.
+        let positionalClaimants (key : string) : Set<int> =
+            schema.Positionals
+            |> List.filter (fun p ->
+                p.Forms
+                |> List.exists (fun form -> String.Equals (key, "--" + form, StringComparison.OrdinalIgnoreCase))
+            )
+            |> List.map (fun p -> p.Id)
+            |> Set.ofList
+
+        let bareToken (value : string) (afterSeparator : bool) : ScanEvent =
+            ScanEvent.Positional
+                {
+                    Value = value
+                    AfterSeparator = afterSeparator
+                    Form = PositionalForm.Bare
+                    Candidates = allSinks
+                }
+
+        /// Resolve a pending key which will receive no value (end of input, or `--` next).
+        let resolvePending (state : ScanState) : ScanEvent list =
+            match state with
+            | ScanState.AwaitingKey -> []
+            | ScanState.AwaitingValue (Some (leaf, negated), source) ->
+                match leaf.Arity with
+                | ErasedArity.BoolLike ->
+                    [
+                        ScanEvent.Occurrence
+                            {
+                                LeafId = leaf.Id
+                                Value = None
+                                Negated = negated
+                                Source = source
+                            }
+                    ]
+                | ErasedArity.One -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
+            | ScanState.AwaitingValue (None, source) -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
+            | ScanState.AwaitingPositionalValue (_, source) -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
+
+        let rec go (state : ScanState) (acc : ScanEvent list) (args : string list) : ScanEvent list =
+            match args with
+            | [] -> List.rev acc @ resolvePending state
+            | "--" :: rest ->
+                let positionals = rest |> List.map (fun token -> bareToken token true)
+                List.rev acc @ resolvePending state @ (ScanEvent.Separator :: positionals)
+            | arg :: rest ->
+                match state with
+                | ScanState.AwaitingKey ->
+                    if not (arg.StartsWith ("--", StringComparison.Ordinal)) then
+                        go ScanState.AwaitingKey (bareToken arg false :: acc) rest
+                    elif String.Equals (arg, "--help", StringComparison.OrdinalIgnoreCase) then
+                        go ScanState.AwaitingKey (ScanEvent.Help arg :: acc) rest
+                    else
+                        let equals = arg.IndexOf ("=", StringComparison.Ordinal)
+
+                        if equals >= 0 then
+                            let key = arg.Substring (0, equals)
+                            let value = arg.Substring (equals + 1)
+
+                            match matchLeaf schema.Leaves key with
+                            | Some (leaf, negated) ->
+                                let occurrence =
+                                    {
+                                        LeafId = leaf.Id
+                                        Value = Some value
+                                        Negated = negated
+                                        Source = arg
+                                    }
+
+                                go ScanState.AwaitingKey (ScanEvent.Occurrence occurrence :: acc) rest
+                            | None ->
+                                let claimants = positionalClaimants key
+
+                                if not (Set.isEmpty claimants) then
+                                    let event =
+                                        ScanEvent.Positional
+                                            {
+                                                Value = value
+                                                AfterSeparator = false
+                                                Form = PositionalForm.KeyEquals key
+                                                Candidates = claimants
+                                            }
+
+                                    go ScanState.AwaitingKey (event :: acc) rest
+                                elif collectFlagLike then
+                                    go ScanState.AwaitingKey (bareToken arg false :: acc) rest
+                                else
+                                    go
+                                        ScanState.AwaitingKey
+                                        (ScanEvent.Error (ScanError.UnknownKeyEqualsValue (key, value)) :: acc)
+                                        rest
+                        else
+                            match matchLeaf schema.Leaves arg with
+                            | Some matched -> go (ScanState.AwaitingValue (Some matched, arg)) acc rest
+                            | None ->
+                                let claimants = positionalClaimants arg
+
+                                if not (Set.isEmpty claimants) then
+                                    go (ScanState.AwaitingPositionalValue (claimants, arg)) acc rest
+                                else
+                                    go (ScanState.AwaitingValue (None, arg)) acc rest
+                | ScanState.AwaitingValue (Some (leaf, negated), source) ->
+                    let consume (value : string) : ScanEvent =
+                        ScanEvent.Occurrence
+                            {
+                                LeafId = leaf.Id
+                                Value = Some value
+                                Negated = negated
+                                Source = source
+                            }
+
+                    match leaf.Arity with
+                    | ErasedArity.One -> go ScanState.AwaitingKey (consume arg :: acc) rest
+                    | ErasedArity.BoolLike ->
+                        if isBoolLiteral arg then
+                            go ScanState.AwaitingKey (consume arg :: acc) rest
+                        else
+                            let occurrence =
+                                {
+                                    LeafId = leaf.Id
+                                    Value = None
+                                    Negated = negated
+                                    Source = source
+                                }
+
+                            go ScanState.AwaitingKey (ScanEvent.Occurrence occurrence :: acc) (arg :: rest)
+                | ScanState.AwaitingValue (None, source) ->
+                    if collectFlagLike then
+                        go ScanState.AwaitingKey (bareToken source false :: acc) (arg :: rest)
+                    else
+                        go ScanState.AwaitingKey (ScanEvent.Error (ScanError.UnknownKey source) :: acc) (arg :: rest)
+                | ScanState.AwaitingPositionalValue (candidates, source) ->
+                    let event =
+                        ScanEvent.Positional
+                            {
+                                Value = arg
+                                AfterSeparator = false
+                                Form = PositionalForm.KeySpaced source
+                                Candidates = candidates
+                            }
+
+                    go ScanState.AwaitingKey (event :: acc) rest
+
+        go ScanState.AwaitingKey [] args
+
+    /// A failure to choose a unique case for a Sum node, or to route the positional stream.
+    [<RequireQualifiedAccess>]
+    type SelectionError =
+        /// Occurrences were seen for leaves belonging to two (or more) different cases of one
+        /// union. The witnesses are (case name, example source token routed to that case).
+        | ConflictingCases of sumId : int * witnesses : (string * string) list
+        /// No case of this union was touched, and no case can be satisfied with no arguments.
+        | NoCaseSelected of sumId : int * caseNames : string list
+        /// No case of this union was touched, and more than one case can be satisfied with no
+        /// arguments, so the choice is ambiguous. (A generation-time check normally rejects
+        /// schemas where this can happen; this is the runtime safety net.)
+        | AmbiguousEmptyCases of sumId : int * caseNames : string list
+        /// Positional tokens were seen, but no positional sink consistent with the named
+        /// arguments can consume them all. `source` is the first positional token, as spelled.
+        | UnroutablePositional of source : string
+        /// The positional stream could be consumed by more than one sink, and nothing else
+        /// distinguishes their alternatives. `source` is the first positional token, as
+        /// spelled; `sinkIds` are the competing sinks. (A generation-time check normally
+        /// rejects schemas where this can happen with bare tokens; this is the runtime safety
+        /// net, and it can also fire for a keyed form shared between otherwise-undistinguished
+        /// alternatives.)
+        | AmbiguousPositionalRouting of source : string * sinkIds : int list
+
+    /// The result of case selection: which case index was chosen for each Sum node reachable in
+    /// the selected interpretation, and which leaves are *active* (belong to selected cases).
+    /// Leaves of unselected cases are inactive: they contribute no missing-required errors and
+    /// their defaults must never run.
+    type Selection =
+        {
+            Choices : Map<int, int>
+            /// Ids of named leaves which are part of the selected interpretation.
+            ActiveLeaves : Set<int>
+            /// The positional sink which is part of the selected interpretation, if any. The
+            /// capacity rule (enforced by WellFormedSchema) guarantees there is at most one.
+            ActivePositional : int option
+            Errors : SelectionError list
+        }
+
+    /// Can this subtree be satisfied with zero occurrences? A named leaf can iff it is not
+    /// required; a positional leaf always can (an empty stream is fine); a product can iff all
+    /// its children can; a sum can iff some case can.
+    let rec private emptyOk (leaves : Map<int, ErasedLeaf>) (tree : ErasedTree) : bool =
+        match tree with
+        | ErasedTree.Leaf leafId ->
+            match (Map.find leafId leaves).Requirement with
+            | ErasedRequirement.Required -> false
+            | ErasedRequirement.Optional
+            | ErasedRequirement.HasDefault -> true
+        | ErasedTree.PositionalLeaf _ -> true
+        | ErasedTree.Product children -> children |> List.forall (emptyOk leaves)
+        | ErasedTree.Sum (_, cases) -> cases |> List.exists (fun (_, case) -> emptyOk leaves case)
+
+    /// All named-leaf ids under a subtree, in declaration order.
+    let rec leafIds (tree : ErasedTree) : int list =
+        match tree with
+        | ErasedTree.Leaf leafId -> [ leafId ]
+        | ErasedTree.PositionalLeaf _ -> []
+        | ErasedTree.Product children -> children |> List.collect leafIds
+        | ErasedTree.Sum (_, cases) -> cases |> List.collect (fun (_, case) -> leafIds case)
+
+    /// All positional-sink ids under a subtree, in declaration order.
+    let rec positionalIds (tree : ErasedTree) : int list =
+        match tree with
+        | ErasedTree.Leaf _ -> []
+        | ErasedTree.PositionalLeaf positionalId -> [ positionalId ]
+        | ErasedTree.Product children -> children |> List.collect positionalIds
+        | ErasedTree.Sum (_, cases) -> cases |> List.collect (fun (_, case) -> positionalIds case)
+
+    /// The maximum number of positional sinks any complete interpretation of the tree can
+    /// contain: a product's interpretations combine its children's, a sum's take the maximum
+    /// over its cases.
+    let rec maxPositionals (tree : ErasedTree) : int =
+        match tree with
+        | ErasedTree.Leaf _ -> 0
+        | ErasedTree.PositionalLeaf _ -> 1
+        | ErasedTree.Product children -> children |> List.sumBy maxPositionals
+        | ErasedTree.Sum (_, cases) ->
+            match cases with
+            | [] -> 0
+            | cases -> cases |> List.map (fun (_, case) -> maxPositionals case) |> List.max
+
+    /// Select a case for every Sum node reachable in the selected interpretation, given a witness
+    /// (an example source token) for every leaf which received an occurrence.
+    ///
+    /// The rule, valid because argument names are globally unique across the schema: a case is
+    /// "touched" if any leaf beneath it received an occurrence. Exactly one touched case means
+    /// that case is selected; two or more touched cases is a conflict; zero touched cases falls
+    /// back to the unique case satisfiable with no arguments.
+    /// Like `select` below, but a positional-stream hypothesis may be supplied: the sink with
+    /// the given id is treated as one additional observed (optional) leaf, its witness being
+    /// the given source text. This is how the resolver asks "which case would be selected if
+    /// sink p consumed the positional stream?".
+    let private selectWith
+        (schema : ErasedSchema)
+        (observed : Map<int, string>)
+        (positionalWitness : (int * string) option)
+        : Selection
+        =
+        let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
+
+        let rec go (tree : ErasedTree) : Map<int, int> * Set<int> * Set<int> * SelectionError list =
+            match tree with
+            | ErasedTree.Leaf leafId -> Map.empty, Set.singleton leafId, Set.empty, []
+            | ErasedTree.PositionalLeaf positionalId -> Map.empty, Set.empty, Set.singleton positionalId, []
+            | ErasedTree.Product children ->
+                ((Map.empty, Set.empty, Set.empty, []), children)
+                ||> List.fold (fun (choices, active, activePos, errors) child ->
+                    let childChoices, childActive, childActivePos, childErrors = go child
+                    let choices = (choices, childChoices) ||> Map.fold (fun m k v -> Map.add k v m)
+                    choices, Set.union active childActive, Set.union activePos childActivePos, errors @ childErrors
+                )
+            | ErasedTree.Sum (sumId, cases) ->
+                let touched =
+                    cases
+                    |> List.indexed
+                    |> List.choose (fun (i, (name, case)) ->
+                        let witness =
+                            leafIds case |> List.tryPick (fun leafId -> Map.tryFind leafId observed)
+
+                        let witness =
+                            match witness with
+                            | Some source -> Some source
+                            | None ->
+                                match positionalWitness with
+                                | Some (positionalId, source) when positionalIds case |> List.contains positionalId ->
+                                    Some source
+                                | _ -> None
+
+                        match witness with
+                        | Some source -> Some (i, name, source)
+                        | None -> None
+                    )
+
+                match touched with
+                | [ (index, _, _) ] ->
+                    let _, case = List.item index cases
+                    let childChoices, childActive, childActivePos, childErrors = go case
+                    Map.add sumId index childChoices, childActive, childActivePos, childErrors
+                | [] ->
+                    let satisfiable =
+                        cases
+                        |> List.indexed
+                        |> List.filter (fun (_, (_, case)) -> emptyOk leavesById case)
+
+                    match satisfiable with
+                    | [ (index, (_, case)) ] ->
+                        let childChoices, childActive, childActivePos, childErrors = go case
+                        Map.add sumId index childChoices, childActive, childActivePos, childErrors
+                    | [] ->
+                        let names = cases |> List.map fst
+                        Map.empty, Set.empty, Set.empty, [ SelectionError.NoCaseSelected (sumId, names) ]
+                    | multiple ->
+                        let names = multiple |> List.map (fun (_, (name, _)) -> name)
+                        Map.empty, Set.empty, Set.empty, [ SelectionError.AmbiguousEmptyCases (sumId, names) ]
+                | multiple ->
+                    let witnesses = multiple |> List.map (fun (_, name, source) -> name, source)
+                    Map.empty, Set.empty, Set.empty, [ SelectionError.ConflictingCases (sumId, witnesses) ]
+
+        let choices, active, activePos, errors = go schema.Tree
+
+        {
+            Choices = choices
+            ActiveLeaves = active
+            ActivePositional =
+                match Set.toList activePos with
+                | [] -> None
+                | [ p ] -> Some p
+                | _ ->
+                    failwith
+                        "WoofWare.Myriad internal error: two positional sinks were active at once; the schema was not validated"
+            Errors = errors
+        }
+
+    let select (schema : ErasedSchema) (observed : Map<int, string>) : Selection = selectWith schema observed None
+
+    /// A positional event's original spelling, for error messages.
+    let describePositionalEvent (event : PositionalEvent) : string =
+        match event.Form with
+        | PositionalForm.Bare -> event.Value
+        | PositionalForm.KeyEquals key -> key + "=" + event.Value
+        | PositionalForm.KeySpaced key -> key + " " + event.Value
+
+    /// Structural resolution: select a case for every Sum *and* route the positional stream,
+    /// given the named observations and the scanned positional events. Pure, and independent
+    /// of conversion by construction: it sees only which named leaves were observed and how
+    /// the positional tokens were spelled.
+    ///
+    /// The rule (mirroring the exhaustive reference semantics): a complete interpretation
+    /// accepts the input iff it contains every observed named leaf, all its required leaves
+    /// were observed, and — when positional tokens exist — it contains a sink which is a
+    /// candidate of every positional event. The parse succeeds exactly when one
+    /// interpretation accepts. Efficiently: intersect the events' candidate sets, and run the
+    /// compositional selector once per candidate sink, with that sink treated as one
+    /// additional observed leaf.
+    ///
+    /// Error reporting prefers the friendliest diagnosis: an interpretation which is unique
+    /// up to missing required arguments is still selected (the missing arguments are reported
+    /// downstream, as for a purely named parse), so positional routing only surfaces in
+    /// errors when it is genuinely the obstacle.
+    let resolve
+        (schema : ErasedSchema)
+        (observed : Map<int, string>)
+        (positionalEvents : PositionalEvent list)
+        : Selection
+        =
+        match positionalEvents, schema.Positionals with
+        | [], _
+        | _, [] -> select schema observed
+        | events, _ ->
+            let candidates =
+                events |> List.map (fun event -> event.Candidates) |> Set.intersectMany
+
+            /// Are all the required named leaves active under this selection observed?
+            let requiredComplete (selection : Selection) : bool =
+                schema.Leaves
+                |> List.forall (fun leaf ->
+                    match leaf.Requirement with
+                    | ErasedRequirement.Required ->
+                        not (Set.contains leaf.Id selection.ActiveLeaves)
+                        || Map.containsKey leaf.Id observed
+                    | ErasedRequirement.Optional
+                    | ErasedRequirement.HasDefault -> true
+                )
+
+            let firstSource = describePositionalEvent (List.head events)
+
+            let hypotheses =
+                schema.Positionals
+                |> List.filter (fun p -> Set.contains p.Id candidates)
+                |> List.map (fun p ->
+                    let witness =
+                        events
+                        |> List.tryFind (fun event -> Set.contains p.Id event.Candidates)
+                        |> Option.map describePositionalEvent
+                        |> Option.defaultValue firstSource
+
+                    p.Id, selectWith schema observed (Some (p.Id, witness))
+                )
+
+            let clean =
+                hypotheses
+                |> List.filter (fun (p, selection) ->
+                    List.isEmpty selection.Errors
+                    && (
+                        match selection.ActivePositional with
+                        | Some active -> active = p
+                        | None -> false
+                    )
+                )
+
+            let fullyValid =
+                clean |> List.filter (fun (_, selection) -> requiredComplete selection)
+
+            let innerAmbiguous =
+                hypotheses
+                |> List.filter (fun (p, selection) ->
+                    not (List.isEmpty selection.Errors)
+                    && (selection.Errors
+                        |> List.forall (fun error ->
+                            match error with
+                            | SelectionError.AmbiguousEmptyCases _ -> true
+                            | _ -> false
+                        ))
+                    && (
+                        match selection.ActivePositional with
+                        | Some active -> active = p
+                        | None -> false
+                    )
+                    && requiredComplete selection
+                )
+
+            let ambiguous (competing : (int * Selection) list) : Selection =
+                {
+                    Choices = Map.empty
+                    ActiveLeaves = Set.empty
+                    ActivePositional = None
+                    Errors =
+                        [
+                            SelectionError.AmbiguousPositionalRouting (
+                                firstSource,
+                                competing |> List.map (fun (p, _) -> p)
+                            )
+                        ]
+                }
+
+            match fullyValid, innerAmbiguous with
+            | [ (_, selection) ], [] -> selection
+            | [], [ (_, selection) ] -> selection
+            | [], [] ->
+                match clean with
+                | [ (_, selection) ] -> selection
+                | clean ->
+                    let selection = select schema observed
+
+                    let unroutable =
+                        { selection with
+                            Errors = selection.Errors @ [ SelectionError.UnroutablePositional firstSource ]
+                        }
+
+                    if Set.isEmpty candidates then
+                        unroutable
+                    elif not (List.isEmpty selection.Errors) then
+                        selection
+                    else
+                        match selection.ActivePositional with
+                        | Some active when events |> List.forall (fun event -> Set.contains active event.Candidates) ->
+                            selection
+                        | _ ->
+                            match clean with
+                            | _ :: _ :: _ -> ambiguous clean
+                            | _ -> unroutable
+            | fullyValid, innerAmbiguous -> ambiguous (fullyValid @ innerAmbiguous)
+
+    /// A structural error found after scanning and selection.
+    [<RequireQualifiedAccess>]
+    type ValidationError =
+        /// A required leaf (active under the selection) received no occurrence.
+        | MissingRequired of leafId : int
+        /// A non-repeatable leaf received more than one occurrence (through any of its forms,
+        /// including negated ones). Carries every occurrence, in argv order.
+        | DuplicateOccurrences of leafId : int * occurrences : ErasedOccurrence list
+        /// An occurrence was routed to a leaf which is not part of the selected interpretation.
+        /// (Selection has necessarily already reported a conflict in this situation; this exists
+        /// so that every occurrence is accounted for.)
+        | InactiveLeaf of occurrence : ErasedOccurrence
+        /// Positional tokens were seen but the schema has no positional sink.
+        | NoPositionalSink of tokens : string list
+
+    /// Structural validation of the scanned events against the selected interpretation.
+    /// Returns the errors (missing-required in leaf declaration order), together with the ids of
+    /// active defaulted leaves which received no occurrence and so must fall back to their
+    /// default source.
+    let validate
+        (schema : ErasedSchema)
+        (selection : Selection)
+        (events : ScanEvent list)
+        : ValidationError list * int list
+        =
+        let observedIds =
+            events
+            |> List.choose (fun event ->
+                match event with
+                | ScanEvent.Occurrence occ -> Some occ.LeafId
+                | _ -> None
+            )
+            |> Set.ofList
+
+        let missing =
+            schema.Leaves
+            |> List.filter (fun leaf ->
+                Set.contains leaf.Id selection.ActiveLeaves
+                && not (Set.contains leaf.Id observedIds)
+                && (
+                    match leaf.Requirement with
+                    | ErasedRequirement.Required -> true
+                    | ErasedRequirement.Optional
+                    | ErasedRequirement.HasDefault -> false
+                )
+            )
+            |> List.map (fun leaf -> ValidationError.MissingRequired leaf.Id)
+
+        let duplicates =
+            let occurrencesByLeaf =
+                events
+                |> List.choose (fun event ->
+                    match event with
+                    | ScanEvent.Occurrence occ -> Some occ
+                    | _ -> None
+                )
+                |> List.groupBy (fun occurrence -> occurrence.LeafId)
+
+            schema.Leaves
+            |> List.choose (fun leaf ->
+                if leaf.Repeatable then
+                    None
+                else
+                    match occurrencesByLeaf |> List.tryFind (fun (leafId, _) -> leafId = leaf.Id) with
+                    | Some (_, occurrences) when List.length occurrences > 1 ->
+                        Some (ValidationError.DuplicateOccurrences (leaf.Id, occurrences))
+                    | _ -> None
+            )
+
+        let inactive =
+            events
+            |> List.choose (fun event ->
+                match event with
+                | ScanEvent.Occurrence occ when not (Set.contains occ.LeafId selection.ActiveLeaves) ->
+                    Some (ValidationError.InactiveLeaf occ)
+                | _ -> None
+            )
+
+        let noSink =
+            match schema.Positionals with
+            | _ :: _ -> []
+            | [] ->
+                let tokens =
+                    events
+                    |> List.choose (fun event ->
+                        match event with
+                        | ScanEvent.Positional positional -> Some positional.Value
+                        | _ -> None
+                    )
+
+                match tokens with
+                | [] -> []
+                | tokens -> [ ValidationError.NoPositionalSink tokens ]
+
+        let needsDefault =
+            schema.Leaves
+            |> List.filter (fun leaf ->
+                Set.contains leaf.Id selection.ActiveLeaves
+                && not (Set.contains leaf.Id observedIds)
+                && (
+                    match leaf.Requirement with
+                    | ErasedRequirement.HasDefault -> true
+                    | ErasedRequirement.Required
+                    | ErasedRequirement.Optional -> false
+                )
+            )
+            |> List.map (fun leaf -> leaf.Id)
+
+        duplicates @ missing @ inactive @ noSink, needsDefault
+
+    /// A structural defect in an ErasedSchema: a violation of an invariant which the scanning
+    /// and selection semantics rely on.
+    ///
+    /// The generator establishes these invariants at generation time where it can see the
+    /// argument forms; it cannot when a form is supplied via e.g. a [<Literal>] constant, which
+    /// the untyped AST does not resolve. Generated code therefore re-checks them at runtime via
+    /// WellFormedSchema.check: a malformed schema must fail loudly up front, not silently route
+    /// colliding tokens to whichever leaf was declared first.
+    [<RequireQualifiedAccess>]
+    type SchemaError =
+        /// Two leaves in the table share an id.
+        | DuplicateLeafId of leafId : int
+        /// The tree refers to this leaf more than once.
+        | LeafRepeatedInTree of leafId : int
+        /// The tree refers to a leaf id which is not in the table.
+        | LeafNotInTable of leafId : int
+        /// A leaf in the table is not reachable in the tree.
+        | LeafNotInTree of leafId : int
+        /// Two Sum nodes in the tree share an id.
+        | DuplicateSumId of sumId : int
+        /// A leaf has no forms at all, so no token could ever address it.
+        | NoForms of leafId : int
+        /// A leaf accepts `--no-` negation but is not boolean-like.
+        | NegationOnNonBool of leafId : int
+        /// A form is the empty string: its token would be `--`, which the scanner always
+        /// treats as the positional separator, so the argument could never be addressed.
+        | EmptyForm of claimant : string
+        /// A form contains an equals sign: the scanner splits a `--key=value` token at its
+        /// *first* `=`, so such a form can never match. An argument required under such a form
+        /// makes the schema (or a union case of it) permanently unsatisfiable.
+        | FormContainsEquals of claimant : string * form : string
+        /// Two distinct claimants respond to the same `--token` under the scanner's
+        /// case-insensitive matching (so e.g. forms `foo` and `FOO` collide, as do a literal
+        /// form `no-foo` and the negated variant of a negatable `foo`). The token is reported
+        /// in the first claimant's spelling; the claimant descriptions are human-readable, in
+        /// declaration order. Positional sinks *may* share forms with each other (a keyed
+        /// positional form always has the same meaning whichever sink wins), so a collision
+        /// is only reported when at least one claimant is not a sink.
+        | TokenCollision of token : string * claimants : string list
+        /// Two positional sinks in the table share an id.
+        | DuplicatePositionalId of positionalId : int
+        /// The tree refers to this positional sink more than once.
+        | PositionalRepeatedInTree of positionalId : int
+        /// The tree refers to a positional-sink id which is not in the table.
+        | PositionalNotInTable of positionalId : int
+        /// A positional sink in the table is not reachable in the tree.
+        | PositionalNotInTree of positionalId : int
+        /// Some complete interpretation of the tree contains more than one positional sink.
+        /// argv holds a single positional stream, and two unbounded consumers would admit no
+        /// canonical partition of it: `P × Q` is malformed, while `(A × P) + (B × Q)` is fine.
+        | PositionalCapacityExceeded of maximum : int
+        /// Positional sinks disagree on the treatment of unrecognised flag-like tokens. The
+        /// policy is lexical — it controls tokenization, which happens before any case is
+        /// selected — so it must be schema-global.
+        | FlagLikePolicyDisagreement
+
+    [<RequireQualifiedAccess>]
+    module SchemaError =
+        /// Render a schema error for humans. These describe a bug in the parser's *definition*,
+        /// not in the arguments a user supplied.
+        let describe (error : SchemaError) : string =
+            match error with
+            | SchemaError.DuplicateLeafId leafId -> sprintf "two arguments share the id %i" leafId
+            | SchemaError.LeafRepeatedInTree leafId ->
+                sprintf "the schema tree refers to argument id %i more than once" leafId
+            | SchemaError.LeafNotInTable leafId ->
+                sprintf "the schema tree refers to argument id %i, which does not exist" leafId
+            | SchemaError.LeafNotInTree leafId -> sprintf "argument id %i is not reachable in the schema tree" leafId
+            | SchemaError.DuplicateSumId sumId -> sprintf "two alternative-groups share the id %i" sumId
+            | SchemaError.NoForms leafId -> sprintf "argument id %i has no names" leafId
+            | SchemaError.NegationOnNonBool leafId ->
+                sprintf "argument id %i accepts --no- negation but is not boolean-like" leafId
+            | SchemaError.EmptyForm claimant ->
+                sprintf "%s has an empty name: its token would be '--', which is the positional separator" claimant
+            | SchemaError.FormContainsEquals (claimant, form) ->
+                sprintf
+                    "%s has the name '%s', which contains '='; a --key=value token splits at its first '=', so this argument could never be addressed"
+                    claimant
+                    form
+            | SchemaError.TokenCollision (token, claimants) ->
+                sprintf
+                    "the token '%s' is claimed by: %s (argument names are matched case-insensitively)"
+                    token
+                    (String.concat "; " claimants)
+            | SchemaError.DuplicatePositionalId positionalId ->
+                sprintf "two positional-args sinks share the id %i" positionalId
+            | SchemaError.PositionalRepeatedInTree positionalId ->
+                sprintf "the schema tree refers to positional-args sink id %i more than once" positionalId
+            | SchemaError.PositionalNotInTable positionalId ->
+                sprintf "the schema tree refers to positional-args sink id %i, which does not exist" positionalId
+            | SchemaError.PositionalNotInTree positionalId ->
+                sprintf "positional-args sink id %i is not reachable in the schema tree" positionalId
+            | SchemaError.PositionalCapacityExceeded maximum ->
+                sprintf
+                    "some alternative of the schema contains %i positional-args sinks; at most one may be active, because argv holds a single stream of positional args"
+                    maximum
+            | SchemaError.FlagLikePolicyDisagreement ->
+                "positional-args sinks disagree on whether to collect unrecognised flag-like tokens; that choice affects tokenization, which happens before alternatives are chosen between, so all sinks must agree"
+
+    /// An ErasedSchema which has passed the structural checks in WellFormedSchema.check.
+    ///
+    /// The selection semantics are only correct on schemas of this type: in particular, every
+    /// addressable `--token` (a form, a `--no-` variant of a negatable form, or the positional
+    /// sink's own name) must name at most one claimant under the scanner's case-insensitive
+    /// matching, or matchLeaf would silently route the token to whichever colliding leaf is
+    /// declared first — for a Sum schema, silently selecting the wrong case.
+    type WellFormedSchema = private | WellFormed of ErasedSchema
+
+    [<RequireQualifiedAccess>]
+    module WellFormedSchema =
+        /// All the structural defects of this schema (empty exactly when it is well-formed).
+        let errors (schema : ErasedSchema) : SchemaError list =
+            let duplicateLeafIds =
+                schema.Leaves
+                |> List.countBy (fun leaf -> leaf.Id)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (leafId, _) -> SchemaError.DuplicateLeafId leafId)
+
+            let treeIds = leafIds schema.Tree
+            let tableIds = schema.Leaves |> List.map (fun leaf -> leaf.Id)
+            let treeIdSet = Set.ofList treeIds
+            let tableIdSet = Set.ofList tableIds
+
+            let repeatedInTree =
+                treeIds
+                |> List.countBy (fun leafId -> leafId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (leafId, _) -> SchemaError.LeafRepeatedInTree leafId)
+
+            let notInTable =
+                treeIds
+                |> List.distinct
+                |> List.filter (fun leafId -> not (Set.contains leafId tableIdSet))
+                |> List.map SchemaError.LeafNotInTable
+
+            let notInTree =
+                tableIds
+                |> List.distinct
+                |> List.filter (fun leafId -> not (Set.contains leafId treeIdSet))
+                |> List.map SchemaError.LeafNotInTree
+
+            let positionalTreeIds = positionalIds schema.Tree
+            let positionalTableIds = schema.Positionals |> List.map (fun p -> p.Id)
+            let positionalTreeIdSet = Set.ofList positionalTreeIds
+            let positionalTableIdSet = Set.ofList positionalTableIds
+
+            let duplicatePositionalIds =
+                positionalTableIds
+                |> List.countBy (fun positionalId -> positionalId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (positionalId, _) -> SchemaError.DuplicatePositionalId positionalId)
+
+            let positionalRepeatedInTree =
+                positionalTreeIds
+                |> List.countBy (fun positionalId -> positionalId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (positionalId, _) -> SchemaError.PositionalRepeatedInTree positionalId)
+
+            let positionalNotInTable =
+                positionalTreeIds
+                |> List.distinct
+                |> List.filter (fun positionalId -> not (Set.contains positionalId positionalTableIdSet))
+                |> List.map SchemaError.PositionalNotInTable
+
+            let positionalNotInTree =
+                positionalTableIds
+                |> List.distinct
+                |> List.filter (fun positionalId -> not (Set.contains positionalId positionalTreeIdSet))
+                |> List.map SchemaError.PositionalNotInTree
+
+            let capacityExceeded =
+                let maximum = maxPositionals schema.Tree
+
+                if maximum > 1 then
+                    [ SchemaError.PositionalCapacityExceeded maximum ]
+                else
+                    []
+
+            let policyDisagreement =
+                let policies =
+                    schema.Positionals
+                    |> List.map (fun p ->
+                        match p.FlagLike with
+                        | ErasedFlagLikeBehaviour.Collect -> true
+                        | ErasedFlagLikeBehaviour.Reject -> false
+                    )
+                    |> List.distinct
+
+                match policies with
+                | []
+                | [ _ ] -> []
+                | _ -> [ SchemaError.FlagLikePolicyDisagreement ]
+
+            let duplicateSumIds =
+                let rec sumIds (tree : ErasedTree) : int list =
+                    match tree with
+                    | ErasedTree.Leaf _ -> []
+                    | ErasedTree.PositionalLeaf _ -> []
+                    | ErasedTree.Product children -> children |> List.collect sumIds
+                    | ErasedTree.Sum (sumId, cases) -> sumId :: (cases |> List.collect (fun (_, case) -> sumIds case))
+
+                sumIds schema.Tree
+                |> List.countBy (fun sumId -> sumId)
+                |> List.filter (fun (_, count) -> count > 1)
+                |> List.map (fun (sumId, _) -> SchemaError.DuplicateSumId sumId)
+
+            let noForms =
+                schema.Leaves
+                |> List.filter (fun leaf -> List.isEmpty leaf.Forms)
+                |> List.map (fun leaf -> SchemaError.NoForms leaf.Id)
+
+            let negationOnNonBool =
+                schema.Leaves
+                |> List.filter (fun leaf ->
+                    leaf.AcceptsNegation
+                    && (
+                        match leaf.Arity with
+                        | ErasedArity.BoolLike -> false
+                        | ErasedArity.One -> true
+                    )
+                )
+                |> List.map (fun leaf -> SchemaError.NegationOnNonBool leaf.Id)
+
+            let claims =
+                (schema.Leaves
+                 |> List.collect (fun leaf ->
+                     let plain =
+                         leaf.Forms
+                         |> List.map (fun form -> "--" + form, sprintf "argument '--%s'" form, false)
+
+                     let negated =
+                         if leaf.AcceptsNegation then
+                             leaf.Forms
+                             |> List.map (fun form ->
+                                 "--no-" + form, sprintf "the --no- form of argument '--%s'" form, false
+                             )
+                         else
+                             []
+
+                     plain @ negated
+                 ))
+                @ (schema.Positionals
+                   |> List.collect (fun positional ->
+                       positional.Forms
+                       |> List.map (fun form -> "--" + form, sprintf "the positional-args sink '--%s'" form, true)
+                   ))
+                @ [ "--help", "the built-in help flag", false ]
+
+            let collisions =
+                let indexOf =
+                    System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
+
+                let buckets = ResizeArray<ResizeArray<string * string * bool>> ()
+
+                for token, claimant, isSink in claims do
+                    match indexOf.TryGetValue token with
+                    | true, index -> buckets.[index].Add ((token, claimant, isSink))
+                    | false, _ ->
+                        indexOf.[token] <- buckets.Count
+                        let bucket = ResizeArray ()
+                        bucket.Add ((token, claimant, isSink))
+                        buckets.Add bucket
+
+                buckets
+                |> Seq.choose (fun bucket ->
+                    let allSinks = bucket |> Seq.forall (fun (_, _, isSink) -> isSink)
+
+                    if bucket.Count < 2 || allSinks then
+                        None
+                    else
+                        let token, _, _ = bucket.[0]
+
+                        Some (
+                            SchemaError.TokenCollision (
+                                token,
+                                bucket |> Seq.map (fun (_, claimant, _) -> claimant) |> List.ofSeq
+                            )
+                        )
+                )
+                |> List.ofSeq
+
+            let unaddressable =
+                (schema.Leaves
+                 |> List.collect (fun leaf ->
+                     let claimant = sprintf "argument id %i" leaf.Id
+
+                     leaf.Forms
+                     |> List.collect (fun form ->
+                         if form = "" then
+                             [ SchemaError.EmptyForm claimant ]
+                         elif form.Contains "=" then
+                             [ SchemaError.FormContainsEquals (claimant, form) ]
+                         else
+                             []
+                     )
+                 ))
+                @ (schema.Positionals
+                   |> List.collect (fun positional ->
+                       let claimant = sprintf "positional-args sink id %i" positional.Id
+
+                       positional.Forms
+                       |> List.collect (fun form ->
+                           if form = "" then
+                               [ SchemaError.EmptyForm claimant ]
+                           elif form.Contains "=" then
+                               [ SchemaError.FormContainsEquals (claimant, form) ]
+                           else
+                               []
+                       )
+                   ))
+
+            duplicateLeafIds
+            @ repeatedInTree
+            @ notInTable
+            @ notInTree
+            @ duplicatePositionalIds
+            @ positionalRepeatedInTree
+            @ positionalNotInTable
+            @ positionalNotInTree
+            @ capacityExceeded
+            @ policyDisagreement
+            @ duplicateSumIds
+            @ noForms
+            @ negationOnNonBool
+            @ unaddressable
+            @ collisions
+
+        /// Check the invariants which the scanning and selection semantics rely on.
+        let check (schema : ErasedSchema) : Result<WellFormedSchema, SchemaError list> =
+            match errors schema with
+            | [] -> Ok (WellFormed schema)
+            | errors -> Error errors
+
+        /// Check, throwing on failure. For generated code: a malformed schema is a bug in the
+        /// parser's definition, which must fail fast rather than misparse.
+        let checkOrFail (schema : ErasedSchema) : WellFormedSchema =
+            match check schema with
+            | Ok wellFormed -> wellFormed
+            | Error errors ->
+                let messages =
+                    errors
+                    |> List.map SchemaError.describe
+                    |> String.concat
+                        "
+"
+
+                failwith (
+                    "Invalid argument parser definition:
+"
+                    + messages
+                )
+
+        /// Extract the underlying schema.
+        let schema (wellFormed : WellFormedSchema) : ErasedSchema =
+            match wellFormed with
+            | WellFormed schema -> schema
+
+    /// The outcome of a full parse, before the typed layer's final record assembly.
+    [<RequireQualifiedAccess>]
+    type ParseOutcome =
+        /// Every argument was routed, converted and defaulted without error: the typed layer's
+        /// slots are fully populated and it may assemble the result. The selection records which
+        /// case was chosen for every discriminated union in the schema.
+        | Success of selection : Selection
+        /// A `--help`-shaped token was seen; the typed layer should render help and stop.
+        | HelpRequested
+        /// The parse was aborted mid-scan (historically these conditions threw immediately). The
+        /// message is fully rendered.
+        | Fatal of message : string
+        /// The parse completed but there were errors; the messages are fully rendered, in order.
+        | Errors of messages : string list
+
+    /// The typed layer's callbacks: everything the erased runtime cannot do itself because it
+    /// involves the target types.
+    type TypedCallbacks =
+        {
+            /// Convert an occurrence's value and store it in the leaf's slot, returning a
+            /// conversion-error message on failure. Called in argv order. A non-repeatable leaf
+            /// which is already populated must be left alone (first occurrence wins); duplicate
+            /// errors are reported by the runtime, not by this callback.
+            StoreOccurrence : ErasedOccurrence -> string option
+            /// Convert a positional token (the bool is true when it appeared after the `--`
+            /// separator) and store it in the sink with the given id, returning a
+            /// conversion-error message on failure. Only called once structural resolution has
+            /// routed the positional stream: the id is always the selected interpretation's
+            /// sink, and it never changes as a result of conversion failures.
+            StorePositional : int -> string -> bool -> string option
+            /// Render the help text (used in fatal unknown-key messages).
+            HelpText : unit -> string
+            /// Render the already-stored first value of the given leaf, for duplicate-argument
+            /// messages (historically the first value is shown via ToString and the rejected
+            /// occurrence as its raw token).
+            RenderStored : int -> string
+            /// Populate the given leaf's slot from its default source (environment variable or
+            /// user-supplied function), returning an error message on failure. Only called when
+            /// the parse is otherwise error-free.
+            ApplyDefault : int -> string option
+        }
+
+    /// Every way the argument can be spelled, for messages: e.g. "--foo / --bar / --no-foo / --no-bar".
+    let humanReadableForms (leaf : ErasedLeaf) : string =
+        let standard = leaf.Forms |> List.map (fun form -> "--" + form)
+
+        let all =
+            if leaf.AcceptsNegation then
+                standard @ (leaf.Forms |> List.map (fun form -> "--no-" + form))
+            else
+                standard
+
+        String.concat " / " all
+
+    /// Drive a full parse: scan, structurally resolve (case selection and positional routing,
+    /// before any conversion), then convert in argv order (so conversion errors interleave
+    /// faithfully with duplicate and trailing-key diagnostics), validate, render every
+    /// structural error, and apply defaults (only when the parse is otherwise clean).
+    ///
+    /// The phase order makes the separation guarantee literal: by the time any converter runs,
+    /// every union case has been chosen and the positional stream routed, so a conversion
+    /// failure can never change either. In particular, when structural resolution fails,
+    /// positional converters are never tried at all.
+    let runParse (schema : WellFormedSchema) (callbacks : TypedCallbacks) (args : string list) : ParseOutcome =
+        let schema = WellFormedSchema.schema schema
+        let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
+        let events = scan schema args
+
+        let aborted =
+            events
+            |> List.tryPick (fun event ->
+                match event with
+                | ScanEvent.Help _ -> Some ParseOutcome.HelpRequested
+                | ScanEvent.Error (ScanError.UnknownKeyEqualsValue (key, value)) ->
+                    sprintf "Unable to process argument %s=%s as key %s and value %s" key value key value
+                    |> ParseOutcome.Fatal
+                    |> Some
+                | ScanEvent.Error (ScanError.UnknownKey source) ->
+                    sprintf
+                        "Unable to process supplied arg %s. Help text follows.
+%s"
+                        source
+                        (callbacks.HelpText ())
+                    |> ParseOutcome.Fatal
+                    |> Some
+                | _ -> None
+            )
+
+        match aborted with
+        | Some outcome -> outcome
+        | None ->
+            let observed =
+                (Map.empty, events)
+                ||> List.fold (fun observed event ->
+                    match event with
+                    | ScanEvent.Occurrence occurrence ->
+                        if Map.containsKey occurrence.LeafId observed then
+                            observed
+                        else
+                            Map.add occurrence.LeafId occurrence.Source observed
+                    | _ -> observed
+                )
+
+            let positionalEvents =
+                events
+                |> List.choose (fun event ->
+                    match event with
+                    | ScanEvent.Positional positional -> Some positional
+                    | _ -> None
+                )
+
+            let selection = resolve schema observed positionalEvents
+            let errors = ResizeArray<string> ()
+            let stored = System.Collections.Generic.HashSet<int> ()
+
+            for event in events do
+                match event with
+                | ScanEvent.Help _ -> ()
+                | ScanEvent.Error (ScanError.UnknownKeyEqualsValue _)
+                | ScanEvent.Error (ScanError.UnknownKey _) -> ()
+                | ScanEvent.Error (ScanError.TrailingKeyNoValue source) ->
+                    sprintf
+                        "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
+                        source
+                    |> errors.Add
+                | ScanEvent.Occurrence occurrence ->
+                    let leaf = Map.find occurrence.LeafId leavesById
+
+                    if stored.Contains occurrence.LeafId && not leaf.Repeatable then
+                        match occurrence.Value with
+                        | None ->
+                            sprintf "Flag '%s' was supplied multiple times" (humanReadableForms leaf)
+                            |> errors.Add
+                        | Some value ->
+                            sprintf
+                                "Argument '%s' was supplied multiple times: %s and %s"
+                                (humanReadableForms leaf)
+                                (callbacks.RenderStored occurrence.LeafId)
+                                value
+                            |> errors.Add
+                    else
+                        match callbacks.StoreOccurrence occurrence with
+                        | Some error -> errors.Add error
+                        | None -> stored.Add occurrence.LeafId |> ignore<bool>
+                | ScanEvent.Positional positional ->
+                    match selection.ActivePositional with
+                    | Some active when List.isEmpty selection.Errors && Set.contains active positional.Candidates ->
+                        match callbacks.StorePositional active positional.Value positional.AfterSeparator with
+                        | Some error -> errors.Add error
+                        | None -> ()
+                    | _ -> ()
+                | ScanEvent.Separator -> ()
+
+            let validationErrors, needsDefault = validate schema selection events
+
+            for selectionError in selection.Errors do
+                match selectionError with
+                | SelectionError.ConflictingCases (_, witnesses) ->
+                    let describe =
+                        witnesses
+                        |> List.map (fun (caseName, source) -> sprintf "%s (via %s)" caseName source)
+                        |> String.concat ", "
+
+                    sprintf "Arguments select more than one alternative: %s" describe |> errors.Add
+                | SelectionError.NoCaseSelected (_, caseNames) ->
+                    sprintf "No arguments were supplied to select one of: %s" (String.concat ", " caseNames)
+                    |> errors.Add
+                | SelectionError.AmbiguousEmptyCases (_, caseNames) ->
+                    sprintf
+                        "Arguments do not determine which of these alternatives was intended: %s"
+                        (String.concat ", " caseNames)
+                    |> errors.Add
+                | SelectionError.UnroutablePositional source ->
+                    sprintf
+                        "Positional argument '%s' does not belong to any single alternative consistent with the other arguments"
+                        source
+                    |> errors.Add
+                | SelectionError.AmbiguousPositionalRouting (source, sinkIds) ->
+                    let describeSink (sinkId : int) : string =
+                        let sink = schema.Positionals |> List.tryFind (fun p -> p.Id = sinkId)
+
+                        match sink with
+                        | Some sink ->
+                            match sink.Forms with
+                            | form :: _ -> "--" + form
+                            | [] -> sprintf "sink %i" sinkId
+                        | None -> sprintf "sink %i" sinkId
+
+                    sprintf
+                        "Positional args (e.g. '%s') could belong to more than one alternative (%s); supply an argument which distinguishes them"
+                        source
+                        (sinkIds |> List.map describeSink |> List.distinct |> String.concat ", ")
+                    |> errors.Add
+
+            for validationError in validationErrors do
+                match validationError with
+                | ValidationError.DuplicateOccurrences _ -> ()
+                | ValidationError.MissingRequired _ -> ()
+                | ValidationError.InactiveLeaf _ -> ()
+                | ValidationError.NoPositionalSink tokens ->
+                    sprintf "There were leftover args: %s" (String.concat " " tokens) |> errors.Add
+
+            for leaf in schema.Leaves do
+                let isRequired =
+                    match leaf.Requirement with
+                    | ErasedRequirement.Required -> true
+                    | ErasedRequirement.Optional
+                    | ErasedRequirement.HasDefault -> false
+
+                if
+                    isRequired
+                    && Set.contains leaf.Id selection.ActiveLeaves
+                    && not (stored.Contains leaf.Id)
+                then
+                    sprintf "Required argument '%s' received no value" (humanReadableForms leaf)
+                    |> errors.Add
+
+            if errors.Count = 0 then
+                for leafId in needsDefault do
+                    match callbacks.ApplyDefault leafId with
+                    | Some error -> errors.Add error
+                    | None -> ()
+
+            if errors.Count = 0 then
+                ParseOutcome.Success selection
+            else
+                ParseOutcome.Errors (List.ofSeq errors)
+namespace ConsumePlugin
+
 open System
 open System.IO
 open WoofWare.Myriad.Plugins
@@ -18,15 +1421,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type BasicNoPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicNoPositionals =
-    type private ParseState_BasicNoPositionals =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : BasicNoPositionals =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
@@ -42,186 +1437,188 @@ module BasicNoPositionals =
         let mutable arg_2 : bool option = None
         let arg_3 : int ResizeArray = ResizeArray ()
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> System.Int32.Parse x) |> arg_3.Add
-                () |> Ok
-            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "baz")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "bar")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "foo")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
-                    |> ArgParser_errors.Add
-
-                    true
-                | None ->
-                    arg_2 <- true |> Some
-                    true
-            else
-                false
-
-        let rec go (state : ParseState_BasicNoPositionals) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_BasicNoPositionals.AwaitingKey -> ()
-                | ParseState_BasicNoPositionals.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-            | arg :: args ->
-                match state with
-                | ParseState_BasicNoPositionals.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
-
-                            if equals < 0 then
-                                args |> go (ParseState_BasicNoPositionals.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
-
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_BasicNoPositionals.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_BasicNoPositionals.AwaitingKey args
-                    else
-                        arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                        go ParseState_BasicNoPositionals.AwaitingKey args
-                | ParseState_BasicNoPositionals.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_BasicNoPositionals.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_BasicNoPositionals.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_BasicNoPositionals.AwaitingKey args
-
-        let parser_LeftoverArgs =
-            if 0 = parser_LeftoverArgs.Count then
-                ()
-            else
-                parser_LeftoverArgs
-                |> String.concat " "
-                |> sprintf "There were leftover args: %s"
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "foo")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "bar")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "baz")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_3 = arg_3 |> Seq.toList
-
-        if 0 = ArgParser_errors.Count then
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
             {
-                Bar = arg_1
-                Baz = arg_2
-                Foo = arg_0
-                Rest = arg_3
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "foo" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "bar" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 2
+                            Forms = [ "baz" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 3
+                            Forms = [ "rest" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
+                        ]
+                    ))
+                Positionals = List.empty
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | 3 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        arg_3.Add (value |> (fun x -> System.Int32.Parse x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                Bar =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Baz =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Foo =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Rest = (arg_3 |> Seq.toList)
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : BasicNoPositionals =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -234,15 +1631,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type Basic
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Basic =
-    type private ParseState_Basic =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : Basic =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" (sprintf " : %s" ("This is a foo!")))
@@ -261,174 +1650,183 @@ module Basic =
         let mutable arg_1 : string option = None
         let mutable arg_2 : bool option = None
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "baz")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "bar")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "foo")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> x) |> arg_3.Add
-                () |> Ok
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
-                    |> ArgParser_errors.Add
-
-                    true
-                | None ->
-                    arg_2 <- true |> Some
-                    true
-            else
-                false
-
-        let rec go (state : ParseState_Basic) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_Basic.AwaitingKey -> ()
-                | ParseState_Basic.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> arg_3.AddRange (rest |> Seq.map (fun x -> x))
-            | arg :: args ->
-                match state with
-                | ParseState_Basic.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
-
-                            if equals < 0 then
-                                args |> go (ParseState_Basic.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
-
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_Basic.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_Basic.AwaitingKey args
-                    else
-                        arg |> (fun x -> x) |> arg_3.Add
-                        go ParseState_Basic.AwaitingKey args
-                | ParseState_Basic.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_Basic.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_Basic.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_Basic.AwaitingKey args
-        let arg_3 = arg_3 |> Seq.toList
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "foo")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "bar")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "baz")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        if 0 = ArgParser_errors.Count then
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
             {
-                Bar = arg_1
-                Baz = arg_2
-                Foo = arg_0
-                Rest = arg_3
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "foo" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "bar" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 2
+                            Forms = [ "baz" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                        ]
+                    ))
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "rest" ]
+                            FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            match positionalId with
+            | 0 ->
+                try
+                    arg_3.Add (value |> (fun x -> x))
+                    None
+                with _ as exc ->
+                    (sprintf "%s (at arg %s)" exc.Message value) |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                Bar =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Baz =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Foo =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Rest = (arg_3 |> Seq.toList)
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : Basic =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -441,15 +1839,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type BasicWithIntPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module BasicWithIntPositionals =
-    type private ParseState_BasicWithIntPositionals =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : BasicWithIntPositionals =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
@@ -464,174 +1854,183 @@ module BasicWithIntPositionals =
         let mutable arg_1 : string option = None
         let mutable arg_2 : bool option = None
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "baz")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "bar")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "foo")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "rest", System.StringComparison.OrdinalIgnoreCase) then
-                value |> (fun x -> System.Int32.Parse x) |> arg_3.Add
-                () |> Ok
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
-                    |> ArgParser_errors.Add
-
-                    true
-                | None ->
-                    arg_2 <- true |> Some
-                    true
-            else
-                false
-
-        let rec go (state : ParseState_BasicWithIntPositionals) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_BasicWithIntPositionals.AwaitingKey -> ()
-                | ParseState_BasicWithIntPositionals.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> arg_3.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
-            | arg :: args ->
-                match state with
-                | ParseState_BasicWithIntPositionals.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
-
-                            if equals < 0 then
-                                args |> go (ParseState_BasicWithIntPositionals.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
-
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_BasicWithIntPositionals.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_BasicWithIntPositionals.AwaitingKey args
-                    else
-                        arg |> (fun x -> System.Int32.Parse x) |> arg_3.Add
-                        go ParseState_BasicWithIntPositionals.AwaitingKey args
-                | ParseState_BasicWithIntPositionals.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_BasicWithIntPositionals.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_BasicWithIntPositionals.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_BasicWithIntPositionals.AwaitingKey args
-        let arg_3 = arg_3 |> Seq.toList
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "foo")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "bar")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "baz")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        if 0 = ArgParser_errors.Count then
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
             {
-                Bar = arg_1
-                Baz = arg_2
-                Foo = arg_0
-                Rest = arg_3
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "foo" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "bar" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 2
+                            Forms = [ "baz" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                        ]
+                    ))
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "rest" ]
+                            FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            match positionalId with
+            | 0 ->
+                try
+                    arg_3.Add (value |> (fun x -> System.Int32.Parse x))
+                    None
+                with _ as exc ->
+                    (sprintf "%s (at arg %s)" exc.Message value) |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                Bar =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Baz =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Foo =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Rest = (arg_3 |> Seq.toList)
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : BasicWithIntPositionals =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -644,15 +2043,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type LoadsOfTypes
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypes =
-    type private ParseState_LoadsOfTypes =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LoadsOfTypes =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
@@ -696,377 +2087,447 @@ module LoadsOfTypes =
         let mutable arg_4 : DirectoryInfo option = None
         let arg_5 : DirectoryInfo ResizeArray = ResizeArray ()
         let mutable arg_6 : int option = None
-        let mutable arg_8 : bool option = None
-        let mutable arg_9 : int option = None
-        let mutable arg_10 : string option = None
+        let mutable arg_8 : Choice<bool, bool> option = None
+        let mutable arg_9 : Choice<int, int> option = None
+        let mutable arg_10 : Choice<string, string> option = None
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if
-                System.String.Equals (
-                    key,
-                    sprintf "--%s" "yet-another-optional-thing",
-                    System.StringComparison.OrdinalIgnoreCase
-                )
-            then
-                match arg_10 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "yet-another-optional-thing")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "foo" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_10 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (
-                    key,
-                    sprintf "--%s" "another-optional-thing",
-                    System.StringComparison.OrdinalIgnoreCase
-                )
-            then
-                match arg_9 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "another-optional-thing")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 1
+                            Forms = [ "bar" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_9 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_8 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "optional-thing")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 2
+                            Forms = [ "baz" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_8 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (
-                    key,
-                    sprintf "--%s" "optional-thing-with-no-default",
-                    System.StringComparison.OrdinalIgnoreCase
-                )
-            then
-                match arg_6 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "optional-thing-with-no-default")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 3
+                            Forms = [ "some-file" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_6 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
-            then
-                value |> (fun x -> System.IO.DirectoryInfo x) |> arg_5.Add
-                () |> Ok
-            else if
-                System.String.Equals (key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_4 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "some-directory")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 4
+                            Forms = [ "some-directory" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_4 <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_3 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "some-file")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 5
+                            Forms = [ "some-list" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_3 <- value |> (fun x -> System.IO.FileInfo x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "baz")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 6
+                            Forms = [ "optional-thing-with-no-default" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "bar")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 7
+                            Forms = [ "optional-thing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                        {
+                            Id = 8
+                            Forms = [ "another-optional-thing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 9
+                            Forms = [ "yet-another-optional-thing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 4
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 5
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 6
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 7
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 8
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 9
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                        ]
+                    ))
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "positionals" ]
+                            FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
                 match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "foo")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
+                | Some _ -> None
                 | None ->
-                    try
-                        arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "positionals", System.StringComparison.OrdinalIgnoreCase)
-            then
-                value |> (fun x -> System.Int32.Parse x) |> arg_7.Add
-                () |> Ok
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if
-                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_8 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "optional-thing")
-                    |> ArgParser_errors.Add
-
-                    true
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
                 | None ->
-                    arg_8 <- true |> Some
-                    true
-            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
                 match arg_2 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
-                    |> ArgParser_errors.Add
-
-                    true
+                | Some _ -> None
                 | None ->
-                    arg_2 <- true |> Some
-                    true
-            else
-                false
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | 3 ->
+                match arg_3 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_3 <- Some (value |> (fun x -> System.IO.FileInfo x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 4 ->
+                match arg_4 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_4 <- Some (value |> (fun x -> System.IO.DirectoryInfo x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 5 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        arg_5.Add (value |> (fun x -> System.IO.DirectoryInfo x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 6 ->
+                match arg_6 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_6 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 7 ->
+                match arg_8 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_8 <- Some (Choice1Of2 (parsedBool))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_8 <- Some (Choice1Of2 ((if occurrence.Negated then false else true)))
+                        None
+            | 8 ->
+                match arg_9 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_9 <- Some (Choice1Of2 (value |> (fun x -> System.Int32.Parse x)))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 9 ->
+                match arg_10 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_10 <- Some (Choice1Of2 (value |> (fun x -> x)))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
-        let rec go (state : ParseState_LoadsOfTypes) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_LoadsOfTypes.AwaitingKey -> ()
-                | ParseState_LoadsOfTypes.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> arg_7.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
-            | arg :: args ->
-                match state with
-                | ParseState_LoadsOfTypes.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            match positionalId with
+            | 0 ->
+                try
+                    arg_7.Add (value |> (fun x -> System.Int32.Parse x))
+                    None
+                with _ as exc ->
+                    (sprintf "%s (at arg %s)" exc.Message value) |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
 
-                            if equals < 0 then
-                                args |> go (ParseState_LoadsOfTypes.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 3 ->
+                match arg_3 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 4 ->
+                match arg_4 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 6 ->
+                match arg_6 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 7 ->
+                match arg_8 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | 8 ->
+                match arg_9 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | 9 ->
+                match arg_10 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
 
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_LoadsOfTypes.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_LoadsOfTypes.AwaitingKey args
-                    else
-                        arg |> (fun x -> System.Int32.Parse x) |> arg_7.Add
-                        go ParseState_LoadsOfTypes.AwaitingKey args
-                | ParseState_LoadsOfTypes.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_LoadsOfTypes.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_LoadsOfTypes.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_LoadsOfTypes.AwaitingKey args
-        let arg_7 = arg_7 |> Seq.toList
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "foo")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "bar")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "baz")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_3 =
-            match arg_3 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "some-file")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_4 =
-            match arg_4 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "some-directory")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_5 = arg_5 |> Seq.toList
-        let arg_6 = arg_6
-
-        let arg_8 =
-            match arg_8 with
-            | None -> LoadsOfTypes.DefaultOptionalThing () |> Choice2Of2
-            | Some x -> Choice1Of2 x
-
-        let arg_9 =
-            match arg_9 with
-            | None -> LoadsOfTypes.DefaultAnotherOptionalThing () |> Choice2Of2
-            | Some x -> Choice1Of2 x
-
-        let arg_10 =
-            match arg_10 with
-            | None ->
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | 7 ->
+                arg_8 <- Some (Choice2Of2 (LoadsOfTypes.DefaultOptionalThing ()))
+                None
+            | 8 ->
+                arg_9 <- Some (Choice2Of2 (LoadsOfTypes.DefaultAnotherOptionalThing ()))
+                None
+            | 9 ->
                 match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
                 | None ->
-                    sprintf
+                    (sprintf
                         "No value was supplied for %s, nor was environment variable %s set"
                         (sprintf "--%s" "yet-another-optional-thing")
-                        "CONSUMEPLUGIN_THINGS"
-                    |> ArgParser_errors.Add
+                        "CONSUMEPLUGIN_THINGS")
+                    |> Some
+                | Some x ->
+                    try
+                        arg_10 <- Some (Choice2Of2 (x |> (fun x -> x)))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (from environment variable %s)" exc.Message "CONSUMEPLUGIN_THINGS")
+                        |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
 
-                    Unchecked.defaultof<_>
-                | Some x -> x |> (fun x -> x)
-                |> Choice2Of2
-            | Some x -> Choice1Of2 x
-
-        if 0 = ArgParser_errors.Count then
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
             {
-                AnotherOptionalThing = arg_9
-                Bar = arg_1
-                Baz = arg_2
-                Foo = arg_0
-                OptionalThing = arg_8
-                OptionalThingWithNoDefault = arg_6
-                Positionals = arg_7
-                SomeDirectory = arg_4
-                SomeFile = arg_3
-                SomeList = arg_5
-                YetAnotherOptionalThing = arg_10
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                AnotherOptionalThing =
+                    (match arg_9 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Bar =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Baz =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Foo =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                OptionalThing =
+                    (match arg_8 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                OptionalThingWithNoDefault = arg_6
+                Positionals = (arg_7 |> Seq.toList)
+                SomeDirectory =
+                    (match arg_4 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                SomeFile =
+                    (match arg_3 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                SomeList = (arg_5 |> Seq.toList)
+                YetAnotherOptionalThing =
+                    (match arg_10 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : LoadsOfTypes =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -1079,15 +2540,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type LoadsOfTypesNoPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module LoadsOfTypesNoPositionals =
-    type private ParseState_LoadsOfTypesNoPositionals =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LoadsOfTypesNoPositionals =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "")
@@ -1129,381 +2582,429 @@ module LoadsOfTypesNoPositionals =
         let mutable arg_4 : DirectoryInfo option = None
         let arg_5 : DirectoryInfo ResizeArray = ResizeArray ()
         let mutable arg_6 : int option = None
-        let mutable arg_7 : bool option = None
-        let mutable arg_8 : int option = None
-        let mutable arg_9 : string option = None
+        let mutable arg_7 : Choice<bool, bool> option = None
+        let mutable arg_8 : Choice<int, int> option = None
+        let mutable arg_9 : Choice<string, string> option = None
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if
-                System.String.Equals (
-                    key,
-                    sprintf "--%s" "yet-another-optional-thing",
-                    System.StringComparison.OrdinalIgnoreCase
-                )
-            then
-                match arg_9 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "yet-another-optional-thing")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "foo" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_9 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (
-                    key,
-                    sprintf "--%s" "another-optional-thing",
-                    System.StringComparison.OrdinalIgnoreCase
-                )
-            then
-                match arg_8 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "another-optional-thing")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 1
+                            Forms = [ "bar" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_8 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_7 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "optional-thing")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 2
+                            Forms = [ "baz" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_7 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (
-                    key,
-                    sprintf "--%s" "optional-thing-with-no-default",
-                    System.StringComparison.OrdinalIgnoreCase
-                )
-            then
-                match arg_6 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "optional-thing-with-no-default")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 3
+                            Forms = [ "some-file" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_6 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "some-list", System.StringComparison.OrdinalIgnoreCase)
-            then
-                value |> (fun x -> System.IO.DirectoryInfo x) |> arg_5.Add
-                () |> Ok
-            else if
-                System.String.Equals (key, sprintf "--%s" "some-directory", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_4 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "some-directory")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 4
+                            Forms = [ "some-directory" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_4 <- value |> (fun x -> System.IO.DirectoryInfo x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "some-file", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_3 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "some-file")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 5
+                            Forms = [ "some-list" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_3 <- value |> (fun x -> System.IO.FileInfo x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "baz")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 6
+                            Forms = [ "optional-thing-with-no-default" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "bar", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "bar")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
+                        {
+                            Id = 7
+                            Forms = [ "optional-thing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
 
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "foo", System.StringComparison.OrdinalIgnoreCase) then
+                        {
+                            Id = 8
+                            Forms = [ "another-optional-thing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 9
+                            Forms = [ "yet-another-optional-thing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 4
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 5
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 6
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 7
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 8
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 9
+                        ]
+                    ))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
                 match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "foo")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
+                | Some _ -> None
                 | None ->
-                    try
-                        arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if
-                System.String.Equals (key, sprintf "--%s" "optional-thing", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_7 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "optional-thing")
-                    |> ArgParser_errors.Add
-
-                    true
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
                 | None ->
-                    arg_7 <- true |> Some
-                    true
-            else if System.String.Equals (key, sprintf "--%s" "baz", System.StringComparison.OrdinalIgnoreCase) then
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
                 match arg_2 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "baz")
-                    |> ArgParser_errors.Add
-
-                    true
+                | Some _ -> None
                 | None ->
-                    arg_2 <- true |> Some
-                    true
-            else
-                false
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | 3 ->
+                match arg_3 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_3 <- Some (value |> (fun x -> System.IO.FileInfo x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 4 ->
+                match arg_4 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_4 <- Some (value |> (fun x -> System.IO.DirectoryInfo x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 5 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        arg_5.Add (value |> (fun x -> System.IO.DirectoryInfo x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 6 ->
+                match arg_6 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_6 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 7 ->
+                match arg_7 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_7 <- Some (Choice1Of2 (parsedBool))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_7 <- Some (Choice1Of2 ((if occurrence.Negated then false else true)))
+                        None
+            | 8 ->
+                match arg_8 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_8 <- Some (Choice1Of2 (value |> (fun x -> System.Int32.Parse x)))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 9 ->
+                match arg_9 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_9 <- Some (Choice1Of2 (value |> (fun x -> x)))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
-        let rec go (state : ParseState_LoadsOfTypesNoPositionals) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_LoadsOfTypesNoPositionals.AwaitingKey -> ()
-                | ParseState_LoadsOfTypesNoPositionals.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-            | arg :: args ->
-                match state with
-                | ParseState_LoadsOfTypesNoPositionals.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
 
-                            if equals < 0 then
-                                args |> go (ParseState_LoadsOfTypesNoPositionals.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 3 ->
+                match arg_3 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 4 ->
+                match arg_4 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 6 ->
+                match arg_6 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 7 ->
+                match arg_7 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | 8 ->
+                match arg_8 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | 9 ->
+                match arg_9 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
 
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
-                    else
-                        arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
-                | ParseState_LoadsOfTypesNoPositionals.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_LoadsOfTypesNoPositionals.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_LoadsOfTypesNoPositionals.AwaitingKey args
-
-        let parser_LeftoverArgs =
-            if 0 = parser_LeftoverArgs.Count then
-                ()
-            else
-                parser_LeftoverArgs
-                |> String.concat " "
-                |> sprintf "There were leftover args: %s"
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "foo")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "bar")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "baz")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_3 =
-            match arg_3 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "some-file")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_4 =
-            match arg_4 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "some-directory")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_5 = arg_5 |> Seq.toList
-        let arg_6 = arg_6
-
-        let arg_7 =
-            match arg_7 with
-            | None -> LoadsOfTypesNoPositionals.DefaultOptionalThing () |> Choice2Of2
-            | Some x -> Choice1Of2 x
-
-        let arg_8 =
-            match arg_8 with
-            | None -> LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing () |> Choice2Of2
-            | Some x -> Choice1Of2 x
-
-        let arg_9 =
-            match arg_9 with
-            | None ->
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | 7 ->
+                arg_7 <- Some (Choice2Of2 (LoadsOfTypesNoPositionals.DefaultOptionalThing ()))
+                None
+            | 8 ->
+                arg_8 <- Some (Choice2Of2 (LoadsOfTypesNoPositionals.DefaultAnotherOptionalThing ()))
+                None
+            | 9 ->
                 match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
                 | None ->
-                    sprintf
+                    (sprintf
                         "No value was supplied for %s, nor was environment variable %s set"
                         (sprintf "--%s" "yet-another-optional-thing")
-                        "CONSUMEPLUGIN_THINGS"
-                    |> ArgParser_errors.Add
+                        "CONSUMEPLUGIN_THINGS")
+                    |> Some
+                | Some x ->
+                    try
+                        arg_9 <- Some (Choice2Of2 (x |> (fun x -> x)))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (from environment variable %s)" exc.Message "CONSUMEPLUGIN_THINGS")
+                        |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
 
-                    Unchecked.defaultof<_>
-                | Some x -> x |> (fun x -> x)
-                |> Choice2Of2
-            | Some x -> Choice1Of2 x
-
-        if 0 = ArgParser_errors.Count then
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
             {
-                AnotherOptionalThing = arg_8
-                Bar = arg_1
-                Baz = arg_2
-                Foo = arg_0
-                OptionalThing = arg_7
-                OptionalThingWithNoDefault = arg_6
-                SomeDirectory = arg_4
-                SomeFile = arg_3
-                SomeList = arg_5
-                YetAnotherOptionalThing = arg_9
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                AnotherOptionalThing =
+                    (match arg_8 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Bar =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Baz =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Foo =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                OptionalThing =
+                    (match arg_7 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                OptionalThingWithNoDefault = arg_6
+                SomeDirectory =
+                    (match arg_4 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                SomeFile =
+                    (match arg_3 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                SomeList = (arg_5 |> Seq.toList)
+                YetAnotherOptionalThing =
+                    (match arg_9 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : LoadsOfTypesNoPositionals =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -1516,18 +3017,10 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type DatesAndTimes
 [<AutoOpen>]
 module DatesAndTimesArgParse =
-    type private ParseState_DatesAndTimes =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type DatesAndTimes with
 
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : DatesAndTimes =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  TimeSpan%s%s" (sprintf "--%s" "plain") "" "")
@@ -1552,240 +3045,234 @@ module DatesAndTimesArgParse =
             let mutable arg_2 : TimeSpan option = None
             let mutable arg_3 : TimeSpan option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "invariant-exact",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    match arg_3 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "invariant-exact")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_3 <-
-                                value
-                                |> (fun x ->
-                                    System.TimeSpan.ParseExact (
-                                        x,
-                                        @"hh\:mm\:ss",
-                                        System.Globalization.CultureInfo.InvariantCulture
-                                    )
-                                )
-                                |> Some
-
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "exact", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_2 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "exact")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_2 <-
-                                value
-                                |> (fun x ->
-                                    System.TimeSpan.ParseExact (
-                                        x,
-                                        @"hh\:mm\:ss",
-                                        System.Globalization.CultureInfo.CurrentCulture
-                                    )
-                                )
-                                |> Some
-
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "invariant", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "invariant")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_1 <-
-                                value
-                                |> (fun x ->
-                                    System.TimeSpan.Parse (x, System.Globalization.CultureInfo.InvariantCulture)
-                                )
-                                |> Some
-
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "plain", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "plain")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> System.TimeSpan.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_DatesAndTimes) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_DatesAndTimes.AwaitingKey -> ()
-                    | ParseState_DatesAndTimes.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_DatesAndTimes.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_DatesAndTimes.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_DatesAndTimes.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_DatesAndTimes.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_DatesAndTimes.AwaitingKey args
-                    | ParseState_DatesAndTimes.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_DatesAndTimes.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_DatesAndTimes.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_DatesAndTimes.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "plain")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_1 =
-                match arg_1 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "invariant")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_2 =
-                match arg_2 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "exact")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_3 =
-                match arg_3 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "invariant-exact")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    Exact = arg_2
-                    Invariant = arg_1
-                    InvariantExact = arg_3
-                    Plain = arg_0
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "plain" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 1
+                                Forms = [ "invariant" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 2
+                                Forms = [ "exact" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 3
+                                Forms = [ "invariant-exact" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
+                            ]
+                        ))
+                    Positionals = List.empty
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.TimeSpan.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_1 <-
+                                    Some (
+                                        value
+                                        |> (fun x ->
+                                            System.TimeSpan.Parse (
+                                                x,
+                                                System.Globalization.CultureInfo.InvariantCulture
+                                            )
+                                        )
+                                    )
+
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 2 ->
+                    match arg_2 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_2 <-
+                                    Some (
+                                        value
+                                        |> (fun x ->
+                                            System.TimeSpan.ParseExact (
+                                                x,
+                                                @"hh\:mm\:ss",
+                                                System.Globalization.CultureInfo.CurrentCulture
+                                            )
+                                        )
+                                    )
+
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 3 ->
+                    match arg_3 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_3 <-
+                                    Some (
+                                        value
+                                        |> (fun x ->
+                                            System.TimeSpan.ParseExact (
+                                                x,
+                                                @"hh\:mm\:ss",
+                                                System.Globalization.CultureInfo.InvariantCulture
+                                            )
+                                        )
+                                    )
+
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 2 ->
+                    match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 3 ->
+                    match arg_3 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    Exact =
+                        (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Invariant =
+                        (match arg_1 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    InvariantExact =
+                        (match arg_3 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Plain =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : DatesAndTimes =
             DatesAndTimes.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -1798,18 +3285,10 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ParentRecord
 [<AutoOpen>]
 module ParentRecordArgParse =
-    type private ParseState_ParentRecord =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ParentRecord with
 
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : ParentRecord =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
@@ -1823,198 +3302,175 @@ module ParentRecordArgParse =
             let mutable arg_1 : string option = None
             let mutable arg_2 : bool option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if
-                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_2 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "and-another")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "thing2")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_1 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "thing1")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if
-                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_2 with
-                    | Some x ->
-                        sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "and-another")
-                        |> ArgParser_errors.Add
-
-                        true
-                    | None ->
-                        arg_2 <- true |> Some
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_ParentRecord) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ParentRecord.AwaitingKey -> ()
-                    | ParseState_ParentRecord.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ParentRecord.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ParentRecord.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ParentRecord.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ParentRecord.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_ParentRecord.AwaitingKey args
-                    | ParseState_ParentRecord.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ParentRecord.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ParentRecord.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ParentRecord.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "thing1")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_1 =
-                match arg_1 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "thing2")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_2 =
-                match arg_2 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "and-another")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    AndAnother = arg_2
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "thing1" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 1
+                                Forms = [ "thing2" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 2
+                                Forms = [ "and-another" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                    [
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                    ]
+                                )
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_1 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 2 ->
+                    match arg_2 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_2 <- Some (parsedBool)
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_2 <- Some ((if occurrence.Negated then false else true))
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 2 ->
+                    match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    AndAnother =
+                        (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                     Child =
                         {
-                            Thing1 = arg_0
-                            Thing2 = arg_1
+                            Thing1 =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            Thing2 =
+                                (match arg_1 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                         }
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ParentRecord =
             ParentRecord.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -2024,15 +3480,181 @@ open System
 open System.IO
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type ParentRecordChildDefault
+[<AutoOpen>]
+module ParentRecordChildDefaultArgParse =
+    /// Extension methods for argument parsing
+    type ParentRecordChildDefault with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ParentRecordChildDefault
+            =
+            let helpText () =
+                [
+                    (sprintf
+                        "%s  int32%s%s"
+                        (sprintf "--%s" "from-function")
+                        (ChildRecordWithDefault.DefaultFromFunction ()
+                         |> (fun x -> x.ToString ())
+                         |> sprintf " (default value: %s)")
+                        "")
+                    (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : Choice<int, int> option = None
+            let mutable arg_1 : bool option = None
+
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "from-function" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 1
+                                Forms = [ "and-another" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                    [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                                )
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (Choice1Of2 (value |> (fun x -> System.Int32.Parse x)))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_1 <- Some (parsedBool)
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_1 <- Some ((if occurrence.Negated then false else true))
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | 0 ->
+                    arg_0 <- Some (Choice2Of2 (ChildRecordWithDefault.DefaultFromFunction ()))
+                    None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    AndAnother =
+                        (match arg_1 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Child =
+                        {
+                            FromFunction =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                        }
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ParentRecordChildDefault =
+            ParentRecordChildDefault.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type ParentRecordChildPos
 [<AutoOpen>]
 module ParentRecordChildPosArgParse =
-    type private ParseState_ParentRecordChildPos =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ParentRecordChildPos with
 
@@ -2041,8 +3663,6 @@ module ParentRecordChildPosArgParse =
             (args : string list)
             : ParentRecordChildPos
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  bool%s%s" (sprintf "--%s" "and-another") "" "")
@@ -2055,163 +3675,157 @@ module ParentRecordChildPosArgParse =
             let mutable arg_2 : bool option = None
             let mutable arg_0 : int option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "thing1")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_2 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "and-another")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    value |> (fun x -> System.Uri x) |> arg_1.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if
-                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_2 with
-                    | Some x ->
-                        sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "and-another")
-                        |> ArgParser_errors.Add
-
-                        true
-                    | None ->
-                        arg_2 <- true |> Some
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_ParentRecordChildPos) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ParentRecordChildPos.AwaitingKey -> ()
-                    | ParseState_ParentRecordChildPos.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Uri x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ParentRecordChildPos.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ParentRecordChildPos.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ParentRecordChildPos.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ParentRecordChildPos.AwaitingKey args
-                        else
-                            arg |> (fun x -> System.Uri x) |> arg_1.Add
-                            go ParseState_ParentRecordChildPos.AwaitingKey args
-                    | ParseState_ParentRecordChildPos.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ParentRecordChildPos.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ParentRecordChildPos.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ParentRecordChildPos.AwaitingKey args
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_2 =
-                match arg_2 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "and-another")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "thing1")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    AndAnother = arg_2
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "and-another" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 1
+                                Forms = [ "thing1" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                    [
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                                    ]
+                                )
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "thing2" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_2 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_2 <- Some (parsedBool)
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_2 <- Some ((if occurrence.Negated then false else true))
+                            None
+                | 1 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (value |> (fun x -> System.Uri x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    AndAnother =
+                        (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                     Child =
                         {
-                            Thing1 = arg_0
-                            Thing2 = arg_1
+                            Thing1 =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            Thing2 = (arg_1 |> Seq.toList)
                         }
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ParentRecordChildPos =
             ParentRecordChildPos.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -2224,12 +3838,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ParentRecordSelfPos
 [<AutoOpen>]
 module ParentRecordSelfPosArgParse =
-    type private ParseState_ParentRecordSelfPos =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ParentRecordSelfPos with
 
@@ -2238,8 +3846,6 @@ module ParentRecordSelfPosArgParse =
             (args : string list)
             : ParentRecordSelfPos
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  int32%s%s" (sprintf "--%s" "thing1") "" "")
@@ -2252,149 +3858,155 @@ module ParentRecordSelfPosArgParse =
             let mutable arg_0 : int option = None
             let mutable arg_1 : string option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "thing2", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "thing2")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_1 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "thing1", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "thing1")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "and-another", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    value |> (fun x -> System.Boolean.Parse x) |> arg_2.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_ParentRecordSelfPos) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ParentRecordSelfPos.AwaitingKey -> ()
-                    | ParseState_ParentRecordSelfPos.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_2.AddRange (rest |> Seq.map (fun x -> System.Boolean.Parse x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ParentRecordSelfPos.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ParentRecordSelfPos.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ParentRecordSelfPos.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ParentRecordSelfPos.AwaitingKey args
-                        else
-                            arg |> (fun x -> System.Boolean.Parse x) |> arg_2.Add
-                            go ParseState_ParentRecordSelfPos.AwaitingKey args
-                    | ParseState_ParentRecordSelfPos.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ParentRecordSelfPos.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ParentRecordSelfPos.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ParentRecordSelfPos.AwaitingKey args
-            let arg_2 = arg_2 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "thing1")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_1 =
-                match arg_1 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "thing2")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    AndAnother = arg_2
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "thing1" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 1
+                                Forms = [ "thing2" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                    [
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                    ]
+                                )
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "and-another" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_1 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_2.Add (value |> (fun x -> System.Boolean.Parse x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    AndAnother = (arg_2 |> Seq.toList)
                     Child =
                         {
-                            Thing1 = arg_0
-                            Thing2 = arg_1
+                            Thing1 =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            Thing2 =
+                                (match arg_1 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                         }
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ParentRecordSelfPos =
             ParentRecordSelfPos.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -2407,12 +4019,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ChoicePositionals
 [<AutoOpen>]
 module ChoicePositionalsArgParse =
-    type private ParseState_ChoicePositionals =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ChoicePositionals with
 
@@ -2421,8 +4027,6 @@ module ChoicePositionalsArgParse =
             (args : string list)
             : ChoicePositionals
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s" "args") " (positional args) (can be repeated)" "")
@@ -2431,88 +4035,80 @@ module ChoicePositionalsArgParse =
 
             let arg_0 : Choice<string, string> ResizeArray = ResizeArray ()
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "args", System.StringComparison.OrdinalIgnoreCase) then
-                    value |> (fun x -> x) |> Choice1Of2 |> arg_0.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_ChoicePositionals) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ChoicePositionals.AwaitingKey -> ()
-                    | ParseState_ChoicePositionals.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_0.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
-                | arg :: args ->
-                    match state with
-                    | ParseState_ChoicePositionals.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ChoicePositionals.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ChoicePositionals.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> Choice1Of2 |> arg_0.Add
-                            go ParseState_ChoicePositionals.AwaitingKey args
-                    | ParseState_ChoicePositionals.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ChoicePositionals.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ChoicePositionals.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ChoicePositionals.AwaitingKey args
-            let arg_0 = arg_0 |> Seq.toList
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    Args = arg_0
+                    Leaves = List.empty
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0 ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "args" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_0.Add (
+                            if afterSeparator then
+                                Choice2Of2 (value |> (fun x -> x))
+                            else
+                                Choice1Of2 (value |> (fun x -> x))
+                        )
+
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    Args = (arg_0 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ChoicePositionals =
             ChoicePositionals.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -2525,12 +4121,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ContainsBoolEnvVar
 [<AutoOpen>]
 module ContainsBoolEnvVarArgParse =
-    type private ParseState_ContainsBoolEnvVar =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ContainsBoolEnvVar with
 
@@ -2539,8 +4129,6 @@ module ContainsBoolEnvVarArgParse =
             (args : string list)
             : ContainsBoolEnvVar
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf
@@ -2552,148 +4140,126 @@ module ContainsBoolEnvVarArgParse =
                 |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
-            let mutable arg_0 : bool option = None
+            let mutable arg_0 : Choice<bool, bool> option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "bool-var" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
                     match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "bool-var")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
+                    | Some _ -> None
                     | None ->
-                        try
-                            arg_0 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_0 <- Some (Choice1Of2 (parsedBool))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_0 <- Some (Choice1Of2 ((if occurrence.Negated then false else true)))
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if System.String.Equals (key, sprintf "--%s" "bool-var", System.StringComparison.OrdinalIgnoreCase) then
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
                     match arg_0 with
-                    | Some x ->
-                        sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "bool-var")
-                        |> ArgParser_errors.Add
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
 
-                        true
-                    | None ->
-                        arg_0 <- true |> Some
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_ContainsBoolEnvVar) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ContainsBoolEnvVar.AwaitingKey -> ()
-                    | ParseState_ContainsBoolEnvVar.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ContainsBoolEnvVar.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ContainsBoolEnvVar.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ContainsBoolEnvVar.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_ContainsBoolEnvVar.AwaitingKey args
-                    | ParseState_ContainsBoolEnvVar.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ContainsBoolEnvVar.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ContainsBoolEnvVar.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ContainsBoolEnvVar.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | 0 ->
                     match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
                     | None ->
-                        sprintf
+                        (sprintf
                             "No value was supplied for %s, nor was environment variable %s set"
                             (sprintf "--%s" "bool-var")
-                            "CONSUMEPLUGIN_THINGS"
-                        |> ArgParser_errors.Add
-
-                        Unchecked.defaultof<_>
+                            "CONSUMEPLUGIN_THINGS")
+                        |> Some
                     | Some x ->
-                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
-                            true
-                        else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
-                            false
-                        else
-                            x |> (fun x -> System.Boolean.Parse x)
-                    |> Choice2Of2
-                | Some x -> Choice1Of2 x
+                        try
+                            arg_0 <-
+                                Some (
+                                    Choice2Of2 (
+                                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                                            true
+                                        else if
+                                            System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase)
+                                        then
+                                            false
+                                        else
+                                            x |> (fun x -> System.Boolean.Parse x)
+                                    )
+                                )
 
-            if 0 = ArgParser_errors.Count then
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (from environment variable %s)" exc.Message "CONSUMEPLUGIN_THINGS")
+                            |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
                 {
-                    BoolVar = arg_0
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    BoolVar =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ContainsBoolEnvVar =
             ContainsBoolEnvVar.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -2706,18 +4272,10 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type WithFlagDu
 [<AutoOpen>]
 module WithFlagDuArgParse =
-    type private ParseState_WithFlagDu =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type WithFlagDu with
 
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithFlagDu =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [ (sprintf "%s  bool%s%s" (sprintf "--%s" "dry-run") "" "") ]
                 |> String.concat "\n"
@@ -2725,148 +4283,116 @@ module WithFlagDuArgParse =
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
             let mutable arg_0 : DryRunMode option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "dry-run")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <-
-                                value
-                                |> (fun x ->
-                                    if System.Boolean.Parse x = Consts.FALSE then
-                                        DryRunMode.Wet
-                                    else
-                                        DryRunMode.Dry
-                                )
-                                |> Some
-
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
-                        |> ArgParser_errors.Add
-
-                        true
-                    | None ->
-                        arg_0 <-
-                            if true = Consts.FALSE then
-                                DryRunMode.Wet
-                            else
-                                DryRunMode.Dry
-                            |> Some
-
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_WithFlagDu) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_WithFlagDu.AwaitingKey -> ()
-                    | ParseState_WithFlagDu.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_WithFlagDu.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_WithFlagDu.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_WithFlagDu.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_WithFlagDu.AwaitingKey args
-                    | ParseState_WithFlagDu.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_WithFlagDu.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_WithFlagDu.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_WithFlagDu.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "dry-run")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    DryRun = arg_0
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "dry-run" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                        ))
+                    Positionals = List.empty
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+
+                                arg_0 <-
+                                    Some (
+                                        (if parsedBool = Consts.FALSE then
+                                             DryRunMode.Wet
+                                         else
+                                             DryRunMode.Dry)
+                                    )
+
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_0 <-
+                                Some (
+                                    (if occurrence.Negated then
+                                         (if false = Consts.FALSE then
+                                              DryRunMode.Wet
+                                          else
+                                              DryRunMode.Dry)
+                                     else
+                                         (if true = Consts.FALSE then
+                                              DryRunMode.Wet
+                                          else
+                                              DryRunMode.Dry))
+                                )
+
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    DryRun =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : WithFlagDu =
             WithFlagDu.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -2879,12 +4405,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ContainsFlagEnvVar
 [<AutoOpen>]
 module ContainsFlagEnvVarArgParse =
-    type private ParseState_ContainsFlagEnvVar =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ContainsFlagEnvVar with
 
@@ -2893,8 +4413,6 @@ module ContainsFlagEnvVarArgParse =
             (args : string list)
             : ContainsFlagEnvVar
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf
@@ -2906,175 +4424,163 @@ module ContainsFlagEnvVarArgParse =
                 |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
-            let mutable arg_0 : DryRunMode option = None
+            let mutable arg_0 : Choice<DryRunMode, DryRunMode> option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "dry-run" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
                     match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "dry-run")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
+                    | Some _ -> None
                     | None ->
-                        try
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+
+                                arg_0 <-
+                                    Some (
+                                        Choice1Of2 (
+                                            (if parsedBool = Consts.FALSE then
+                                                 DryRunMode.Wet
+                                             else
+                                                 DryRunMode.Dry)
+                                        )
+                                    )
+
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
                             arg_0 <-
-                                value
-                                |> (fun x ->
-                                    if System.Boolean.Parse x = Consts.FALSE then
-                                        DryRunMode.Wet
-                                    else
-                                        DryRunMode.Dry
+                                Some (
+                                    Choice1Of2 (
+                                        (if occurrence.Negated then
+                                             (if false = Consts.FALSE then
+                                                  DryRunMode.Wet
+                                              else
+                                                  DryRunMode.Dry)
+                                         else
+                                             (if true = Consts.FALSE then
+                                                  DryRunMode.Wet
+                                              else
+                                                  DryRunMode.Dry))
+                                    )
                                 )
-                                |> Some
 
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
                     match arg_0 with
-                    | Some x ->
-                        sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
-                        |> ArgParser_errors.Add
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
 
-                        true
-                    | None ->
-                        arg_0 <-
-                            if true = Consts.FALSE then
-                                DryRunMode.Wet
-                            else
-                                DryRunMode.Dry
-                            |> Some
-
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_ContainsFlagEnvVar) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ContainsFlagEnvVar.AwaitingKey -> ()
-                    | ParseState_ContainsFlagEnvVar.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ContainsFlagEnvVar.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ContainsFlagEnvVar.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ContainsFlagEnvVar.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_ContainsFlagEnvVar.AwaitingKey args
-                    | ParseState_ContainsFlagEnvVar.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ContainsFlagEnvVar.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ContainsFlagEnvVar.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ContainsFlagEnvVar.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | 0 ->
                     match "CONSUMEPLUGIN_THINGS" |> getEnvironmentVariable with
                     | None ->
-                        sprintf
+                        (sprintf
                             "No value was supplied for %s, nor was environment variable %s set"
                             (sprintf "--%s" "dry-run")
-                            "CONSUMEPLUGIN_THINGS"
-                        |> ArgParser_errors.Add
-
-                        Unchecked.defaultof<_>
+                            "CONSUMEPLUGIN_THINGS")
+                        |> Some
                     | Some x ->
-                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
-                            if true = Consts.FALSE then
-                                DryRunMode.Wet
-                            else
-                                DryRunMode.Dry
-                        else if System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase) then
-                            if false = Consts.FALSE then
-                                DryRunMode.Wet
-                            else
-                                DryRunMode.Dry
-                        else
-                            x
-                            |> (fun x ->
-                                if System.Boolean.Parse x = Consts.FALSE then
-                                    DryRunMode.Wet
-                                else
-                                    DryRunMode.Dry
-                            )
-                    |> Choice2Of2
-                | Some x -> Choice1Of2 x
+                        try
+                            arg_0 <-
+                                Some (
+                                    Choice2Of2 (
+                                        if System.String.Equals (x, "1", System.StringComparison.OrdinalIgnoreCase) then
+                                            if true = Consts.FALSE then
+                                                DryRunMode.Wet
+                                            else
+                                                DryRunMode.Dry
+                                        else if
+                                            System.String.Equals (x, "0", System.StringComparison.OrdinalIgnoreCase)
+                                        then
+                                            if false = Consts.FALSE then
+                                                DryRunMode.Wet
+                                            else
+                                                DryRunMode.Dry
+                                        else
+                                            x
+                                            |> (fun x ->
+                                                if System.Boolean.Parse x = Consts.FALSE then
+                                                    DryRunMode.Wet
+                                                else
+                                                    DryRunMode.Dry
+                                            )
+                                    )
+                                )
 
-            if 0 = ArgParser_errors.Count then
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (from environment variable %s)" exc.Message "CONSUMEPLUGIN_THINGS")
+                            |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
                 {
-                    DryRun = arg_0
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    DryRun =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ContainsFlagEnvVar =
             ContainsFlagEnvVar.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -3087,12 +4593,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ContainsFlagDefaultValue
 [<AutoOpen>]
 module ContainsFlagDefaultValueArgParse =
-    type private ParseState_ContainsFlagDefaultValue =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ContainsFlagDefaultValue with
 
@@ -3101,8 +4601,6 @@ module ContainsFlagDefaultValueArgParse =
             (args : string list)
             : ContainsFlagDefaultValue
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf
@@ -3118,146 +4616,126 @@ module ContainsFlagDefaultValueArgParse =
                 |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
-            let mutable arg_0 : DryRunMode option = None
+            let mutable arg_0 : Choice<DryRunMode, DryRunMode> option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "dry-run")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <-
-                                value
-                                |> (fun x ->
-                                    if System.Boolean.Parse x = Consts.FALSE then
-                                        DryRunMode.Wet
-                                    else
-                                        DryRunMode.Dry
-                                )
-                                |> Some
-
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if System.String.Equals (key, sprintf "--%s" "dry-run", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "dry-run")
-                        |> ArgParser_errors.Add
-
-                        true
-                    | None ->
-                        arg_0 <-
-                            if true = Consts.FALSE then
-                                DryRunMode.Wet
-                            else
-                                DryRunMode.Dry
-                            |> Some
-
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_ContainsFlagDefaultValue) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ContainsFlagDefaultValue.AwaitingKey -> ()
-                    | ParseState_ContainsFlagDefaultValue.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ContainsFlagDefaultValue.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ContainsFlagDefaultValue.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
-                    | ParseState_ContainsFlagDefaultValue.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ContainsFlagDefaultValue.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ContainsFlagDefaultValue.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ContainsFlagDefaultValue.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None -> ContainsFlagDefaultValue.DefaultDryRun () |> Choice2Of2
-                | Some x -> Choice1Of2 x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    DryRun = arg_0
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "dry-run" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                        ))
+                    Positionals = List.empty
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+
+                                arg_0 <-
+                                    Some (
+                                        Choice1Of2 (
+                                            (if parsedBool = Consts.FALSE then
+                                                 DryRunMode.Wet
+                                             else
+                                                 DryRunMode.Dry)
+                                        )
+                                    )
+
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_0 <-
+                                Some (
+                                    Choice1Of2 (
+                                        (if occurrence.Negated then
+                                             (if false = Consts.FALSE then
+                                                  DryRunMode.Wet
+                                              else
+                                                  DryRunMode.Dry)
+                                         else
+                                             (if true = Consts.FALSE then
+                                                  DryRunMode.Wet
+                                              else
+                                                  DryRunMode.Dry))
+                                    )
+                                )
+
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | 0 ->
+                    arg_0 <- Some (Choice2Of2 (ContainsFlagDefaultValue.DefaultDryRun ()))
+                    None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    DryRun =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ContainsFlagDefaultValue =
             ContainsFlagDefaultValue.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -3270,18 +4748,10 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type ManyLongForms
 [<AutoOpen>]
 module ManyLongFormsArgParse =
-    type private ParseState_ManyLongForms =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type ManyLongForms with
 
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : ManyLongForms =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s / --%s" "do-something-else" "anotherarg") "" "")
@@ -3293,236 +4763,132 @@ module ManyLongFormsArgParse =
             let mutable arg_0 : string option = None
             let mutable arg_1 : bool option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "dont-turn-it-off",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_1 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_1 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (key, sprintf "--%s" "anotherarg", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "do-something-else",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool =
-                if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "dont-turn-it-off",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Flag '%s' was supplied multiple times"
-                            (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                        |> ArgParser_errors.Add
-
-                        true
-                    | None ->
-                        arg_1 <- true |> Some
-                        true
-                else if
-                    System.String.Equals (key, sprintf "--%s" "turn-it-on", System.StringComparison.OrdinalIgnoreCase)
-                then
-                    match arg_1 with
-                    | Some x ->
-                        sprintf
-                            "Flag '%s' was supplied multiple times"
-                            (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                        |> ArgParser_errors.Add
-
-                        true
-                    | None ->
-                        arg_1 <- true |> Some
-                        true
-                else
-                    false
-
-            let rec go (state : ParseState_ManyLongForms) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_ManyLongForms.AwaitingKey -> ()
-                    | ParseState_ManyLongForms.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_ManyLongForms.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_ManyLongForms.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_ManyLongForms.AwaitingKey args
-                                    | Error x ->
-                                        match x with
-                                        | None ->
-                                            failwithf
-                                                "Unable to process argument %s as key %s and value %s"
-                                                arg
-                                                key
-                                                value
-                                        | Some msg ->
-                                            sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                            go ParseState_ManyLongForms.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                            go ParseState_ManyLongForms.AwaitingKey args
-                    | ParseState_ManyLongForms.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_ManyLongForms.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_ManyLongForms.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_ManyLongForms.AwaitingKey args
-
-            let parser_LeftoverArgs =
-                if 0 = parser_LeftoverArgs.Count then
-                    ()
-                else
-                    parser_LeftoverArgs
-                    |> String.concat " "
-                    |> sprintf "There were leftover args: %s"
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf
-                        "Required argument '%s' received no value"
-                        (sprintf "--%s / --%s" "do-something-else" "anotherarg")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            let arg_1 =
-                match arg_1 with
-                | None ->
-                    sprintf
-                        "Required argument '%s' received no value"
-                        (sprintf "--%s / --%s" "turn-it-on" "dont-turn-it-off")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    DoTheThing = arg_0
-                    SomeFlag = arg_1
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "do-something-else" ; "anotherarg" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 1
+                                Forms = [ "turn-it-on" ; "dont-turn-it-off" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ]
+                        ))
+                    Positionals = List.empty
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_1 <- Some (parsedBool)
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_1 <- Some ((if occurrence.Negated then false else true))
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    DoTheThing =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    SomeFlag =
+                        (match arg_1 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : ManyLongForms =
             ManyLongForms.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -3532,15 +4898,150 @@ open System
 open System.IO
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type AliasedPositionals
+[<AutoOpen>]
+module AliasedPositionalsArgParse =
+    /// Extension methods for argument parsing
+    type AliasedPositionals with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : AliasedPositionals
+            =
+            let helpText () =
+                [
+                    (sprintf "%s  int32%s%s" (sprintf "--%s" "count") "" "")
+                    (sprintf
+                        "%s  string%s%s"
+                        (sprintf "--%s / --%s" "rest" "remainder")
+                        " (positional args) (can be repeated)"
+                        "")
+                ]
+                |> String.concat "\n"
+
+            let arg_1 : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "count" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "rest" ; "remainder" ]
+                                FlagLike = ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (value |> (fun x -> x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    Count =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Others = (arg_1 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : AliasedPositionals =
+            AliasedPositionals.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type FlagsIntoPositionalArgs
 [<AutoOpen>]
 module FlagsIntoPositionalArgsArgParse =
-    type private ParseState_FlagsIntoPositionalArgs =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgs with
 
@@ -3549,8 +5050,6 @@ module FlagsIntoPositionalArgsArgParse =
             (args : string list)
             : FlagsIntoPositionalArgs
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
@@ -3565,128 +5064,117 @@ module FlagsIntoPositionalArgsArgParse =
             let arg_1 : string ResizeArray = ResizeArray ()
             let mutable arg_0 : string option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "a")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "grab-everything",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    value |> (fun x -> x) |> arg_1.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_FlagsIntoPositionalArgs) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgs.AwaitingKey -> ()
-                    | ParseState_FlagsIntoPositionalArgs.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgs.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgs.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-                                    | Error x ->
-                                        if true then
-                                            arg |> (fun x -> x) |> arg_1.Add
-                                            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-                                        else
-                                            match x with
-                                            | None ->
-                                                failwithf
-                                                    "Unable to process argument %s as key %s and value %s"
-                                                    arg
-                                                    key
-                                                    value
-                                            | Some msg ->
-                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> arg_1.Add
-                            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-                    | ParseState_FlagsIntoPositionalArgs.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
-                            else if true then
-                                key |> (fun x -> x) |> arg_1.Add
-                                go ParseState_FlagsIntoPositionalArgs.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_FlagsIntoPositionalArgs.AwaitingKey args
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    A = arg_0
-                    GrabEverything = arg_1
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "a" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (value |> (fun x -> x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    A =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    GrabEverything = (arg_1 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgs =
             FlagsIntoPositionalArgs.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -3699,12 +5187,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgsChoice
 [<AutoOpen>]
 module FlagsIntoPositionalArgsChoiceArgParse =
-    type private ParseState_FlagsIntoPositionalArgsChoice =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgsChoice with
 
@@ -3713,8 +5195,6 @@ module FlagsIntoPositionalArgsChoiceArgParse =
             (args : string list)
             : FlagsIntoPositionalArgsChoice
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
@@ -3729,128 +5209,123 @@ module FlagsIntoPositionalArgsChoiceArgParse =
             let arg_1 : Choice<string, string> ResizeArray = ResizeArray ()
             let mutable arg_0 : string option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "a")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "grab-everything",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    value |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_FlagsIntoPositionalArgsChoice) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey -> ()
-                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x) |> Seq.map Choice2Of2)
-                | arg :: args ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
-                                    | Error x ->
-                                        if true then
-                                            arg |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
-                                            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
-                                        else
-                                            match x with
-                                            | None ->
-                                                failwithf
-                                                    "Unable to process argument %s as key %s and value %s"
-                                                    arg
-                                                    key
-                                                    value
-                                            | Some msg ->
-                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
-                            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
-                    | ParseState_FlagsIntoPositionalArgsChoice.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
-                            else if true then
-                                key |> (fun x -> x) |> Choice1Of2 |> arg_1.Add
-                                go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_FlagsIntoPositionalArgsChoice.AwaitingKey args
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    A = arg_0
-                    GrabEverything = arg_1
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "a" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (
+                            if afterSeparator then
+                                Choice2Of2 (value |> (fun x -> x))
+                            else
+                                Choice1Of2 (value |> (fun x -> x))
+                        )
+
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    A =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    GrabEverything = (arg_1 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsChoice =
             FlagsIntoPositionalArgsChoice.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -3863,12 +5338,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgsInt
 [<AutoOpen>]
 module FlagsIntoPositionalArgsIntArgParse =
-    type private ParseState_FlagsIntoPositionalArgsInt =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgsInt with
 
@@ -3877,8 +5346,6 @@ module FlagsIntoPositionalArgsIntArgParse =
             (args : string list)
             : FlagsIntoPositionalArgsInt
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
@@ -3893,128 +5360,117 @@ module FlagsIntoPositionalArgsIntArgParse =
             let arg_1 : int ResizeArray = ResizeArray ()
             let mutable arg_0 : string option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "a")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "grab-everything",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    value |> (fun x -> System.Int32.Parse x) |> arg_1.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_FlagsIntoPositionalArgsInt) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey -> ()
-                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgsInt.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
-                                    | Error x ->
-                                        if true then
-                                            arg |> (fun x -> System.Int32.Parse x) |> arg_1.Add
-                                            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
-                                        else
-                                            match x with
-                                            | None ->
-                                                failwithf
-                                                    "Unable to process argument %s as key %s and value %s"
-                                                    arg
-                                                    key
-                                                    value
-                                            | Some msg ->
-                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
-                        else
-                            arg |> (fun x -> System.Int32.Parse x) |> arg_1.Add
-                            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
-                    | ParseState_FlagsIntoPositionalArgsInt.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
-                            else if true then
-                                key |> (fun x -> System.Int32.Parse x) |> arg_1.Add
-                                go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_FlagsIntoPositionalArgsInt.AwaitingKey args
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    A = arg_0
-                    GrabEverything = arg_1
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "a" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (value |> (fun x -> System.Int32.Parse x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    A =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    GrabEverything = (arg_1 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsInt =
             FlagsIntoPositionalArgsInt.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -4027,12 +5483,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgsIntChoice
 [<AutoOpen>]
 module FlagsIntoPositionalArgsIntChoiceArgParse =
-    type private ParseState_FlagsIntoPositionalArgsIntChoice =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgsIntChoice with
 
@@ -4041,8 +5491,6 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
             (args : string list)
             : FlagsIntoPositionalArgsIntChoice
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
@@ -4057,128 +5505,123 @@ module FlagsIntoPositionalArgsIntChoiceArgParse =
             let arg_1 : Choice<int, int> ResizeArray = ResizeArray ()
             let mutable arg_0 : string option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "a")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "grab-everything",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    value |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_FlagsIntoPositionalArgsIntChoice) (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey -> ()
-                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> System.Int32.Parse x) |> Seq.map Choice2Of2)
-                | arg :: args ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
-                                    | Error x ->
-                                        if true then
-                                            arg |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
-                                            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
-                                        else
-                                            match x with
-                                            | None ->
-                                                failwithf
-                                                    "Unable to process argument %s as key %s and value %s"
-                                                    arg
-                                                    key
-                                                    value
-                                            | Some msg ->
-                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
-                        else
-                            arg |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
-                            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
-                    | ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
-                            else if true then
-                                key |> (fun x -> System.Int32.Parse x) |> Choice1Of2 |> arg_1.Add
-                                go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_FlagsIntoPositionalArgsIntChoice.AwaitingKey args
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    A = arg_0
-                    GrabEverything = arg_1
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "a" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "grab-everything" ]
+                                FlagLike =
+                                    (if true then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (
+                            if afterSeparator then
+                                Choice2Of2 (value |> (fun x -> System.Int32.Parse x))
+                            else
+                                Choice1Of2 (value |> (fun x -> System.Int32.Parse x))
+                        )
+
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    A =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    GrabEverything = (arg_1 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgsIntChoice =
             FlagsIntoPositionalArgsIntChoice.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -4191,12 +5634,6 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type FlagsIntoPositionalArgs'
 [<AutoOpen>]
 module FlagsIntoPositionalArgs'ArgParse =
-    type private ParseState_FlagsIntoPositionalArgs' =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     /// Extension methods for argument parsing
     type FlagsIntoPositionalArgs' with
 
@@ -4205,8 +5642,6 @@ module FlagsIntoPositionalArgs'ArgParse =
             (args : string list)
             : FlagsIntoPositionalArgs'
             =
-            let ArgParser_errors = ResizeArray ()
-
             let helpText () =
                 [
                     (sprintf "%s  string%s%s" (sprintf "--%s" "a") "" "")
@@ -4221,128 +5656,117 @@ module FlagsIntoPositionalArgs'ArgParse =
             let arg_1 : string ResizeArray = ResizeArray ()
             let mutable arg_0 : string option = None
 
-            /// Processes the key-value pair, returning Error if no key was matched.
-            /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-            /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-            let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-                if System.String.Equals (key, sprintf "--%s" "a", System.StringComparison.OrdinalIgnoreCase) then
-                    match arg_0 with
-                    | Some x ->
-                        sprintf
-                            "Argument '%s' was supplied multiple times: %s and %s"
-                            (sprintf "--%s" "a")
-                            (x.ToString ())
-                            (value.ToString ())
-                        |> ArgParser_errors.Add
-
-                        Ok ()
-                    | None ->
-                        try
-                            arg_0 <- value |> (fun x -> x) |> Some
-                            Ok ()
-                        with _ as exc ->
-                            exc.Message |> Some |> Error
-                else if
-                    System.String.Equals (
-                        key,
-                        sprintf "--%s" "dont-grab-everything",
-                        System.StringComparison.OrdinalIgnoreCase
-                    )
-                then
-                    value |> (fun x -> x) |> arg_1.Add
-                    () |> Ok
-                else
-                    Error None
-
-            /// Returns false if we didn't set a value.
-            let setFlagValue (key : string) : bool = false
-
-            let rec go (state : ParseState_FlagsIntoPositionalArgs') (args : string list) =
-                match args with
-                | [] ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgs'.AwaitingKey -> ()
-                    | ParseState_FlagsIntoPositionalArgs'.AwaitingValue key ->
-                        if setFlagValue key then
-                            ()
-                        else
-                            sprintf
-                                "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                                key
-                            |> ArgParser_errors.Add
-                | "--" :: rest -> arg_1.AddRange (rest |> Seq.map (fun x -> x))
-                | arg :: args ->
-                    match state with
-                    | ParseState_FlagsIntoPositionalArgs'.AwaitingKey ->
-                        if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                            if arg = "--help" then
-                                helpText () |> failwithf "Help text requested.\n%s"
-                            else
-                                let equals = arg.IndexOf (char 61)
-
-                                if equals < 0 then
-                                    args |> go (ParseState_FlagsIntoPositionalArgs'.AwaitingValue arg)
-                                else
-                                    let key = arg.[0 .. equals - 1]
-                                    let value = arg.[equals + 1 ..]
-
-                                    match processKeyValue key value with
-                                    | Ok () -> go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-                                    | Error x ->
-                                        if false then
-                                            arg |> (fun x -> x) |> arg_1.Add
-                                            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-                                        else
-                                            match x with
-                                            | None ->
-                                                failwithf
-                                                    "Unable to process argument %s as key %s and value %s"
-                                                    arg
-                                                    key
-                                                    value
-                                            | Some msg ->
-                                                sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-                        else
-                            arg |> (fun x -> x) |> arg_1.Add
-                            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-                    | ParseState_FlagsIntoPositionalArgs'.AwaitingValue key ->
-                        match processKeyValue key arg with
-                        | Ok () -> go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-                        | Error exc ->
-                            if setFlagValue key then
-                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
-                            else if false then
-                                key |> (fun x -> x) |> arg_1.Add
-                                go ParseState_FlagsIntoPositionalArgs'.AwaitingKey (arg :: args)
-                            else
-                                match exc with
-                                | None ->
-                                    failwithf
-                                        "Unable to process supplied arg %s. Help text follows.\n%s"
-                                        key
-                                        (helpText ())
-                                | Some msg -> msg |> ArgParser_errors.Add
-
-            go ParseState_FlagsIntoPositionalArgs'.AwaitingKey args
-            let arg_1 = arg_1 |> Seq.toList
-
-            let arg_0 =
-                match arg_0 with
-                | None ->
-                    sprintf "Required argument '%s' received no value" (sprintf "--%s" "a")
-                    |> ArgParser_errors.Add
-
-                    Unchecked.defaultof<_>
-                | Some x -> x
-
-            if 0 = ArgParser_errors.Count then
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
-                    A = arg_0
-                    DontGrabEverything = arg_1
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "a" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.PositionalLeaf 0
+                            ]
+                        ))
+                    Positionals =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "dont-grab-everything" ]
+                                FlagLike =
+                                    (if false then
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Collect
+                                     else
+                                         ArgParserRuntime_BasicNoPositionals.ErasedFlagLikeBehaviour.Reject)
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
                 }
-            else
-                ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                match positionalId with
+                | 0 ->
+                    try
+                        arg_1.Add (value |> (fun x -> x))
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message value) |> Some
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    A =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    DontGrabEverything = (arg_1 |> Seq.toList)
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
         static member parse (args : string list) : FlagsIntoPositionalArgs' =
             FlagsIntoPositionalArgs'.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -4355,15 +5779,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type WithTypeHelp
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module WithTypeHelp =
-    type private ParseState_WithTypeHelp =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithTypeHelp =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 "Parse command-line arguments for a basic configuration. This help text appears before the argument list."
@@ -4385,182 +5801,165 @@ module WithTypeHelp =
         let mutable arg_1 : bool option = None
         let mutable arg_2 : int option = None
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if System.String.Equals (key, sprintf "--%s" "port", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "port")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Int32.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if System.String.Equals (key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "verbose")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "config-file", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "config-file")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_0 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, sprintf "--%s" "verbose", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_1 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "verbose")
-                    |> ArgParser_errors.Add
-
-                    true
-                | None ->
-                    arg_1 <- true |> Some
-                    true
-            else
-                false
-
-        let rec go (state : ParseState_WithTypeHelp) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_WithTypeHelp.AwaitingKey -> ()
-                | ParseState_WithTypeHelp.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-            | arg :: args ->
-                match state with
-                | ParseState_WithTypeHelp.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
-
-                            if equals < 0 then
-                                args |> go (ParseState_WithTypeHelp.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
-
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_WithTypeHelp.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_WithTypeHelp.AwaitingKey args
-                    else
-                        arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                        go ParseState_WithTypeHelp.AwaitingKey args
-                | ParseState_WithTypeHelp.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_WithTypeHelp.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_WithTypeHelp.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_WithTypeHelp.AwaitingKey args
-
-        let parser_LeftoverArgs =
-            if 0 = parser_LeftoverArgs.Count then
-                ()
-            else
-                parser_LeftoverArgs
-                |> String.concat " "
-                |> sprintf "There were leftover args: %s"
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "config-file")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "verbose")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "port")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        if 0 = ArgParser_errors.Count then
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
             {
-                ConfigFile = arg_0
-                Port = arg_2
-                Verbose = arg_1
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "config-file" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "verbose" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 2
+                            Forms = [ "port" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                        ]
+                    ))
+                Positionals = List.empty
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_1 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_1 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | 2 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_2 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                ConfigFile =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Port =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Verbose =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : WithTypeHelp =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
@@ -4573,15 +5972,7 @@ open WoofWare.Myriad.Plugins
 /// Methods to parse arguments for the type WithMultilineTypeHelp
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module WithMultilineTypeHelp =
-    type private ParseState_WithMultilineTypeHelp =
-        /// Ready to consume a key or positional arg
-        | AwaitingKey
-        /// Waiting to receive a value for the key we've already consumed
-        | AwaitingValue of key : string
-
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithMultilineTypeHelp =
-        let ArgParser_errors = ResizeArray ()
-
         let helpText () =
             [
                 "This is a multiline help text example.
@@ -4600,184 +5991,259 @@ You can use this to provide detailed documentation for your argument parser."
         let mutable arg_1 : string option = None
         let mutable arg_2 : bool option = None
 
-        /// Processes the key-value pair, returning Error if no key was matched.
-        /// If the key is an arg which can have arity 1, but throws when consuming that arg, we return Error(<the message>).
-        /// This can nevertheless be a successful parse, e.g. when the key may have arity 0.
-        let processKeyValue (key : string) (value : string) : Result<unit, string option> =
-            if System.String.Equals (key, sprintf "--%s" "force", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "force")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_2 <- value |> (fun x -> System.Boolean.Parse x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "output-dir", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_1 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "output-dir")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_1 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else if
-                System.String.Equals (key, sprintf "--%s" "input-file", System.StringComparison.OrdinalIgnoreCase)
-            then
-                match arg_0 with
-                | Some x ->
-                    sprintf
-                        "Argument '%s' was supplied multiple times: %s and %s"
-                        (sprintf "--%s" "input-file")
-                        (x.ToString ())
-                        (value.ToString ())
-                    |> ArgParser_errors.Add
-
-                    Ok ()
-                | None ->
-                    try
-                        arg_0 <- value |> (fun x -> x) |> Some
-                        Ok ()
-                    with _ as exc ->
-                        exc.Message |> Some |> Error
-            else
-                Error None
-
-        /// Returns false if we didn't set a value.
-        let setFlagValue (key : string) : bool =
-            if System.String.Equals (key, sprintf "--%s" "force", System.StringComparison.OrdinalIgnoreCase) then
-                match arg_2 with
-                | Some x ->
-                    sprintf "Flag '%s' was supplied multiple times" (sprintf "--%s" "force")
-                    |> ArgParser_errors.Add
-
-                    true
-                | None ->
-                    arg_2 <- true |> Some
-                    true
-            else
-                false
-
-        let rec go (state : ParseState_WithMultilineTypeHelp) (args : string list) =
-            match args with
-            | [] ->
-                match state with
-                | ParseState_WithMultilineTypeHelp.AwaitingKey -> ()
-                | ParseState_WithMultilineTypeHelp.AwaitingValue key ->
-                    if setFlagValue key then
-                        ()
-                    else
-                        sprintf
-                            "Trailing argument %s had no value. Use a double-dash to separate positional args from key-value args."
-                            key
-                        |> ArgParser_errors.Add
-            | "--" :: rest -> parser_LeftoverArgs.AddRange (rest |> Seq.map (fun x -> x))
-            | arg :: args ->
-                match state with
-                | ParseState_WithMultilineTypeHelp.AwaitingKey ->
-                    if arg.StartsWith ("--", System.StringComparison.Ordinal) then
-                        if arg = "--help" then
-                            helpText () |> failwithf "Help text requested.\n%s"
-                        else
-                            let equals = arg.IndexOf (char 61)
-
-                            if equals < 0 then
-                                args |> go (ParseState_WithMultilineTypeHelp.AwaitingValue arg)
-                            else
-                                let key = arg.[0 .. equals - 1]
-                                let value = arg.[equals + 1 ..]
-
-                                match processKeyValue key value with
-                                | Ok () -> go ParseState_WithMultilineTypeHelp.AwaitingKey args
-                                | Error x ->
-                                    match x with
-                                    | None ->
-                                        failwithf "Unable to process argument %s as key %s and value %s" arg key value
-                                    | Some msg ->
-                                        sprintf "%s (at arg %s)" msg arg |> ArgParser_errors.Add
-                                        go ParseState_WithMultilineTypeHelp.AwaitingKey args
-                    else
-                        arg |> (fun x -> x) |> parser_LeftoverArgs.Add
-                        go ParseState_WithMultilineTypeHelp.AwaitingKey args
-                | ParseState_WithMultilineTypeHelp.AwaitingValue key ->
-                    match processKeyValue key arg with
-                    | Ok () -> go ParseState_WithMultilineTypeHelp.AwaitingKey args
-                    | Error exc ->
-                        if setFlagValue key then
-                            go ParseState_WithMultilineTypeHelp.AwaitingKey (arg :: args)
-                        else
-                            match exc with
-                            | None ->
-                                failwithf "Unable to process supplied arg %s. Help text follows.\n%s" key (helpText ())
-                            | Some msg -> msg |> ArgParser_errors.Add
-
-        go ParseState_WithMultilineTypeHelp.AwaitingKey args
-
-        let parser_LeftoverArgs =
-            if 0 = parser_LeftoverArgs.Count then
-                ()
-            else
-                parser_LeftoverArgs
-                |> String.concat " "
-                |> sprintf "There were leftover args: %s"
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-
-        let arg_0 =
-            match arg_0 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "input-file")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_1 =
-            match arg_1 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "output-dir")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        let arg_2 =
-            match arg_2 with
-            | None ->
-                sprintf "Required argument '%s' received no value" (sprintf "--%s" "force")
-                |> ArgParser_errors.Add
-
-                Unchecked.defaultof<_>
-            | Some x -> x
-
-        if 0 = ArgParser_errors.Count then
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
             {
-                Force = arg_2
-                InputFile = arg_0
-                OutputDir = arg_1
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "input-file" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "output-dir" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 2
+                            Forms = [ "force" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                            ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                        ]
+                    ))
+                Positionals = List.empty
             }
-        else
-            ArgParser_errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                Force =
+                    (match arg_2 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                InputFile =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                OutputDir =
+                    (match arg_1 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
 
     let parse (args : string list) : WithMultilineTypeHelp =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type NonPositionalBoolList
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module NonPositionalBoolList =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : NonPositionalBoolList =
+        let helpText () =
+            [ (sprintf "%s  bool%s%s" (sprintf "--%s" "flags") " (can be repeated)" "") ]
+            |> String.concat "\n"
+
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let arg_0 : bool ResizeArray = ResizeArray ()
+
+        let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "flags" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                        [ ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0 ]
+                    ))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        let parsedBool = System.Boolean.Parse value
+                        let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                        arg_0.Add (parsedBool)
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    arg_0.Add ((if occurrence.Negated then false else true))
+                    None
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_BasicNoPositionals.runParse
+                (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+            {
+                Flags = (arg_0 |> Seq.toList)
+            }
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+            helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : NonPositionalBoolList =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
