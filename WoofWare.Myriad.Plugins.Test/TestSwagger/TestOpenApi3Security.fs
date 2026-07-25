@@ -231,13 +231,13 @@ module TestOpenApi3Security =
         |> shouldEqual OpenApiSecuritySchemeKind.OpenIdConnect
 
     [<Test>]
-    let ``The first representable alternative is the one applied`` () =
+    let ``The one satisfiable alternative is applied, whatever its position`` () =
         let source =
             securityDocument
                 [
                     "queryKey", apiKeyElsewhereScheme "query"
+                    "cookieKey", apiKeyElsewhereScheme "cookie"
                     "bearerAuth", httpScheme "bearer"
-                    "apiKeyAuth", apiKeyHeaderScheme "X-API-Key"
                 ]
                 None
                 [
@@ -246,7 +246,7 @@ module TestOpenApi3Security =
                         [
                             requirement [ "queryKey" ]
                             requirement [ "bearerAuth" ]
-                            requirement [ "apiKeyAuth" ]
+                            requirement [ "cookieKey" ]
                         ]
                 ]
 
@@ -254,15 +254,57 @@ module TestOpenApi3Security =
 
         (operation plan "thing").Security |> shouldEqual [ "bearerAuth" ]
 
+    // Document order is not a preference: a spec which says an operation accepts any of several
+    // credentials is not saying which one *you* should send, and picking for you would silently
+    // choose how you authenticate.
     [<Test>]
-    let ``An operation whose alternatives include the empty requirement first sends nothing`` () =
+    let ``Several satisfiable alternatives are ambiguous rather than guessed between`` () =
+        let source =
+            securityDocument
+                [
+                    "bearerAuth", httpScheme "bearer"
+                    "apiKeyAuth", apiKeyHeaderScheme "X-API-Key"
+                ]
+                None
+                [
+                    "thing", Some [ requirement [ "bearerAuth" ] ; requirement [ "apiKeyAuth" ] ]
+                ]
+
+        diagnostics config source
+        |> List.filter (fun diagnostic -> diagnostic.Code = OpenApiGenerationDiagnosticCode.AmbiguousSecurity)
+        |> List.map _.Location
+        |> shouldEqual [ "#/paths/~1thing/get/security" ]
+
+    /// An operation offering both "no credentials" and a real scheme is a genuine choice too:
+    /// sending nothing is exactly the silently-unauthenticated client this all exists to prevent.
+    [<Test>]
+    let ``An alternative demanding no credentials does not win by default`` () =
         let source =
             securityDocument
                 [ "bearerAuth", httpScheme "bearer" ]
                 None
                 [ "thing", Some [ requirement [] ; requirement [ "bearerAuth" ] ] ]
 
-        let plan = plan config source
+        let diagnostics = diagnostics config source
+
+        diagnostics
+        |> List.exists (fun diagnostic -> diagnostic.Code = OpenApiGenerationDiagnosticCode.AmbiguousSecurity)
+        |> shouldEqual true
+
+        // The message has to say how to ask for the unauthenticated one, since it has no name.
+        diagnostics
+        |> List.exists (fun diagnostic -> diagnostic.Message.Contains ("(no credentials)", StringComparison.Ordinal))
+        |> shouldEqual true
+
+    [<Test>]
+    let ``An empty SecuritySchemes parameter selects the unauthenticated alternative`` () =
+        let source =
+            securityDocument
+                [ "bearerAuth", httpScheme "bearer" ]
+                None
+                [ "thing", Some [ requirement [] ; requirement [ "bearerAuth" ] ] ]
+
+        let plan = plan (config |> Map.add "SECURITYSCHEMES" "") source
 
         (operation plan "thing").Security |> shouldEqual []
         plan.Credentials |> shouldEqual Map.empty
@@ -391,9 +433,10 @@ module TestOpenApi3Security =
 
         (operation restricted "thing").Security |> shouldEqual [ "apiKeyAuth" ]
 
-        // Without the restriction we'd have taken the document's first alternative.
-        (operation (plan config source) "thing").Security
-        |> shouldEqual [ "bearerAuth" ]
+        // Without the restriction, this document doesn't say which to use, so it doesn't generate.
+        diagnostics config source
+        |> List.exists (fun diagnostic -> diagnostic.Code = OpenApiGenerationDiagnosticCode.AmbiguousSecurity)
+        |> shouldEqual true
 
     [<Test>]
     let ``The SecuritySchemes parameter cannot silently exclude every alternative`` () =
@@ -491,30 +534,32 @@ module TestOpenApi3Security =
         }
 
     [<Test>]
-    let ``The applied requirement is always the document's first satisfiable alternative`` () =
+    let ``The applied requirement is always the document's unique satisfiable alternative`` () =
         let property (schemes : GeneratedScheme list, alternatives : int list list) =
-            // The oracle: the first alternative all of whose schemes we can carry, and no two of
-            // whose schemes want the same header (one request can't carry two Authorization values).
-            // An absent alternative list is not a failure; it means "this operation needs no
-            // credentials".
+            // An alternative works if we can carry every scheme it names, and no two of them want
+            // the same header (one request can't carry two Authorization values).
             let satisfiable (alternative : int list) =
                 let headers = alternative |> List.map (fun index -> schemes.[index].Header)
 
                 List.forall Option.isSome headers
                 && List.length (List.distinct headers) = List.length headers
 
+            let schemeNames (alternative : int list) =
+                alternative
+                |> List.map (fun index -> schemes.[index].Name)
+                |> List.distinct
+                |> List.sort
+
+            // The oracle: the operation generates exactly when one distinct alternative works. An
+            // absent alternative list is not a failure; it means "this operation needs no
+            // credentials".
             let expected =
                 if List.isEmpty alternatives then
                     Some []
                 else
-                    alternatives
-                    |> List.tryFind satisfiable
-                    |> Option.map (fun alternative ->
-                        alternative
-                        |> List.map (fun index -> schemes.[index].Name)
-                        |> List.distinct
-                        |> List.sort
-                    )
+                    match alternatives |> List.filter satisfiable |> List.map schemeNames |> List.distinct with
+                    | [ chosen ] -> Some chosen
+                    | _ -> None
 
             let source =
                 securityDocument
@@ -536,10 +581,13 @@ module TestOpenApi3Security =
                 && (plan.Credentials |> Map.toList |> List.map fst) = List.distinct expected
             | Error diagnostics, None ->
                 diagnostics
-                |> List.exists (fun diagnostic -> diagnostic.Code = OpenApiGenerationDiagnosticCode.UnsupportedSecurity)
+                |> List.exists (fun diagnostic ->
+                    diagnostic.Code = OpenApiGenerationDiagnosticCode.UnsupportedSecurity
+                    || diagnostic.Code = OpenApiGenerationDiagnosticCode.AmbiguousSecurity
+                )
             | Ok plan, None ->
                 let sent = (operation plan "thing").Security
-                failwith $"Planning accepted an unsatisfiable requirement, sending %+A{sent}"
+                failwith $"Planning chose credentials %+A{sent} where the document did not say to"
             | Error diagnostics, Some expected ->
                 failwith
                     $"Planning rejected a satisfiable requirement %+A{expected}: %+A{diagnostics |> List.map _.Message}"

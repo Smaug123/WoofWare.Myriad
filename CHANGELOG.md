@@ -9,7 +9,7 @@ Unsupported or structurally ambiguous OpenAPI constructs fail with structured, J
 The OpenAPI 3.0 generator now applies `security` requirements, rather than ignoring them.
 Each security scheme an operation requires becomes a `unit -> string` argument of the generated `make`, evaluated afresh per request, and each operation sends exactly the credentials its own requirement asks for (an operation with `security: []` sends none).
 Supported schemes are the header-carried ones: `apiKey` in a header, `http` of any scheme, and `oauth2`/`openIdConnect` (for which you supply the `Authorization` header value; no token flow is performed).
-Where an operation offers alternative requirements, the first satisfiable one is used; the new `SecuritySchemes` Myriad parameter restricts which schemes may be chosen.
+Where an operation can be authenticated in more than one way, the generator refuses to guess: name the one you want in the new `SecuritySchemes` Myriad parameter (or set it empty to send no credentials wherever the document permits that).
 An operation with no satisfiable requirement is now a build failure rather than a silently unauthenticated client.
 
 Fixes a latent bug in the `HttpClient` generator: an interface property named `Client` collided with the `HttpClient` argument of the generated `make`, so the generated source did not compile.

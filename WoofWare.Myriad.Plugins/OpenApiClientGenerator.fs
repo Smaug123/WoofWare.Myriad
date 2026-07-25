@@ -20,6 +20,7 @@ type internal OpenApiGenerationDiagnosticCode =
     | UnsupportedParameter
     | UnsupportedOperation
     | UnsupportedSecurity
+    | AmbiguousSecurity
     | AmbiguousSuccessResponse
 
 type internal OpenApiGenerationDiagnostic =
@@ -1364,14 +1365,26 @@ module internal OpenApiClientGenerator =
         |> List.choose id
         |> Some
 
-    /// Choose the credentials an operation sends: the first alternative, in document order, all of
-    /// whose schemes we can represent and the caller permitted. `Ok []` means "send none", which is
-    /// what an absent or empty `security` demands. `Error` lists why each alternative was rejected.
+    /// Why an operation's security requirement could not be met.
+    type private SecuritySelectionFailure =
+        /// No alternative can be satisfied, so the client could only issue unauthenticated requests.
+        /// Each entry is a requirement's location and why it was rejected.
+        | Unsatisfiable of rejections : (string * string) list
+        /// Several alternatives could be satisfied, and the document says nothing about which the
+        /// caller would prefer. Each entry is a candidate's location and the schemes it names.
+        | Ambiguous of candidates : (string * string list) list
+
+    /// Choose the credentials an operation sends. `Ok []` means "send none", which is what an absent
+    /// or empty `security` demands.
+    ///
+    /// Exactly one alternative must be satisfiable. *Several* is an error rather than a guess: a
+    /// document lists its alternatives in no particular order, so choosing between them would choose
+    /// how the caller authenticates. They say which they want with the SecuritySchemes parameter.
     let private selectSecurityRequirement
         (permitted : Set<string> option)
         (schemes : Map<string, SecurityScheme>)
         (alternatives : SecurityRequirement list)
-        : Result<string list, (string * string) list>
+        : Result<string list, SecuritySelectionFailure>
         =
         let rejection (schemeName : string) : string option =
             match Map.tryFind schemeName schemes with
@@ -1408,23 +1421,33 @@ module internal OpenApiClientGenerator =
                 |> String.concat "; "
                 |> Some
 
-        let rec go (rejections : (string * string) list) (alternatives : SecurityRequirement list) =
-            match alternatives with
-            | [] -> Error (List.rev rejections)
-            | alternative :: rest ->
-                match alternative.Schemes |> List.choose rejection with
-                | [] ->
-                    match collidingHeaders alternative.Schemes with
-                    | None -> Ok alternative.Schemes
-                    | Some reason -> go ((alternative.Location, reason) :: rejections) rest
-                | reasons -> go ((alternative.Location, String.concat "; " reasons) :: rejections) rest
-
         // No alternatives at all is not a failure to satisfy anything: it is the statement that this
         // operation needs no credentials.
         if List.isEmpty alternatives then
             Ok []
         else
-            go [] alternatives
+
+        let satisfiable, rejected =
+            alternatives
+            |> List.map (fun alternative ->
+                match alternative.Schemes |> List.choose rejection with
+                | [] ->
+                    match collidingHeaders alternative.Schemes with
+                    | None -> Choice1Of2 alternative
+                    | Some reason -> Choice2Of2 (alternative.Location, reason)
+                | reasons -> Choice2Of2 (alternative.Location, String.concat "; " reasons)
+            )
+            |> List.partitionChoice
+
+        // Two alternatives naming the same schemes are the same choice, not a choice between two.
+        match satisfiable |> List.distinctBy _.Schemes with
+        | [ chosen ] -> Ok chosen.Schemes
+        | [] -> Error (SecuritySelectionFailure.Unsatisfiable rejected)
+        | candidates ->
+            candidates
+            |> List.map (fun candidate -> candidate.Location, candidate.Schemes)
+            |> SecuritySelectionFailure.Ambiguous
+            |> Error
 
     type private OperationPlanningContext =
         {
@@ -2053,7 +2076,7 @@ module internal OpenApiClientGenerator =
                                     alternatives
                             with
                             | Ok schemes -> schemes
-                            | Error rejections ->
+                            | Error (SecuritySelectionFailure.Unsatisfiable rejections) ->
                                 let rejections =
                                     rejections
                                     |> List.map (fun (location, reason) -> $"%s{location}: %s{reason}")
@@ -2063,6 +2086,25 @@ module internal OpenApiClientGenerator =
                                     UnsupportedSecurity
                                     ($"%s{operation.Location}/security")
                                     $"No security requirement of this operation can be satisfied by the generated client, so it would silently issue unauthenticated requests.%s{Environment.NewLine}%s{rejections}"
+
+                                []
+                            | Error (SecuritySelectionFailure.Ambiguous candidates) ->
+                                let candidates =
+                                    candidates
+                                    |> List.map (fun (location, schemes) ->
+                                        let schemes =
+                                            match schemes with
+                                            | [] -> "(no credentials)"
+                                            | schemes -> String.concat " + " schemes
+
+                                        $"%s{location}: %s{schemes}"
+                                    )
+                                    |> String.concat Environment.NewLine
+
+                                report
+                                    AmbiguousSecurity
+                                    ($"%s{operation.Location}/security")
+                                    $"This operation can be authenticated in more than one way, and choosing between them would choose how you authenticate. Name the scheme you want in the SecuritySchemes Myriad parameter (comma-separated; leave it empty to send no credentials wherever the document permits that).%s{Environment.NewLine}%s{candidates}"
 
                                 []
 

@@ -382,10 +382,11 @@ and `oauth2`/`openIdConnect` (which supply the `Authorization` header value: the
 token flow of its own, so you remain responsible for acquiring and refreshing tokens).
 `apiKey` with `in: query` or `in: cookie` is not supported.
 
-Where an operation offers *alternative* requirements, the first one the generated client can satisfy is
-applied, and which one that is is visible in the generated source.
-To choose a different one, restrict the schemes with the `SecuritySchemes` Myriad parameter, which takes a
-comma-separated list of scheme names:
+Where an operation can be authenticated in more than one way, the generator **refuses to guess**, because
+a document lists its alternatives in no particular order, and choosing between them chooses how you
+authenticate.
+Say which you want with the `SecuritySchemes` Myriad parameter, which takes a comma-separated list of
+scheme names:
 
 ```xml
 <MyriadParams>
@@ -393,6 +394,10 @@ comma-separated list of scheme names:
   <SecuritySchemes>bearerAuth,apiKeyAuth</SecuritySchemes>
 </MyriadParams>
 ```
+
+This includes the case where one of the alternatives is the empty requirement `{}`, i.e. "no credentials":
+sending nothing is a choice too, and a silently unauthenticated client is exactly what this is here to
+prevent. Set `SecuritySchemes` to the empty string to take that alternative wherever the document offers it.
 
 An operation with no satisfiable requirement is a build failure, rather than a client which silently
 issues unauthenticated requests.
