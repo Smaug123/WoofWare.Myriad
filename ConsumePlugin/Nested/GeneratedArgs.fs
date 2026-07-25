@@ -405,7 +405,7 @@ module private ArgParserRuntime_SameBaseNameArgs =
 
         go ScanState.AwaitingKey [] args
 
-    /// A failure to choose a unique case for a Sum node.
+    /// A failure to choose a unique case for a Sum node, or to route the positional stream.
     [<RequireQualifiedAccess>]
     type SelectionError =
         /// Occurrences were seen for leaves belonging to two (or more) different cases of one
@@ -417,6 +417,16 @@ module private ArgParserRuntime_SameBaseNameArgs =
         /// arguments, so the choice is ambiguous. (A generation-time check normally rejects
         /// schemas where this can happen; this is the runtime safety net.)
         | AmbiguousEmptyCases of sumId : int * caseNames : string list
+        /// Positional tokens were seen, but no positional sink consistent with the named
+        /// arguments can consume them all. `source` is the first positional token, as spelled.
+        | UnroutablePositional of source : string
+        /// The positional stream could be consumed by more than one sink, and nothing else
+        /// distinguishes their alternatives. `source` is the first positional token, as
+        /// spelled; `sinkIds` are the competing sinks. (A generation-time check normally
+        /// rejects schemas where this can happen with bare tokens; this is the runtime safety
+        /// net, and it can also fire for a keyed form shared between otherwise-undistinguished
+        /// alternatives.)
+        | AmbiguousPositionalRouting of source : string * sinkIds : int list
 
     /// The result of case selection: which case index was chosen for each Sum node reachable in
     /// the selected interpretation, and which leaves are *active* (belong to selected cases).
@@ -483,7 +493,16 @@ module private ArgParserRuntime_SameBaseNameArgs =
     /// "touched" if any leaf beneath it received an occurrence. Exactly one touched case means
     /// that case is selected; two or more touched cases is a conflict; zero touched cases falls
     /// back to the unique case satisfiable with no arguments.
-    let select (schema : ErasedSchema) (observed : Map<int, string>) : Selection =
+    /// Like `select` below, but a positional-stream hypothesis may be supplied: the sink with
+    /// the given id is treated as one additional observed (optional) leaf, its witness being
+    /// the given source text. This is how the resolver asks "which case would be selected if
+    /// sink p consumed the positional stream?".
+    let private selectWith
+        (schema : ErasedSchema)
+        (observed : Map<int, string>)
+        (positionalWitness : (int * string) option)
+        : Selection
+        =
         let leavesById = schema.Leaves |> List.map (fun leaf -> leaf.Id, leaf) |> Map.ofList
 
         let rec go (tree : ErasedTree) : Map<int, int> * Set<int> * Set<int> * SelectionError list =
@@ -504,6 +523,15 @@ module private ArgParserRuntime_SameBaseNameArgs =
                     |> List.choose (fun (i, (name, case)) ->
                         let witness =
                             leafIds case |> List.tryPick (fun leafId -> Map.tryFind leafId observed)
+
+                        let witness =
+                            match witness with
+                            | Some source -> Some source
+                            | None ->
+                                match positionalWitness with
+                                | Some (positionalId, source) when positionalIds case |> List.contains positionalId ->
+                                    Some source
+                                | _ -> None
 
                         match witness with
                         | Some source -> Some (i, name, source)
@@ -549,6 +577,146 @@ module private ArgParserRuntime_SameBaseNameArgs =
                         "WoofWare.Myriad internal error: two positional sinks were active at once; the schema was not validated"
             Errors = errors
         }
+
+    let select (schema : ErasedSchema) (observed : Map<int, string>) : Selection = selectWith schema observed None
+
+    /// A positional event's original spelling, for error messages.
+    let describePositionalEvent (event : PositionalEvent) : string =
+        match event.Form with
+        | PositionalForm.Bare -> event.Value
+        | PositionalForm.KeyEquals key -> key + "=" + event.Value
+        | PositionalForm.KeySpaced key -> key + " " + event.Value
+
+    /// Structural resolution: select a case for every Sum *and* route the positional stream,
+    /// given the named observations and the scanned positional events. Pure, and independent
+    /// of conversion by construction: it sees only which named leaves were observed and how
+    /// the positional tokens were spelled.
+    ///
+    /// The rule (mirroring the exhaustive reference semantics): a complete interpretation
+    /// accepts the input iff it contains every observed named leaf, all its required leaves
+    /// were observed, and — when positional tokens exist — it contains a sink which is a
+    /// candidate of every positional event. The parse succeeds exactly when one
+    /// interpretation accepts. Efficiently: intersect the events' candidate sets, and run the
+    /// compositional selector once per candidate sink, with that sink treated as one
+    /// additional observed leaf.
+    ///
+    /// Error reporting prefers the friendliest diagnosis: an interpretation which is unique
+    /// up to missing required arguments is still selected (the missing arguments are reported
+    /// downstream, as for a purely named parse), so positional routing only surfaces in
+    /// errors when it is genuinely the obstacle.
+    let resolve
+        (schema : ErasedSchema)
+        (observed : Map<int, string>)
+        (positionalEvents : PositionalEvent list)
+        : Selection
+        =
+        match positionalEvents, schema.Positionals with
+        | [], _
+        | _, [] -> select schema observed
+        | events, _ ->
+            let candidates =
+                events |> List.map (fun event -> event.Candidates) |> Set.intersectMany
+
+            /// Are all the required named leaves active under this selection observed?
+            let requiredComplete (selection : Selection) : bool =
+                schema.Leaves
+                |> List.forall (fun leaf ->
+                    match leaf.Requirement with
+                    | ErasedRequirement.Required ->
+                        not (Set.contains leaf.Id selection.ActiveLeaves)
+                        || Map.containsKey leaf.Id observed
+                    | ErasedRequirement.Optional
+                    | ErasedRequirement.HasDefault -> true
+                )
+
+            let firstSource = describePositionalEvent (List.head events)
+
+            let hypotheses =
+                schema.Positionals
+                |> List.filter (fun p -> Set.contains p.Id candidates)
+                |> List.map (fun p ->
+                    let witness =
+                        events
+                        |> List.tryFind (fun event -> Set.contains p.Id event.Candidates)
+                        |> Option.map describePositionalEvent
+                        |> Option.defaultValue firstSource
+
+                    p.Id, selectWith schema observed (Some (p.Id, witness))
+                )
+
+            let clean =
+                hypotheses
+                |> List.filter (fun (p, selection) ->
+                    List.isEmpty selection.Errors
+                    && (
+                        match selection.ActivePositional with
+                        | Some active -> active = p
+                        | None -> false
+                    )
+                )
+
+            let fullyValid =
+                clean |> List.filter (fun (_, selection) -> requiredComplete selection)
+
+            let innerAmbiguous =
+                hypotheses
+                |> List.filter (fun (p, selection) ->
+                    not (List.isEmpty selection.Errors)
+                    && (selection.Errors
+                        |> List.forall (fun error ->
+                            match error with
+                            | SelectionError.AmbiguousEmptyCases _ -> true
+                            | _ -> false
+                        ))
+                    && (
+                        match selection.ActivePositional with
+                        | Some active -> active = p
+                        | None -> false
+                    )
+                    && requiredComplete selection
+                )
+
+            let ambiguous (competing : (int * Selection) list) : Selection =
+                {
+                    Choices = Map.empty
+                    ActiveLeaves = Set.empty
+                    ActivePositional = None
+                    Errors =
+                        [
+                            SelectionError.AmbiguousPositionalRouting (
+                                firstSource,
+                                competing |> List.map (fun (p, _) -> p)
+                            )
+                        ]
+                }
+
+            match fullyValid, innerAmbiguous with
+            | [ (_, selection) ], [] -> selection
+            | [], [ (_, selection) ] -> selection
+            | [], [] ->
+                match clean with
+                | [ (_, selection) ] -> selection
+                | clean ->
+                    let selection = select schema observed
+
+                    let unroutable =
+                        { selection with
+                            Errors = selection.Errors @ [ SelectionError.UnroutablePositional firstSource ]
+                        }
+
+                    if Set.isEmpty candidates then
+                        unroutable
+                    elif not (List.isEmpty selection.Errors) then
+                        selection
+                    else
+                        match selection.ActivePositional with
+                        | Some active when events |> List.forall (fun event -> Set.contains active event.Candidates) ->
+                            selection
+                        | _ ->
+                            match clean with
+                            | _ :: _ :: _ -> ambiguous clean
+                            | _ -> unroutable
+            | fullyValid, innerAmbiguous -> ambiguous (fullyValid @ innerAmbiguous)
 
     /// A structural error found after scanning and selection.
     [<RequireQualifiedAccess>]
@@ -1170,6 +1338,27 @@ module private ArgParserRuntime_SameBaseNameArgs =
                     sprintf
                         "Arguments do not determine which of these alternatives was intended: %s"
                         (String.concat ", " caseNames)
+                    |> errors.Add
+                | SelectionError.UnroutablePositional source ->
+                    sprintf
+                        "Positional argument '%s' does not belong to any single alternative consistent with the other arguments"
+                        source
+                    |> errors.Add
+                | SelectionError.AmbiguousPositionalRouting (source, sinkIds) ->
+                    let describeSink (sinkId : int) : string =
+                        let sink = schema.Positionals |> List.tryFind (fun p -> p.Id = sinkId)
+
+                        match sink with
+                        | Some sink ->
+                            match sink.Forms with
+                            | form :: _ -> "--" + form
+                            | [] -> sprintf "sink %i" sinkId
+                        | None -> sprintf "sink %i" sinkId
+
+                    sprintf
+                        "Positional args (e.g. '%s') could belong to more than one alternative (%s); supply an argument which distinguishes them"
+                        source
+                        (sinkIds |> List.map describeSink |> String.concat ", ")
                     |> errors.Add
 
             for validationError in validationErrors do
