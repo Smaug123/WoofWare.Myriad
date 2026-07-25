@@ -351,8 +351,8 @@ so that the following manoeuvre will result in a generated mock:
 
 ### OpenAPI 3.0
 
-The existing `swagger-client` generator detects the document version from the root `swagger` or `openapi` field, so OpenAPI 3.0 uses the same project configuration and preserves the Swagger 2.0 entry point.
-OpenAPI 3.1 is rejected explicitly rather than being interpreted with 3.0 schema semantics.
+The generator detects the document version from the root `swagger` or `openapi` field, so OpenAPI 3.0 uses the same project configuration as Swagger 2.0.
+OpenAPI 3.1 is rejected at build time.
 
 The OpenAPI 3.0 path supports:
 
@@ -366,7 +366,7 @@ The OpenAPI 3.0 path supports:
 The planner fails with a located diagnostic for structural constructs which the generated HTTP/JSON layer cannot represent.
 This currently includes OpenAPI 3.1, external references, `oneOf`/`anyOf`/`not`, optional-and-nullable three-state values, mutually recursive groups of records, header/cookie parameters, non-default parameter styles, optional or binary request bodies, and operations whose possible successful responses have incompatible body shapes.
 
-This is a typed client generator, not a complete OpenAPI validator or policy engine:
+This is only a typed client generator, not a complete OpenAPI validator or policy engine:
 
 * schema validation keywords such as `enum`, patterns, and numeric bounds are not enforced by the generated F# types;
 * security requirements and schemes do not add authentication automatically: configure the caller-supplied `HttpClient` instead;
