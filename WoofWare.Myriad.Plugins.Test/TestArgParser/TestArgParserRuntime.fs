@@ -394,7 +394,7 @@ module TestArgParserRuntime =
     type private FakeTyped =
         {
             mutable Slots : Map<int, string list>
-            mutable Positionals : (string * bool) list
+            mutable Positionals : (int * string * bool) list
             mutable Defaults : int list
             mutable HelpTextCalls : int
         }
@@ -431,9 +431,12 @@ module TestArgParserRuntime =
                             this.Slots <- Map.add occurrence.LeafId (existing @ [ value ]) this.Slots
                             None
                 StorePositional =
-                    fun value afterSeparator ->
-                        this.Positionals <- this.Positionals @ [ value, afterSeparator ]
-                        None
+                    fun positionalId value afterSeparator ->
+                        if value = "unconvertible" then
+                            Some (sprintf "cannot convert positional (at arg %s)" value)
+                        else
+                            this.Positionals <- this.Positionals @ [ positionalId, value, afterSeparator ]
+                            None
                 HelpText =
                     fun () ->
                         this.HelpTextCalls <- this.HelpTextCalls + 1
@@ -645,7 +648,7 @@ module TestArgParserRuntime =
         runParse schema (fake.Callbacks schema) [ "pre" ; "--foo=1" ; "--" ; "post" ]
         |> shouldEqual (ParseOutcome.Success (productSelection schema))
 
-        fake.Positionals |> shouldEqual [ "pre", false ; "post", true ]
+        fake.Positionals |> shouldEqual [ 99, "pre", false ; 99, "post", true ]
 
     [<Test>]
     let ``runParse: motivating example end to end`` () =
@@ -2266,3 +2269,117 @@ module TestArgParserRuntime =
         rejectedCount |> shouldBeGreaterThan 200
         ambiguousCount |> shouldBeGreaterThan 20
         withEvents |> shouldBeGreaterThan 500
+
+    // ----------------------------------------------------------------------------------------
+    // The resolve-then-convert pipeline: positional conversion happens only after structural
+    // resolution has routed the stream, and its failures can never re-route anything.
+
+    /// Shadow of the module-level runParse for the per-case-sink schemas below.
+    let private runParse' (schema : ErasedSchema) : TypedCallbacks -> string list -> ParseOutcome =
+        ArgParserRuntime.runParse (WellFormedSchema.checkOrFail schema)
+
+    [<Test>]
+    let ``runParse: positional conversion is not tried when no case is selected`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "rest" ] [ "rest" ]
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse' schema (fake.Callbacks schema) [ "2" ; "3" ]
+        |> shouldEqual (ParseOutcome.Errors [ "No arguments were supplied to select one of: A, B" ])
+
+        fake.Positionals |> shouldEqual []
+
+    [<Test>]
+    let ``runParse: the routed sink's id reaches the typed layer`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "rest" ] [ "rest" ]
+
+        let fake = FakeTyped.Fresh ()
+
+        match runParse' schema (fake.Callbacks schema) [ "--bar=1" ; "2" ; "--rest=3" ] with
+        | ParseOutcome.Success selection ->
+            selection.Choices |> shouldEqual (Map.ofList [ 0, 1 ])
+            selection.ActivePositional |> shouldEqual (Some 11)
+        | outcome -> failwithf "unexpected outcome: %A" outcome
+
+        fake.Positionals |> shouldEqual [ 11, "2", false ; 11, "3", false ]
+
+    [<Test>]
+    let ``runParse: a positional conversion failure reports but never re-routes`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "rest" ] [ "rest" ]
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse' schema (fake.Callbacks schema) [ "--foo=1" ; "unconvertible" ; "2" ]
+        |> shouldEqual (ParseOutcome.Errors [ "cannot convert positional (at arg unconvertible)" ])
+
+        // The failure did not disturb routing: the remaining token still landed in A's sink.
+        fake.Positionals |> shouldEqual [ 10, "2", false ]
+
+    [<Test>]
+    let ``runParse: routing failures render helpfully`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "files" ] [ "nums" ]
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse' schema (fake.Callbacks schema) [ "--foo=1" ; "--nums=4" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "Positional argument '--nums=4' does not belong to any single alternative consistent with the other arguments"
+                ]
+        )
+
+        fake.Positionals |> shouldEqual []
+
+        let schema =
+            perCaseSinks ErasedRequirement.Optional ErasedRequirement.Optional [ "rest" ] [ "rest" ]
+
+        let fake = FakeTyped.Fresh ()
+
+        runParse' schema (fake.Callbacks schema) [ "--rest=4" ]
+        |> shouldEqual (
+            ParseOutcome.Errors
+                [
+                    "Positional args (e.g. '--rest=4') could belong to more than one alternative (--rest); supply an argument which distinguishes them"
+                ]
+        )
+
+    [<Test>]
+    let ``runParse: converter failures never change routing`` () =
+        let schema =
+            perCaseSinks ErasedRequirement.Required ErasedRequirement.Required [ "rest" ] [ "rest" ]
+
+        let property (pattern : bool list) : unit =
+            let tokens =
+                pattern
+                |> List.mapi (fun i ok -> if ok then sprintf "%i" i else "unconvertible")
+
+            let fake = FakeTyped.Fresh ()
+            let outcome = runParse' schema (fake.Callbacks schema) ("--foo=1" :: tokens)
+
+            // Routing is invariant under conversion outcomes: every successfully converted
+            // token landed in case A's sink, whatever failed around it.
+            for sinkId, _, _ in fake.Positionals do
+                sinkId |> shouldEqual 10
+
+            fake.Positionals
+            |> List.length
+            |> shouldEqual (pattern |> List.filter id |> List.length)
+
+            match outcome with
+            | ParseOutcome.Success selection ->
+                pattern |> List.forall id |> shouldEqual true
+                selection.Choices |> shouldEqual (Map.ofList [ 0, 0 ])
+                selection.ActivePositional |> shouldEqual (Some 10)
+            | ParseOutcome.Errors messages ->
+                pattern |> List.forall id |> shouldEqual false
+
+                for message in messages do
+                    message.Contains "alternative" |> shouldEqual false
+            | outcome -> failwithf "unexpected outcome: %A" outcome
+
+        Check.QuickThrowOnFailure property
