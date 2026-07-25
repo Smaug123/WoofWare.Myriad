@@ -247,14 +247,20 @@ You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<Pa
 You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
 
 You can collect leftover args as positional args, with `[<PositionalArgs>]`; this respects a trailing `--` so that you can specify positional args which look like flags.
-The positional args feature is currently *not* supported simultaneously with DUs, though: the generator will fail at build time.
+
+Restrictions on the composition of positional args and DUs:
+
+* `[<PositionalArgs true>]` (to collect unrecognised flag-like arguments like `--unrecognised-arg` as positionals) will fail to generate code if present in a parser that also contains DUs, because the failure mode if the user makes a typo in an arg name is very confusing in that case.
+* We only use structural information, and not "we tried and failed to parse positional args as a specified type", when deciding which DU case to select. The parser uses named args to choose where the positional args are going to be collected, and only then tries to parse positional values.
 
 If `--help` appears in a position where the parser is expecting a key (e.g. in the first position, or after a `--foo=bar`), the parser fails with help text.
 The parser also makes a limited effort to supply help text when encountering an invalid parse.
 
 Records compose: if your record contains other records which are visible to the source generator (that is, they're in the same file as the main args type), the fields of *those* records will also be included in the command line, as if you'd specified them inline in the top-level record.
 
-Discriminated unions compose with each other and with records, hopefully as you would expect: the fields specified by the record of a DU field must be mutually satisified, or the parse will fail to select that DU field.
+Discriminated unions compose with each other and with records, hopefully as you would expect: the fields specified by the record contained within the exactly-one field of each DU case must all be mutually satisified, or the parse will fail to select that DU field.
+We will fail at build time to generate a parser if you have several DU cases which contain fields of the same name, though, because in general resolving the parse in that case is NP-hard.
+(An upcoming piece of work will hopefully relax this restriction.)
 
 ### What's the point?
 
@@ -274,7 +280,6 @@ This is very bare-bones, but do raise GitHub issues if you like (or if you find 
 * I don't handle very many types at the leaves. You may find yourself needing to write wrapper types to contain the leaf values, if you want to parse them correctly.
 * I don't try very hard to find a valid parse. It may well be possible to find a case where I fail to parse despite there existing a valid parse.
 * There's no subcommand support (you'll have to do that yourself).
-* Discriminated unions can't currently be specified in a type that contains positional args. This is a limitation I hope to relax soon.
 
 It should work fine if you just want to compose a few primitive types, though.
 
