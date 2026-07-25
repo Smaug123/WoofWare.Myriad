@@ -460,17 +460,17 @@ module private ParseTree =
                 failwith
                     $"Cases %s{names} can all be satisfied without supplying any arguments, so an empty command line cannot choose between them. Make an argument in all but one of them mandatory."
 
-    /// Build the expression for the erased-schema tree mirroring this parse tree. Leaf ids are
-    /// assigned in `accumulators` order, which is exactly this walk's traversal order. `rt`
-    /// resolves a path inside the embedded runtime module; `listOf` builds a list literal (with
-    /// the empty list handled). The positional sink is not part of the erased tree, hence the
-    /// option.
+    /// Build the expression for the erased-schema tree mirroring this parse tree. Named-leaf
+    /// ids are assigned in `accumulators` order, which is exactly this walk's traversal order;
+    /// the positional sink (at most one today) has its own id space and always gets id 0. `rt`
+    /// resolves a path inside the embedded runtime module; `listOf` builds a list literal
+    /// (with the empty list handled).
     let rec toErasedTreeExpr<'a>
         (rt : string list -> SynExpr)
         (listOf : SynExpr list -> SynExpr)
         (counter : int ref)
         (tree : ParseTree<'a>)
-        : SynExpr option
+        : SynExpr
         =
         let product (children : SynExpr list) : SynExpr =
             SynExpr.applyFunction (rt [ "ErasedTree" ; "Product" ]) (SynExpr.paren (listOf children))
@@ -481,19 +481,17 @@ module private ParseTree =
             counter.Value <- counter.Value + 1
 
             SynExpr.applyFunction (rt [ "ErasedTree" ; "Leaf" ]) (SynExpr.CreateConst index)
-            |> Some
-        | ParseTree.PositionalLeaf _ -> None
+        | ParseTree.PositionalLeaf _ ->
+            SynExpr.applyFunction (rt [ "ErasedTree" ; "PositionalLeaf" ]) (SynExpr.CreateConst 0)
         | ParseTree.Branch (fields, _, _) ->
             fields
-            |> List.choose (fun (_, child) -> toErasedTreeExpr rt listOf counter child)
+            |> List.map (fun (_, child) -> toErasedTreeExpr rt listOf counter child)
             |> product
-            |> Some
         | ParseTree.Sum (sumId, cases, _, _) ->
             let caseExprs =
                 cases
                 |> List.map (fun (caseName, payload) ->
-                    let payloadExpr =
-                        toErasedTreeExpr rt listOf counter payload |> Option.defaultValue (product [])
+                    let payloadExpr = toErasedTreeExpr rt listOf counter payload
 
                     SynExpr.tuple [ SynExpr.CreateConst caseName.idText ; payloadExpr ]
                 )
@@ -501,16 +499,13 @@ module private ParseTree =
             SynExpr.applyFunction
                 (rt [ "ErasedTree" ; "Sum" ])
                 (SynExpr.paren (SynExpr.tuple [ SynExpr.CreateConst sumId ; listOf caseExprs ]))
-            |> Some
         | ParseTree.BranchPos (_, posTree, fields, _, _) ->
-            // Ordering matches `accumulators`: the sibling fields first, then any named leaves
-            // inside the positional subtree.
+            // Ordering matches `accumulators`: the sibling fields first, then the positional
+            // subtree (whose own named leaves come after the siblings').
             let siblings =
-                fields
-                |> List.choose (fun (_, child) -> toErasedTreeExpr rt listOf counter child)
+                fields |> List.map (fun (_, child) -> toErasedTreeExpr rt listOf counter child)
 
-            let fromPos = toErasedTreeExpr rt listOf counter posTree |> Option.toList
-            product (siblings @ fromPos) |> Some
+            product (siblings @ [ toErasedTreeExpr rt listOf counter posTree ])
 
     /// Build the return value. (References the `parser_selection` binding which the generated
     /// code brings into scope on the success path, to choose among Sum cases.)
@@ -1509,14 +1504,11 @@ module internal ArgParserGenerator =
                         ParseTree.toErasedTreeExpr rt listOf counter tree
                 }
                 |> spec.Apply
-                |> Option.defaultValue (
-                    SynExpr.applyFunction (rt [ "ErasedTree" ; "Product" ]) (SynExpr.paren (listOf []))
-                )
                 |> SynExpr.paren
 
-            let positional =
+            let positionals =
                 match pos with
-                | None -> SynExpr.createIdent "None"
+                | None -> []
                 | Some pf ->
                     let flagLike =
                         let includeFlagLike =
@@ -1533,26 +1525,22 @@ module internal ArgParserGenerator =
                                 (rt [ "ErasedFlagLikeBehaviour" ; "Collect" ])
                             |> SynExpr.paren
 
-
-                    // Unlike the leaf literals, this record is not in annotation-directed
-                    // position (it flows through `Some`), and its type's module is not open, so
-                    // every label must be qualified.
-                    let positionalField (name : string) (value : SynExpr) : SynLongIdent * SynExpr =
-                        SynLongIdent.create [ runtimeModule ; Ident.create "ErasedPositional" ; Ident.create name ],
-                        value
-
                     [
-                        positionalField "Id" (SynExpr.CreateConst (List.length nonPos))
-                        positionalField "Forms" (listOf pf.ArgForm)
-                        positionalField "FlagLike" flagLike
-                        positionalField "TypeDescription" (SynExpr.CreateConst "")
-                        positionalField "Help" (SynExpr.createIdent "None")
+                        [
+                            field "Id" (SynExpr.CreateConst 0)
+                            field "Forms" (listOf pf.ArgForm)
+                            field "FlagLike" flagLike
+                            field "TypeDescription" (SynExpr.CreateConst "")
+                            field "Help" (SynExpr.createIdent "None")
+                        ]
+                        |> SynExpr.createRecord None
                     ]
-                    |> SynExpr.createRecord None
-                    |> SynExpr.paren
-                    |> SynExpr.pipeThroughFunction (SynExpr.createIdent "Some")
 
-            [ field "Leaves" leaves ; field "Tree" tree ; field "Positional" positional ]
+            [
+                field "Leaves" leaves
+                field "Tree" tree
+                field "Positionals" (listOf positionals)
+            ]
             |> SynExpr.createRecord None
             |> SynBinding.basic [ schemaVar ] []
             |> SynBinding.withReturnAnnotation (rtType "ErasedSchema")
