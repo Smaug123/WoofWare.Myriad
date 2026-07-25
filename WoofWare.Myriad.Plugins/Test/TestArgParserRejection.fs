@@ -575,6 +575,41 @@ type DuArgs =
         List.length modules |> shouldEqual 2
 
     [<Test>]
+    let ``Sinks in mutually exclusive cases may have different forms`` () =
+        // The cases' sinks are addressable as --rest and --others respectively; at most one
+        // case wins, so neither keyed form is ambiguous and this must generate successfully.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+
+        [<PositionalArgs>]
+        Rest : int list
+    }
+
+type BarArgs =
+    {
+        Bar : int
+
+        [<PositionalArgs>]
+        Others : string list
+    }
+
+[<ArgParser>]
+type DuArgs =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
     let ``A sink's form still may not collide with a named argument across cases`` () =
         """namespace TestMe
 
