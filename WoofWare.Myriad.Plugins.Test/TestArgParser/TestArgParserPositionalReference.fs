@@ -71,6 +71,14 @@ module TestArgParserPositionalReference =
 
     /// A structural input: which named leaves were observed, and the positional events in
     /// order. (Order does not affect acceptance; it is the candidate sets that matter.)
+    ///
+    /// This is *post-scanning* input, and the split into named observations and positional
+    /// events is well defined only under the existing restriction that a positional sink may
+    /// sit beside a union only in Reject mode: a Collect-mode sink turns an unrecognised
+    /// `--key` token into a positional event, so the split would itself depend on which case
+    /// the scan is trying to select. Deliberately unmodelled, therefore: unrecognised
+    /// flag-like tokens, `--help`, scanner errors, and repeat occurrences of a single named
+    /// leaf (this is a set, so the runtime's duplicate-argument error is out of scope).
     type RefInput =
         {
             ObservedNamed : Set<int>
@@ -174,6 +182,14 @@ module TestArgParserPositionalReference =
             |> List.map (fun p -> p.Id)
             |> Set.ofList
 
+    /// The named half of acceptance: every observed named leaf belongs to the interpretation,
+    /// and every required named leaf of the interpretation was observed. Named separately
+    /// because on a well-formed tree this half already selects: see the confirm-or-veto
+    /// property below.
+    let acceptsNamed (interp : Interpretation) (input : RefInput) : bool =
+        Set.isSubset input.ObservedNamed interp.Named
+        && Set.isSubset interp.RequiredNamed input.ObservedNamed
+
     /// The acceptance predicate: does this interpretation structurally accept this input?
     ///
     /// - every observed named leaf belongs to the interpretation;
@@ -183,8 +199,7 @@ module TestArgParserPositionalReference =
     ///
     /// Conversion is deliberately absent: whether values parse never features.
     let accepts (sinks : RefPositionalLeaf list) (interp : Interpretation) (input : RefInput) : bool =
-        Set.isSubset input.ObservedNamed interp.Named
-        && Set.isSubset interp.RequiredNamed input.ObservedNamed
+        acceptsNamed interp input
         && (List.isEmpty input.PositionalEvents
             || (
                 match Set.toList interp.Positionals with
@@ -197,7 +212,18 @@ module TestArgParserPositionalReference =
 
     /// The reference semantics: the parse is structurally successful exactly when one
     /// interpretation accepts.
+    ///
+    /// The tree must satisfy linearity (capacity at most one positional leaf). That is a
+    /// property of the schema, not of the input, so it is checked up front: the assertion
+    /// inside `accepts` fires only once an event needs routing, which would silently accept an
+    /// over-capacity tree on the inputs that happen to carry no positional events at all.
     let exhaustiveSelect (tree : RefTree) (input : RefInput) : RefOutcome =
+        match maxPositionals tree with
+        | 0
+        | 1 -> ()
+        | capacity ->
+            failwithf "linearity violated: this tree admits an interpretation with %i positional leaves" capacity
+
         let sinks = positionalLeaves tree
 
         match interpretations tree |> List.filter (fun interp -> accepts sinks interp input) with
@@ -647,28 +673,36 @@ module TestArgParserPositionalReference =
         acceptCount |> shouldBeGreaterThan 200
 
     [<Test>]
-    let ``Bare-only inputs are never ambiguous when every sum passes the empty-ambiguity check`` () =
-        // The lemma which makes the generation-time check sufficient: bare tokens name every
-        // sink, so they cannot discriminate between cases; if two interpretations both
-        // accepted a bare-only input, both their cases (at the outermost sum where they
-        // differ) would have to be satisfiable with no named observations — exactly what the
-        // per-sum check forbids. Keyed events are excluded: a keyed form genuinely can
-        // discriminate, which is by design.
+    let ``Positional events can only confirm or veto the interpretation the named half selects`` () =
+        // The lemma which makes the generation-time check sufficient, in its strongest form:
+        // the *named* half of acceptance already picks out at most one interpretation. Leaf
+        // ids are distinct across cases, so an observed leaf belongs to exactly one of them;
+        // and if two interpretations were both named-accepted, then at the outermost sum where
+        // they differ both their cases would have to be satisfiable with no named observations
+        // — exactly what the per-sum check forbids.
+        //
+        // Acceptance is a conjunction, so the positional half can only filter that singleton.
+        // Hence no input is ever ambiguous, and no positional event — bare *or* keyed — can
+        // change which case is chosen. A bare token names every sink and so is always neutral;
+        // a keyed token naming no sink of the selected interpretation vetoes it outright
+        // rather than selecting some other case.
+        //
+        // This is what licenses the production resolver to select structurally first and
+        // validate the events against the active sink afterwards. It rests on ids being
+        // distinct across cases, which the generator enforces by rejecting an argument name
+        // shared between two union cases; were that relaxed, a keyed form genuinely could
+        // select, and this property would fail.
         let mutable checkedTrees = 0
         let mutable inputsWithEvents = 0
+        let mutable inputsWithKeyedEvents = 0
+        let mutable vetoed = 0
 
         let cases =
             gen {
                 let! sumBias = Gen.elements [ 30 ; 60 ; 90 ]
                 let! tree = genTree sumBias
-                let! rawInput = genInput 30 40 20 tree
-                let bareOnly = rawInput.PositionalEvents |> List.map (fun _ -> RefSpelling.Bare)
-
-                return
-                    tree,
-                    { rawInput with
-                        PositionalEvents = bareOnly
-                    }
+                let! input = genInput 30 40 20 tree
+                return tree, input
             }
 
         let property (tree : RefTree, input : RefInput) : unit =
@@ -678,16 +712,42 @@ module TestArgParserPositionalReference =
                 if not (List.isEmpty input.PositionalEvents) then
                     inputsWithEvents <- inputsWithEvents + 1
 
+                let isKeyed (spelling : RefSpelling) : bool =
+                    match spelling with
+                    | RefSpelling.Keyed _ -> true
+                    | RefSpelling.Bare -> false
+
+                if input.PositionalEvents |> List.exists isKeyed then
+                    inputsWithKeyedEvents <- inputsWithKeyedEvents + 1
+
+                let namedOnly =
+                    interpretations tree |> List.filter (fun interp -> acceptsNamed interp input)
+
+                // The named half alone already selects.
+                List.length namedOnly |> shouldBeSmallerThan 2
+
                 match exhaustiveSelect tree input with
                 | RefOutcome.Ambiguous _ -> failwithf "ambiguous outcome for %A on %A" tree input
-                | RefOutcome.Unique _
-                | RefOutcome.NoInterpretation -> ()
+                | RefOutcome.Unique interp ->
+                    // Confirmation: the events agreed, and the case chosen is the one the
+                    // named half had already picked.
+                    match namedOnly with
+                    | [ only ] -> interp.Choices |> shouldEqual only.Choices
+                    | _ -> failwithf "accepted %A, which the named half did not select, on %A" interp input
+                | RefOutcome.NoInterpretation ->
+                    // Veto (or nothing was named-accepted in the first place).
+                    if not (List.isEmpty namedOnly) then
+                        vetoed <- vetoed + 1
 
         let config = Config.QuickThrowOnFailure.WithMaxTest 2000
         Check.One (config, Prop.forAll (Arb.fromGen cases) property)
 
         checkedTrees |> shouldBeGreaterThan 500
         inputsWithEvents |> shouldBeGreaterThan 200
+        // The keyed half of the law is the interesting one, and vetoes must actually happen:
+        // otherwise "confirm or veto" is only being tested on inputs which confirm.
+        inputsWithKeyedEvents |> shouldBeGreaterThan 100
+        vetoed |> shouldBeGreaterThan 20
 
     [<Test>]
     let ``The generator explores every outcome regime`` () =
@@ -815,7 +875,7 @@ module TestArgParserPositionalReference =
         |> shouldEqual RefOutcome.NoInterpretation
 
     [<Test>]
-    let ``Per-case sinks: a distinctive keyed form is itself a structural discriminator`` () =
+    let ``Per-case sinks: a distinctive keyed form confirms or vetoes, but never selects`` () =
         let tree =
             RefTree.Sum (
                 0,
@@ -825,14 +885,32 @@ module TestArgParserPositionalReference =
                 ]
             )
 
-        // Nothing but --files=x: only Foo's interpretation can consume the event.
+        // Foo is what the named half selects on no observations at all: it is empty-satisfiable
+        // and Bar, whose named leaf is required, is not.
+        match exhaustiveSelect tree (input [] []) with
+        | RefOutcome.Unique interp -> interp.Choices |> shouldEqual (Map.ofList [ 0, 0 ])
+        | other -> failwithf "unexpected outcome: %A" other
+
+        // --files=x therefore *confirms* that choice rather than making it: the sink Foo
+        // already carries is the one which claims the form, so the event routes and the
+        // outcome is unchanged.
         match exhaustiveSelect tree (input [] [ RefSpelling.Keyed "files" ]) with
         | RefOutcome.Unique interp ->
             interp.Choices |> shouldEqual (Map.ofList [ 0, 0 ])
             interp.Positionals |> shouldEqual (Set.singleton 1000)
         | other -> failwithf "unexpected outcome: %A" other
 
-        // A keyed form belonging to the case the named observations exclude: no acceptance.
+        // --nums=x names no sink of Foo, so it vetoes: the outcome is failure, and emphatically
+        // not a switch to Bar, whose required named leaf was never observed.
+        exhaustiveSelect tree (input [] [ RefSpelling.Keyed "nums" ])
+        |> shouldEqual RefOutcome.NoInterpretation
+
+        // Likewise where the named observations select Bar: --files belongs to the case they
+        // exclude, so it vetoes rather than dragging the choice back to Foo.
+        match exhaustiveSelect tree (input [ 1 ] []) with
+        | RefOutcome.Unique interp -> interp.Choices |> shouldEqual (Map.ofList [ 0, 1 ])
+        | other -> failwithf "unexpected outcome: %A" other
+
         exhaustiveSelect tree (input [ 1 ] [ RefSpelling.Keyed "files" ])
         |> shouldEqual RefOutcome.NoInterpretation
 
@@ -855,7 +933,18 @@ module TestArgParserPositionalReference =
         // The linearity rule: argv has one positional stream, so P × Q is rejected by
         // capacity while (A × P) + (B × Q) is fine. This is what schema validation will
         // enforce; the model just states the arithmetic.
-        maxPositionals (RefTree.Product [ sink 1000 [ "rest" ] ; sink 1001 [ "files" ] ])
-        |> shouldEqual 2
+        let overCapacity = RefTree.Product [ sink 1000 [ "rest" ] ; sink 1001 [ "files" ] ]
+
+        maxPositionals overCapacity |> shouldEqual 2
 
         maxPositionals perCaseSinks |> shouldEqual 1
+
+        // The model refuses to interpret such a tree at all. In particular it refuses on an
+        // input with no positional events, which routes nothing and so would otherwise sail
+        // past the routing-time check and report a unique interpretation holding both sinks.
+        for events in [ [] ; [ RefSpelling.Bare ] ; [ RefSpelling.Keyed "rest" ] ] do
+            let exc =
+                Assert.Throws<exn> (fun () -> exhaustiveSelect overCapacity (input [] events) |> ignore<RefOutcome>)
+
+            exc.Message
+            |> shouldEqual "linearity violated: this tree admits an interpretation with 2 positional leaves"
