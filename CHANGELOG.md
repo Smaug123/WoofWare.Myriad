@@ -1,10 +1,9 @@
 Notable changes are recorded here.
 
-# Unreleased
+# WoofWare.Myriad.Plugins 10.3.1
 
-The `ArgParserGenerator` now supports positional args together with discriminated-union args, as long as the positional args reject unrecognised flag-like tokens (the default; `[<PositionalArgs true>]` remains banned in combination with a union).
-A `[<PositionalArgs>]` field may sit beside the union-typed field (the positional stream is shared by every alternative), or inside the cases' payload records (each alternative converts the stream at its own field's type).
-Case selection is purely structural and happens before any value conversion: named arguments (and, where unique to one alternative, the keyed `--rest=value` form of a positional field) select the case, bare positional tokens never do, and whether a token happens to parse at some case's element type never influences which case wins.
+The `ArgParserGenerator` now supports positional args together with arbitrary discriminated-union args.
+(As in 10.2.3, the non-default `[<PositionalArgs true>]`, which collects into the positional args any unrecognised flag-like arguments such as `--foo`, remains banned in combination with a union.)
 
 # WoofWare.Myriad.Plugins 10.2.3
 
