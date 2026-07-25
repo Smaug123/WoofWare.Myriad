@@ -15,7 +15,7 @@ module TestArgParserDuCasePositional =
     let noEnv (_ : string) : string option = None
 
     [<Test>]
-    let ``The named discriminator selects the case, whose sink converts the stream`` () =
+    let ``The named discriminator selects the case whose sink converts the stream`` () =
         FooBarMode.parse' noEnv [ "--foo=1" ; "2" ; "3" ]
         |> shouldEqual (
             FooMode
