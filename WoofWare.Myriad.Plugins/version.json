@@ -5,6 +5,7 @@
   ],
   "pathFilters": [
     "./",
+    ":^Test",
     ":/WoofWare.Myriad.Plugins.Attributes",
     ":^/WoofWare.Myriad.Plugins.Attributes/Test",
     ":/global.json",
