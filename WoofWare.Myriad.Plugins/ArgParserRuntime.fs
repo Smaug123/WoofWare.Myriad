@@ -152,14 +152,32 @@ module internal ArgParserRuntime =
         /// `--rest value`; the key text is recorded as spelled.
         | KeySpaced of key : string
 
+    /// One value belonging to the positional stream. Scanning does not decide which sink
+    /// receives it: the token's spelling determines only the *candidate* sinks, and the actual
+    /// consumer is resolved after case selection. (For today's schemas, with at most one sink,
+    /// the candidate set is that sink alone.)
+    type PositionalEvent =
+        {
+            Value : string
+            /// True for tokens which appeared after the `--` separator.
+            AfterSeparator : bool
+            /// How the value was spelled; preserved exactly, for diagnostics and lossless
+            /// reconstruction of argv.
+            Form : PositionalForm
+            /// The sinks which could consume this token: every sink for a bare token
+            /// (including everything after `--`, and flag-like tokens collected in Collect
+            /// mode), the claimants of the key for a keyed one.
+            Candidates : Set<int>
+        }
+
     /// The scan phase emits an ordered log of these; the typed layer folds over the log in order,
     /// so that e.g. conversion errors interleave with structural errors in argv order.
     [<RequireQualifiedAccess>]
     type ScanEvent =
         | Occurrence of ErasedOccurrence
-        /// A value routed to the positional sink (or to the leftover-args accumulator, for a
-        /// schema with no sink). `afterSeparator` is true for tokens which appeared after `--`.
-        | Positional of value : string * afterSeparator : bool * form : PositionalForm
+        /// A value belonging to the positional stream (or to the leftover-args accumulator,
+        /// for a schema with no sink).
+        | Positional of PositionalEvent
         | Error of ScanError
         /// A `--help`-shaped token was seen in key position; the token itself is recorded (the
         /// match is case-insensitive, so it may be e.g. "--HELP").
@@ -184,9 +202,10 @@ module internal ArgParserRuntime =
     type private ScanState =
         | AwaitingKey
         | AwaitingValue of leaf : (ErasedLeaf * bool) option * source : string
-        /// The positional sink's own key (`--rest`) was seen; the next token is its value,
-        /// consumed greedily (keyed positionals always take exactly one value).
-        | AwaitingPositionalValue of source : string
+        /// A positional sink's own key (`--rest`) was seen; the next token is its value,
+        /// consumed greedily (keyed positionals always take exactly one value). `candidates`
+        /// are the sinks claiming the key.
+        | AwaitingPositionalValue of candidates : Set<int> * source : string
 
     /// Match a full `--key` token (value part already split off) against the leaf table.
     /// Returns the leaf and whether the match was via the negated `--no-` form.
@@ -244,13 +263,29 @@ module internal ArgParserRuntime =
                     | ErasedFlagLikeBehaviour.Reject -> false
                 )
 
-        /// Does this full `--key` token (value part already split off) name a positional sink?
-        let isPositionalKey (key : string) : bool =
+        /// Every sink: the candidate set of a bare positional token.
+        let allSinks : Set<int> =
+            schema.Positionals |> List.map (fun p -> p.Id) |> Set.ofList
+
+        /// The sinks claiming this full `--key` token (value part already split off); empty
+        /// when the token does not name a positional sink at all.
+        let positionalClaimants (key : string) : Set<int> =
             schema.Positionals
-            |> List.exists (fun p ->
+            |> List.filter (fun p ->
                 p.Forms
                 |> List.exists (fun form -> String.Equals (key, "--" + form, StringComparison.OrdinalIgnoreCase))
             )
+            |> List.map (fun p -> p.Id)
+            |> Set.ofList
+
+        let bareToken (value : string) (afterSeparator : bool) : ScanEvent =
+            ScanEvent.Positional
+                {
+                    Value = value
+                    AfterSeparator = afterSeparator
+                    Form = PositionalForm.Bare
+                    Candidates = allSinks
+                }
 
         /// Resolve a pending key which will receive no value (end of input, or `--` next).
         let resolvePending (state : ScanState) : ScanEvent list =
@@ -270,15 +305,13 @@ module internal ArgParserRuntime =
                     ]
                 | ErasedArity.One -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
             | ScanState.AwaitingValue (None, source) -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
-            | ScanState.AwaitingPositionalValue source -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
+            | ScanState.AwaitingPositionalValue (_, source) -> [ ScanEvent.Error (ScanError.TrailingKeyNoValue source) ]
 
         let rec go (state : ScanState) (acc : ScanEvent list) (args : string list) : ScanEvent list =
             match args with
             | [] -> List.rev acc @ resolvePending state
             | "--" :: rest ->
-                let positionals =
-                    rest
-                    |> List.map (fun token -> ScanEvent.Positional (token, true, PositionalForm.Bare))
+                let positionals = rest |> List.map (fun token -> bareToken token true)
 
                 List.rev acc @ resolvePending state @ (ScanEvent.Separator :: positionals)
             | arg :: rest ->
@@ -286,7 +319,7 @@ module internal ArgParserRuntime =
             match state with
             | ScanState.AwaitingKey ->
                 if not (arg.StartsWith ("--", StringComparison.Ordinal)) then
-                    go ScanState.AwaitingKey (ScanEvent.Positional (arg, false, PositionalForm.Bare) :: acc) rest
+                    go ScanState.AwaitingKey (bareToken arg false :: acc) rest
                 elif String.Equals (arg, "--help", StringComparison.OrdinalIgnoreCase) then
                     go ScanState.AwaitingKey (ScanEvent.Help arg :: acc) rest
                 else
@@ -310,16 +343,21 @@ module internal ArgParserRuntime =
 
                             go ScanState.AwaitingKey (ScanEvent.Occurrence occurrence :: acc) rest
                         | None ->
-                            if isPositionalKey key then
-                                go
-                                    ScanState.AwaitingKey
-                                    (ScanEvent.Positional (value, false, PositionalForm.KeyEquals key) :: acc)
-                                    rest
+                            let claimants = positionalClaimants key
+
+                            if not (Set.isEmpty claimants) then
+                                let event =
+                                    ScanEvent.Positional
+                                        {
+                                            Value = value
+                                            AfterSeparator = false
+                                            Form = PositionalForm.KeyEquals key
+                                            Candidates = claimants
+                                        }
+
+                                go ScanState.AwaitingKey (event :: acc) rest
                             elif collectFlagLike then
-                                go
-                                    ScanState.AwaitingKey
-                                    (ScanEvent.Positional (arg, false, PositionalForm.Bare) :: acc)
-                                    rest
+                                go ScanState.AwaitingKey (bareToken arg false :: acc) rest
                             else
                                 go
                                     ScanState.AwaitingKey
@@ -330,8 +368,10 @@ module internal ArgParserRuntime =
                         match matchLeaf schema.Leaves arg with
                         | Some matched -> go (ScanState.AwaitingValue (Some matched, arg)) acc rest
                         | None ->
-                            if isPositionalKey arg then
-                                go (ScanState.AwaitingPositionalValue arg) acc rest
+                            let claimants = positionalClaimants arg
+
+                            if not (Set.isEmpty claimants) then
+                                go (ScanState.AwaitingPositionalValue (claimants, arg)) acc rest
                             else
                                 go (ScanState.AwaitingValue (None, arg)) acc rest
             | ScanState.AwaitingValue (Some (leaf, negated), source) ->
@@ -363,18 +403,21 @@ module internal ArgParserRuntime =
             | ScanState.AwaitingValue (None, source) ->
                 // A pending unrecognised key, now known not to be trailing.
                 if collectFlagLike then
-                    go
-                        ScanState.AwaitingKey
-                        (ScanEvent.Positional (source, false, PositionalForm.Bare) :: acc)
-                        (arg :: rest)
+                    go ScanState.AwaitingKey (bareToken source false :: acc) (arg :: rest)
                 else
                     go ScanState.AwaitingKey (ScanEvent.Error (ScanError.UnknownKey source) :: acc) (arg :: rest)
-            | ScanState.AwaitingPositionalValue source ->
+            | ScanState.AwaitingPositionalValue (candidates, source) ->
                 // The sink's own key consumes the next token greedily, like any arity-one key.
-                go
-                    ScanState.AwaitingKey
-                    (ScanEvent.Positional (arg, false, PositionalForm.KeySpaced source) :: acc)
-                    rest
+                let event =
+                    ScanEvent.Positional
+                        {
+                            Value = arg
+                            AfterSeparator = false
+                            Form = PositionalForm.KeySpaced source
+                            Candidates = candidates
+                        }
+
+                go ScanState.AwaitingKey (event :: acc) rest
 
         go ScanState.AwaitingKey [] args
 
@@ -612,7 +655,7 @@ module internal ArgParserRuntime =
                     events
                     |> List.choose (fun event ->
                         match event with
-                        | ScanEvent.Positional (value, _, _) -> Some value
+                        | ScanEvent.Positional positional -> Some positional.Value
                         | _ -> None
                     )
 
@@ -1109,13 +1152,13 @@ module internal ArgParserRuntime =
                     | None -> stored.Add occurrence.LeafId |> ignore<bool>
 
                 consume rest
-            | ScanEvent.Positional (value, afterSeparator, _) ->
+            | ScanEvent.Positional positional ->
                 match schema.Positionals with
                 | [] ->
                     // No sink: the tokens are reported wholesale by validation below.
                     consume rest
                 | _ :: _ ->
-                    match callbacks.StorePositional value afterSeparator with
+                    match callbacks.StorePositional positional.Value positional.AfterSeparator with
                     | Some error -> errors.Add error
                     | None -> ()
 
