@@ -2801,3 +2801,689 @@ module GitLike =
 
     let parse (args : string list) : GitLike =
         parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type EnumArgs
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module EnumArgs =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : EnumArgs =
+        let helpText () =
+            [
+                (sprintf "%s  Verbosity [one of: Quiet|Normal|ExtremelyLoud]%s%s" (sprintf "--%s" "verbosity") "" "")
+
+                (sprintf
+                    "%s  Colour [one of: Red|Green]%s%s"
+                    (sprintf "--%s" "colour")
+                    " (optional)"
+                    (sprintf " : %s" ("Which colour to paint it")))
+
+                (sprintf "%s  Colour [one of: Red|Green]%s%s" (sprintf "--%s" "palette") " (can be repeated)" "")
+
+                (sprintf
+                    "%s  Verbosity [one of: Quiet|Normal|ExtremelyLoud]%s%s"
+                    (sprintf "--%s" "fallback")
+                    (match EnumArgs.DefaultFallback () with
+                     | Verbosity.Quiet -> "Quiet"
+                     | Verbosity.Normal -> "Normal"
+                     | Verbosity.ExtremelyLoud -> "ExtremelyLoud"
+                     |> (fun x -> x.ToString ())
+                     |> sprintf " (default value: %s)")
+                    "")
+
+                (sprintf
+                    "%s  Colour [one of: Red|Green]%s%s"
+                    (sprintf "--%s" "env-colour")
+                    ("CONSUMEPLUGIN_ENUM_COLOUR"
+                     |> sprintf " (default value populated from env var %s)")
+                    "")
+                (sprintf
+                    "%s  Colour [one of: Red|Green]%s%s"
+                    (sprintf "--%s" "rest")
+                    " (positional args) (can be repeated)"
+                    "")
+            ]
+            |> String.concat "\n"
+
+        let arg_5 : Colour ResizeArray = ResizeArray ()
+        let mutable arg_0 : Verbosity option = None
+        let mutable arg_1 : Colour option = None
+        let arg_2 : Colour ResizeArray = ResizeArray ()
+        let mutable arg_3 : Choice<Verbosity, Verbosity> option = None
+        let mutable arg_4 : Choice<Colour, Colour> option = None
+
+        let parser_schema : ArgParserRuntime_DuArgs.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "verbosity" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "colour" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 2
+                            Forms = [ "palette" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 3
+                            Forms = [ "fallback" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 4
+                            Forms = [ "env-colour" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.HasDefault
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_DuArgs.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_DuArgs.ErasedTree.Leaf 0
+                            ArgParserRuntime_DuArgs.ErasedTree.Leaf 1
+                            ArgParserRuntime_DuArgs.ErasedTree.Leaf 2
+                            ArgParserRuntime_DuArgs.ErasedTree.Leaf 3
+                            ArgParserRuntime_DuArgs.ErasedTree.Leaf 4
+                            ArgParserRuntime_DuArgs.ErasedTree.PositionalLeaf 0
+                        ]
+                    ))
+                Positionals =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "rest" ]
+                            FlagLike = ArgParserRuntime_DuArgs.ErasedFlagLikeBehaviour.Reject
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_DuArgs.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <-
+                                Some (
+                                    value
+                                    |> (fun x ->
+                                        if
+                                            System.String.Equals (
+                                                x,
+                                                "Quiet",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Verbosity.Quiet
+                                        else if
+                                            System.String.Equals (
+                                                x,
+                                                "Normal",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Verbosity.Normal
+                                        else if
+                                            System.String.Equals (
+                                                x,
+                                                "ExtremelyLoud",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Verbosity.ExtremelyLoud
+                                        else
+                                            (sprintf
+                                                "Unrecognised value '%s' for %s: expected one of %s"
+                                                x
+                                                "Verbosity"
+                                                "Quiet, Normal, ExtremelyLoud")
+                                            |> failwith
+                                    )
+                                )
+
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <-
+                                Some (
+                                    value
+                                    |> (fun x ->
+                                        if
+                                            System.String.Equals (x, "Red", System.StringComparison.OrdinalIgnoreCase)
+                                        then
+                                            Colour.Red
+                                        else if
+                                            System.String.Equals (
+                                                x,
+                                                "Green",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Colour.Green
+                                        else
+                                            (sprintf
+                                                "Unrecognised value '%s' for %s: expected one of %s"
+                                                x
+                                                "Colour"
+                                                "Red, Green")
+                                            |> failwith
+                                    )
+                                )
+
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        arg_2.Add (
+                            value
+                            |> (fun x ->
+                                if System.String.Equals (x, "Red", System.StringComparison.OrdinalIgnoreCase) then
+                                    Colour.Red
+                                else if
+                                    System.String.Equals (x, "Green", System.StringComparison.OrdinalIgnoreCase)
+                                then
+                                    Colour.Green
+                                else
+                                    (sprintf
+                                        "Unrecognised value '%s' for %s: expected one of %s"
+                                        x
+                                        "Colour"
+                                        "Red, Green")
+                                    |> failwith
+                            )
+                        )
+
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 3 ->
+                match arg_3 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_3 <-
+                                Some (
+                                    Choice1Of2 (
+                                        value
+                                        |> (fun x ->
+                                            if
+                                                System.String.Equals (
+                                                    x,
+                                                    "Quiet",
+                                                    System.StringComparison.OrdinalIgnoreCase
+                                                )
+                                            then
+                                                Verbosity.Quiet
+                                            else if
+                                                System.String.Equals (
+                                                    x,
+                                                    "Normal",
+                                                    System.StringComparison.OrdinalIgnoreCase
+                                                )
+                                            then
+                                                Verbosity.Normal
+                                            else if
+                                                System.String.Equals (
+                                                    x,
+                                                    "ExtremelyLoud",
+                                                    System.StringComparison.OrdinalIgnoreCase
+                                                )
+                                            then
+                                                Verbosity.ExtremelyLoud
+                                            else
+                                                (sprintf
+                                                    "Unrecognised value '%s' for %s: expected one of %s"
+                                                    x
+                                                    "Verbosity"
+                                                    "Quiet, Normal, ExtremelyLoud")
+                                                |> failwith
+                                        )
+                                    )
+                                )
+
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 4 ->
+                match arg_4 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_4 <-
+                                Some (
+                                    Choice1Of2 (
+                                        value
+                                        |> (fun x ->
+                                            if
+                                                System.String.Equals (
+                                                    x,
+                                                    "Red",
+                                                    System.StringComparison.OrdinalIgnoreCase
+                                                )
+                                            then
+                                                Colour.Red
+                                            else if
+                                                System.String.Equals (
+                                                    x,
+                                                    "Green",
+                                                    System.StringComparison.OrdinalIgnoreCase
+                                                )
+                                            then
+                                                Colour.Green
+                                            else
+                                                (sprintf
+                                                    "Unrecognised value '%s' for %s: expected one of %s"
+                                                    x
+                                                    "Colour"
+                                                    "Red, Green")
+                                                |> failwith
+                                        )
+                                    )
+                                )
+
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            match positionalId with
+            | 0 ->
+                try
+                    arg_5.Add (
+                        value
+                        |> (fun x ->
+                            if System.String.Equals (x, "Red", System.StringComparison.OrdinalIgnoreCase) then
+                                Colour.Red
+                            else if System.String.Equals (x, "Green", System.StringComparison.OrdinalIgnoreCase) then
+                                Colour.Green
+                            else
+                                (sprintf "Unrecognised value '%s' for %s: expected one of %s" x "Colour" "Red, Green")
+                                |> failwith
+                        )
+                    )
+
+                    None
+                with _ as exc ->
+                    (sprintf "%s (at arg %s)" exc.Message value) |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown positional sink id"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 3 ->
+                match arg_3 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | 4 ->
+                match arg_4 with
+                | Some (Choice1Of2 x) -> x.ToString ()
+                | Some (Choice2Of2 x) -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | 3 ->
+                arg_3 <- Some (Choice2Of2 (EnumArgs.DefaultFallback ()))
+                None
+            | 4 ->
+                match "CONSUMEPLUGIN_ENUM_COLOUR" |> getEnvironmentVariable with
+                | None ->
+                    (sprintf
+                        "No value was supplied for %s, nor was environment variable %s set"
+                        (sprintf "--%s" "env-colour")
+                        "CONSUMEPLUGIN_ENUM_COLOUR")
+                    |> Some
+                | Some x ->
+                    try
+                        arg_4 <-
+                            Some (
+                                Choice2Of2 (
+                                    x
+                                    |> (fun x ->
+                                        if
+                                            System.String.Equals (x, "Red", System.StringComparison.OrdinalIgnoreCase)
+                                        then
+                                            Colour.Red
+                                        else if
+                                            System.String.Equals (
+                                                x,
+                                                "Green",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Colour.Green
+                                        else
+                                            (sprintf
+                                                "Unrecognised value '%s' for %s: expected one of %s"
+                                                x
+                                                "Colour"
+                                                "Red, Green")
+                                            |> failwith
+                                    )
+                                )
+                            )
+
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (from environment variable %s)" exc.Message "CONSUMEPLUGIN_ENUM_COLOUR")
+                        |> Some
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_DuArgs.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_DuArgs.runParse
+                (ArgParserRuntime_DuArgs.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_DuArgs.ParseOutcome.Success parser_selection ->
+            {
+                Colour = arg_1
+                EnvColour =
+                    (match arg_4 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Fallback =
+                    (match arg_3 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                Palette = (arg_2 |> Seq.toList)
+                Rest = (arg_5 |> Seq.toList)
+                Verbosity =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_DuArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_DuArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_DuArgs.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : EnumArgs =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type EnumInUnion
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module EnumInUnion =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : EnumInUnion =
+        let helpText () =
+            [
+                "exactly one of the following sets of arguments:"
+                "Build:"
+                (sprintf "  %s  Verbosity [one of: Quiet|Normal|ExtremelyLoud]%s%s" (sprintf "--%s" "verbosity") "" "")
+                "Clean:"
+                (sprintf "  %s  bool%s%s" (sprintf "--%s" "force") " (optional)" "")
+            ]
+            |> String.concat "\n"
+
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_1 : Verbosity option = None
+        let mutable arg_2 : bool option = None
+
+        let parser_schema : ArgParserRuntime_DuArgs.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "verbosity" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 1
+                            Forms = [ "force" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_DuArgs.ErasedTree.Sum (
+                        (0,
+                         [
+                             ("Build",
+                              ArgParserRuntime_DuArgs.ErasedTree.Product ([ ArgParserRuntime_DuArgs.ErasedTree.Leaf 0 ]))
+                             ("Clean",
+                              ArgParserRuntime_DuArgs.ErasedTree.Product ([ ArgParserRuntime_DuArgs.ErasedTree.Leaf 1 ]))
+                         ])
+                    ))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_DuArgs.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <-
+                                Some (
+                                    value
+                                    |> (fun x ->
+                                        if
+                                            System.String.Equals (
+                                                x,
+                                                "Quiet",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Verbosity.Quiet
+                                        else if
+                                            System.String.Equals (
+                                                x,
+                                                "Normal",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Verbosity.Normal
+                                        else if
+                                            System.String.Equals (
+                                                x,
+                                                "ExtremelyLoud",
+                                                System.StringComparison.OrdinalIgnoreCase
+                                            )
+                                        then
+                                            Verbosity.ExtremelyLoud
+                                        else
+                                            (sprintf
+                                                "Unrecognised value '%s' for %s: expected one of %s"
+                                                x
+                                                "Verbosity"
+                                                "Quiet, Normal, ExtremelyLoud")
+                                            |> failwith
+                                    )
+                                )
+
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_DuArgs.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_DuArgs.runParse
+                (ArgParserRuntime_DuArgs.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_DuArgs.ParseOutcome.Success parser_selection ->
+            match Map.tryFind 0 parser_selection.Choices with
+            | Some 0 ->
+                EnumInUnion.Build (
+                    {
+                        Verbosity =
+                            (match arg_1 with
+                             | Some x -> x
+                             | None ->
+                                 failwith
+                                     "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    }
+                )
+            | Some 1 ->
+                EnumInUnion.Clean (
+                    {
+                        Force = arg_2
+                    }
+                )
+            | _ ->
+                failwith
+                    "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"
+        | ArgParserRuntime_DuArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_DuArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_DuArgs.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : EnumInUnion =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
