@@ -253,6 +253,42 @@ Restrictions on the composition of positional args and DUs:
 * `[<PositionalArgs true>]` (to collect unrecognised flag-like arguments like `--unrecognised-arg` as positionals) will fail to generate code if present in a parser that also contains DUs, because the failure mode if the user makes a typo in an arg name is very confusing in that case.
 * We only use structural information, and not "we tried and failed to parse positional args as a specified type", when deciding which DU case to select. The parser uses named args to choose where the positional args are going to be collected, and only then tries to parse positional values.
 
+### Map-valued arguments
+
+A `Map<'k, 'v>` field accumulates key-value entries across occurrences, much as a `list` field accumulates values.
+You must say how an entry is spelled, with the mandatory `[<ArgumentKeyValueSeparator>]` attribute; you may additionally allow several entries per occurrence with `[<ArgumentMapEntrySeparator>]`.
+
+```fsharp
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Labels : Map<string, string>
+
+        [<ArgumentKeyValueSeparator '='>]
+        [<ArgumentMapEntrySeparator ','>]
+        Env : Map<string, string>
+    }
+```
+
+```
+./my-app --labels=owner:alice --labels team:web --env=A=1,B=2 --env=C=3
+```
+
+gives `Labels = map ["owner", "alice"; "team", "web"]` and `Env = map ["A", "1"; "B", "2"; "C", "3"]`.
+
+An unsupplied `Map` field is empty, exactly as an unsupplied `list` field is; it may therefore not be an `option`, nor carry a default through `Choice<'a, 'a>`.
+Supplying the same key twice is an error rather than an overwrite, and duplicates are detected on the *parsed* key, so for a `Map<SomeEnum, _>` the spellings `low` and `LOW` collide as they should.
+Keys and values may be any scalar argument type the generator already understands, including enumerated unions.
+
+**On which maps you can express.** There is no separator-based encoding which reaches every `Map<string, string>`: some character has to separate a key from its value, and that character may occur in a key.
+We split each entry at its *first* key-value separator, which confines the restriction to keys — a value may contain anything at all, separator included, so `--labels=url:https://example.com:8080` does what you want.
+The encoding is therefore onto exactly those maps whose keys avoid the separator; if you also configure an entry separator, keys *and* values must avoid that one, which is why it is opt-in.
+
+For key types which cannot spell the separator in the first place — an `int`, or a data-free union whose case names are alphanumeric — the restriction is vacuous and every map is expressible.
+Do note that some types spell themselves with punctuation: `TimeSpan` uses colons and `Guid` uses hyphens, so choose a separator accordingly.
+If you need to express keys containing arbitrary characters, take a `string list` field and do the splitting yourself.
+
 If `--help` appears in a position where the parser is expecting a key (e.g. in the first position, or after a `--foo=bar`), the parser fails with help text.
 The parser also makes a limited effort to supply help text when encountering an invalid parse.
 

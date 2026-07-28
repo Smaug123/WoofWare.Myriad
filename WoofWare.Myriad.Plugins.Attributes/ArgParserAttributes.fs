@@ -103,6 +103,43 @@ type ArgumentFlagAttribute (flagValue : bool) =
 type ArgumentLongForm (s : string) =
     inherit Attribute ()
 
+/// Attribute specifying the character which separates a key from its value within one entry of a
+/// `Map`-typed field. This attribute is mandatory on `Map` fields, and is rejected anywhere else:
+/// there is no default, because the right separator depends on what the key and value can spell.
+///
+/// For example, `[<ArgumentKeyValueSeparator ':'>] MyMap : Map<string, string>` accepts
+/// `--my-map=foo:bar`, giving the single entry `"foo" => "bar"`. The field may be supplied
+/// repeatedly, and the entries are combined; supplying the same key twice is an error.
+///
+/// The entry is split at the *first* occurrence of the separator, so a value may itself contain
+/// the separator (`--my-map=foo:bar:baz` gives `"foo" => "bar:baz"`), but a key may not. Every
+/// `Map` whose keys avoid the separator is therefore expressible. Choose a separator which cannot
+/// appear in a key: for `int` or data-free-union keys any punctuation will do, but note that e.g.
+/// `TimeSpan` spells itself with colons and `Guid` with hyphens.
+///
+/// If you need to express keys which contain every character, take a `string list` field and do
+/// the splitting yourself.
+[<AttributeUsage(AttributeTargets.Field, AllowMultiple = false)>]
+type ArgumentKeyValueSeparatorAttribute (separator : char) =
+    inherit Attribute ()
+
+/// Attribute specifying the character which separates one entry from the next within a single
+/// occurrence of a `Map`-typed field. This attribute is optional, and is rejected on any field
+/// which is not a `Map`.
+///
+/// For example, `[<ArgumentKeyValueSeparator ':'>] [<ArgumentMapEntrySeparator ','>]` accepts
+/// `--my-map=foo:bar,quux:baz`, giving two entries from one occurrence. Without this attribute,
+/// each occurrence carries exactly one entry, so the user must write
+/// `--my-map=foo:bar --my-map=quux:baz`.
+///
+/// Supplying this attribute costs expressiveness: the entry separator is stripped out before
+/// keys and values are split apart, so neither a key nor a value may contain it. (Without it,
+/// only keys are constrained, by the key-value separator.) Omit it unless the terser command
+/// line is worth that.
+[<AttributeUsage(AttributeTargets.Field, AllowMultiple = false)>]
+type ArgumentMapEntrySeparatorAttribute (separator : char) =
+    inherit Attribute ()
+
 /// Attribute indicating that this boolean or flag field should accept `--no-` prefix for negation.
 /// When this attribute is present on a boolean or flag DU field, the generated parser will accept
 /// both --field-name and --no-field-name as argument forms.

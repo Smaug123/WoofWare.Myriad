@@ -1,5 +1,15 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.4.1, WoofWare.Myriad.Plugins.Attributes 3.9.1
+
+The `ArgParserGenerator` now supports `Map<'k, 'v>` fields, which accumulate key-value entries across occurrences as `list` fields accumulate values.
+Adds the `[<ArgumentKeyValueSeparator>]` attribute (mandatory on a `Map` field), which gives the character separating a key from its value, and the optional `[<ArgumentMapEntrySeparator>]` attribute, which lets one occurrence carry several entries.
+So `--labels=owner:alice --labels team:web` builds a two-entry map, and with an entry separator of `,` you may instead write `--labels=owner:alice,team:web`.
+
+An unsupplied `Map` is empty, so (like a `list`) it may not be an `option` or carry a default.
+Supplying the same key twice is an error rather than an overwrite.
+Each entry is split at its *first* key-value separator, so a value may contain that separator but a key may not; see the README for which maps are expressible.
+
 # WoofWare.Myriad.Plugins 10.3.1
 
 The `ArgParserGenerator` now supports positional args together with arbitrary discriminated-union args.

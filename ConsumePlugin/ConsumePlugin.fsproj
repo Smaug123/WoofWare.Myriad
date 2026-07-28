@@ -104,6 +104,10 @@
     <Compile Include="GeneratedDuArgs.fs">
       <MyriadFile>DuArgs.fs</MyriadFile>
     </Compile>
+    <Compile Include="MapArgs.fs" />
+    <Compile Include="GeneratedMapArgs.fs">
+      <MyriadFile>MapArgs.fs</MyriadFile>
+    </Compile>
     <Compile Include="Nested/Args.fs" />
     <Compile Include="Nested/GeneratedArgs.fs">
       <MyriadFile>Nested/Args.fs</MyriadFile>

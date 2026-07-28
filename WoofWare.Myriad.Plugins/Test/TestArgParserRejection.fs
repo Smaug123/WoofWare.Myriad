@@ -1334,3 +1334,183 @@ type Args =
 """
         |> shouldRejectWith
             "[<ArgumentNegateWithPrefix>] can only be applied to boolean or flag DU fields, but was applied to field Blah of type LongIdent (SynLongIdent ([FooDto], [], [None]))"
+
+    [<Test>]
+    let ``A map without a key-value separator is rejected`` () =
+        // There is no defensible default: which character is safe depends on what the key type
+        // can spell, and guessing wrong silently misparses rather than failing.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : Map<string, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Blah' has type map<string, string>, so it requires an [<ArgumentKeyValueSeparator>] attribute giving the character which separates a key from its value within one entry. There is no default: which separator is safe depends on what your keys can spell."
+
+    [<Test>]
+    let ``An entry separator without a key-value separator is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentMapEntrySeparator ','>]
+        Blah : Map<string, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Blah' has type map<string, string>, so it requires an [<ArgumentKeyValueSeparator>] attribute giving the character which separates a key from its value within one entry. There is no default: which separator is safe depends on what your keys can spell."
+
+    [<Test>]
+    let ``A key-value separator on a non-map field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : string
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentKeyValueSeparator>] can only be applied to map fields, but was applied to field 'Blah' of type string. It controls how one entry of a map is split into a key and a value."
+
+    [<Test>]
+    let ``An entry separator on a non-map field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        [<ArgumentMapEntrySeparator ','>]
+        Blah : string list
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentKeyValueSeparator>] can only be applied to map fields, but was applied to field 'Blah' of type string list. It controls how one entry of a map is split into a key and a value."
+
+    [<Test>]
+    let ``The two separators must differ`` () =
+        // Otherwise the entry split consumes every separator and no entry can ever contain one.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        [<ArgumentMapEntrySeparator ':'>]
+        Blah : Map<string, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Blah' uses ':' as both its [<ArgumentKeyValueSeparator>] and its [<ArgumentMapEntrySeparator>]. They must differ, or no entry could be split into a key and a value."
+
+    [<Test>]
+    let ``An optional map is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Map<string, string> option
+    }
+"""
+        |> shouldRejectWith
+            "ArgParser does not support optional maps at field Blah: a map is already satisfiable with no arguments, so it is empty rather than absent."
+
+    [<Test>]
+    let ``A defaulted map is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Choice<Map<string, string>, Map<string, string>>
+    }
+"""
+        |> shouldRejectWith
+            "ArgParser does not support choices containing maps at field Blah: a map is already satisfiable with no arguments, so it is empty rather than defaulted."
+
+    [<Test>]
+    let ``A list of maps is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Map<string, string> list
+    }
+"""
+        |> shouldRejectWith
+            "ArgParser does not support lists of maps at field Blah: a map already accumulates across occurrences."
+
+    [<Test>]
+    let ``A map with a non-scalar value type is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Map<string, string list>
+    }
+"""
+        |> shouldRejectWith
+            "ArgParser does not support map values which are themselves lists, options, choices or maps, at field Blah: one entry spells one value."
+
+    [<Test>]
+    let ``A map with a non-scalar key type is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Map<string option, string>
+    }
+"""
+        |> shouldRejectWith
+            "ArgParser does not support map keys which are themselves lists, options, choices or maps, at field Blah: one entry spells one key."
+
+    [<Test>]
+    let ``A positional map is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Map<string, string>
+    }
+"""
+        |> shouldRejectWith "Expected positional arg accumulation type to be List, but it was map<string, string>"
