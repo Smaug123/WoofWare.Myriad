@@ -15,6 +15,7 @@ Help text describes each half of an entry in the syntax that half accepts, so a 
 
 The `ArgParserGenerator` gains `[<ArgumentDefaultValue foo>]`: shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant.
 `foo` is an ordinary .NET attribute argument, so F# restricts it to compile-time constants (literals, `[<Literal>]` bindings, and enum cases); anything else, including a discriminated union case, still needs `[<ArgumentDefaultFunction>]`.
+The value is spliced into the generated file rather than evaluated at your attribute, so F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`) are rejected: they would be resolved against the generated file rather than yours.
 
 # WoofWare.Myriad.Plugins 10.3.1
 

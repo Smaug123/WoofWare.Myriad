@@ -761,6 +761,44 @@ module internal ArgParserGenerator =
         | Accumulation.Choice _
         | Accumulation.List _ -> rejectSeparatorAttributes fieldName fieldType attrs
 
+    /// What we found in the argument of an `[<ArgumentDefaultValue>]`.
+    type private DefaultValueExpr =
+        /// Safe to splice into the generated file: it means there what it means in the user's source.
+        | Constant
+        /// One of F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`,
+        /// `__SOURCE_DIRECTORY__`), whose value depends on where it is written.
+        | ContextSensitive of name : string
+        /// Some other shape, which we decline to splice sight-unseen.
+        | Unrecognised
+
+    /// We splice an `[<ArgumentDefaultValue>]`'s argument into the generated file rather than
+    /// evaluating it, so we accept only expressions which mean the same thing there as here. This
+    /// recognises the shapes rather than searching for bad ones: an expression we have not
+    /// anticipated must be refused, not spliced blind.
+    ///
+    /// F# has already restricted a custom-attribute argument to a compile-time constant by the time
+    /// the whole compilation unit type-checks, so in practice this sees a literal, a reference to a
+    /// `[<Literal>]` binding or an enum case, or a context-sensitive constant.
+    let rec private classifyDefaultValue (expr : SynExpr) : DefaultValueExpr =
+        match expr with
+        // F#'s attribute syntax requires parentheses around an argument which is not a bare literal,
+        // and the user may add more of their own.
+        | SynExpr.Paren (expr = e) -> classifyDefaultValue e
+        | SynExpr.Const (constant = c) ->
+            let rec ofConst (c : SynConst) : DefaultValueExpr =
+                match c with
+                | SynConst.SourceIdentifier (constant = name) -> ContextSensitive name
+                // A measure annotation such as `3.0<m>` wraps the constant it annotates.
+                | SynConst.Measure (constant = c) -> ofConst c
+                | _ -> Constant
+
+            ofConst c
+        // A `[<Literal>]` binding or an enum case. The generated file inherits the source file's
+        // `open`s, so such a name resolves there exactly as it does at the attribute.
+        | SynExpr.Ident _
+        | SynExpr.LongIdent _ -> Constant
+        | _ -> Unrecognised
+
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
@@ -936,6 +974,15 @@ module internal ArgParserGenerator =
                         | [ "Myriad" ; "Plugins" ; "ArgumentDefaultValueAttribute" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultValue" ]
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultValueAttribute" ] ->
+                            match classifyDefaultValue attr.ArgExpr with
+                            | DefaultValueExpr.ContextSensitive name ->
+                                failwith
+                                    $"Field '%s{fieldName.idText}' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant %s{name}. Its value depends on where it is written, and we splice it into the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+                            | DefaultValueExpr.Unrecognised ->
+                                failwith
+                                    $"Field '%s{fieldName.idText}' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We splice the value into the generated file rather than evaluating it at your attribute, so we accept only a literal, or a reference to a [<Literal>] binding or an enum case (each optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
+                            | DefaultValueExpr.Constant -> ()
+
                             // Parenthesised, because the expression lands in positions such as
                             // `(3).ToString ()` where a bare literal would lex wrongly.
                             ArgumentDefaultSpec.Literal (SynExpr.paren attr.ArgExpr) |> Some

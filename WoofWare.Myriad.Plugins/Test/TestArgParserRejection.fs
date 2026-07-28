@@ -1244,6 +1244,69 @@ type WithLiteralDefault =
         // One namespace for the embedded runtime module, one for the generated parser module.
         List.length modules |> shouldEqual 2
 
+    /// F#'s context-sensitive constants: valid attribute arguments, but their value depends on
+    /// where they are written.
+    let sourceIdentifiers : TestCaseData list =
+        [ "__LINE__" ; "__SOURCE_FILE__" ; "__SOURCE_DIRECTORY__" ]
+        |> List.map TestCaseData
+
+    [<TestCaseSource(nameof sourceIdentifiers)>]
+    let ``ArgumentDefaultValue with a context-sensitive constant is rejected`` (constant : string) =
+        // We splice the attribute's expression into the generated file, so one of these would be
+        // evaluated *there* rather than at the user's own attribute: __SOURCE_FILE__ would name the
+        // generated file. Worse, we emit the default in two places (the help text and the
+        // defaulting step), so __LINE__ would advertise one default and store another.
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type ContextSensitiveDefault =
+    {{
+        [<ArgumentDefaultValue(%s{constant})>]
+        Where : Choice<string, string>
+    }}
+"""
+        |> shouldRejectWith
+            $"Field 'Where' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant %s{constant}. Its value depends on where it is written, and we splice it into the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+
+    [<Test>]
+    let ``ArgumentDefaultValue sees through redundant parentheses`` () =
+        // F#'s attribute syntax already requires one pair of parentheses around a non-literal
+        // argument, and the user may add more; the check must not be fooled by the extra layer.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type DoublyParenthesisedDefault =
+    {
+        [<ArgumentDefaultValue((__SOURCE_FILE__))>]
+        Where : Choice<string, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Where' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant __SOURCE_FILE__. Its value depends on where it is written, and we splice it into the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+
+    [<Test>]
+    let ``ArgumentDefaultValue with an unrecognised expression is rejected`` () =
+        // We recognise the constant forms rather than hunting for bad ones, so an expression we
+        // have not anticipated is refused instead of being spliced sight-unseen. (F# would reject
+        // this attribute argument too, since it is not a compile-time constant.)
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type ComputedDefault =
+    {
+        [<ArgumentDefaultValue(3 + 4)>]
+        Count : Choice<int, int>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Count' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We splice the value into the generated file rather than evaluating it at your attribute, so we accept only a literal, or a reference to a [<Literal>] binding or an enum case (each optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
+
     // Exactly one source may supply a field's default. With two, the generator would have to
     // invent a precedence order which is invisible at the use site, so it refuses instead.
 

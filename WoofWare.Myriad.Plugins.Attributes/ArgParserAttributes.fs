@@ -81,6 +81,11 @@ type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
 /// union case such as a flag DU's, needs `[<ArgumentDefaultFunction>]` instead.) Note that F#'s
 /// attribute syntax requires parentheses around an argument which is not a bare literal:
 /// `[<ArgumentDefaultValue(Consts.Foo)>]`, but `[<ArgumentDefaultValue 3>]`.
+///
+/// F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`) are
+/// rejected, even though they are valid attribute arguments: since we splice rather than evaluate,
+/// they would be resolved against the generated file instead of yours. Use
+/// `[<ArgumentDefaultFunction>]`, whose function is evaluated in your own file, if you want one.
 type ArgumentDefaultValueAttribute (defaultValue : obj) =
     inherit Attribute ()
 
