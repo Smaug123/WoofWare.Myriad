@@ -8,7 +8,8 @@ So `--labels=owner:alice --labels team:web` builds a two-entry map, and with an 
 
 An unsupplied `Map` is empty, so (like a `list`) it may not be an `option` or carry a default.
 Supplying the same key twice is an error rather than an overwrite.
-Each entry is split at its *first* key-value separator, so a value may contain that separator but a key may not; see the README for which maps are expressible.
+Each entry is split at its *first* key-value separator, so a value may contain that separator but a key may not.
+This means e.g. that some `Map<string, string>` are inexpressible (if the key contains the key-value separator); use `string list` and parse it yourself into a map if you need something smarter.
 
 # WoofWare.Myriad.Plugins 10.3.1
 
