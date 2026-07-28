@@ -563,6 +563,10 @@ module internal ArgParserGenerator =
         | Some name -> enumDus |> List.tryFind (fun du -> du.Name.idText = name)
         | None -> None
 
+    /// The slot holding the keys a `Map`-typed field has accumulated so far, beside the slot
+    /// holding the entries themselves.
+    let private seenVariable (target : Ident) : Ident = Ident.create (target.idText + "_seen")
+
     /// A type as we'd spell it in an error message. `toHumanReadableString` throws on the exotic
     /// shapes (tuples, functions, anonymous records), and an error message is the worst place to
     /// raise a different error from the one being reported, so fall back to the raw form.
@@ -986,27 +990,47 @@ module internal ArgParserGenerator =
             let valueParser, valueParsedTy = scalar "value" valueTy
 
             // Case names are arbitrary identifiers: a double-backtick name may contain any
-            // character, including a separator, and such a value would have no spelling on any
-            // command line. Where the spellings are known at generation time we can say so
-            // instead of silently misparsing. The key-value separator constrains only keys
-            // (entries split at the *first* one, so a value may contain it); the entry separator
-            // is stripped before that split, so it constrains both.
-            let checkEnumSpellings (role : string) (ty : SynType) (separators : (string * string) list) : unit =
+            // character, including a separator. Where the spellings are known at generation time
+            // we can reject the unspellable ones instead of silently misparsing.
+            //
+            // An enumerated value is matched with OrdinalIgnoreCase but an entry is split
+            // ordinally, so *every* casing of a case name is an accepted spelling, and only a
+            // character whose casings are all separators is unavoidable. (A case named `A`
+            // survives the separator 'A', because it may be spelled `a`.)
+            //
+            // The key-value separator constrains only keys, since entries split at the *first*
+            // one and so a value may contain it; the entry separator is stripped before that
+            // split, so it constrains keys and values alike.
+            let checkEnumSpellings (role : string) (ty : SynType) (separators : string list) : unit =
                 match identifyAsEnum ambient.EnumDus ty with
                 | None -> ()
                 | Some union ->
-                    for separator, attributeName in separators do
-                        for case in union.Cases do
-                            if case.Name.idText.Contains separator then
-                                failwith
-                                    $"Field '%s{fieldName.idText}' uses '%s{separator}' as its [<%s{attributeName}>], but its map %s{role} type %s{union.Name.idText} has a case named '%s{case.Name.idText}' which contains that character. No command line could express that %s{role}, so choose a different separator."
+                    for case in union.Cases do
+                        let unavoidable =
+                            case.Name.idText
+                            |> Seq.tryPick (fun c ->
+                                let spellings =
+                                    [ Char.ToLowerInvariant c ; Char.ToUpperInvariant c ]
+                                    |> List.map string<char>
+                                    |> List.distinct
 
-            let entrySeparators =
-                match entrySeparator with
-                | None -> []
-                | Some entry -> [ entry, "ArgumentMapEntrySeparator" ]
+                                if spellings |> List.forall (fun s -> List.contains s separators) then
+                                    Some spellings
+                                else
+                                    None
+                            )
 
-            checkEnumSpellings "key" keyTy ((keyValueSeparator, "ArgumentKeyValueSeparator") :: entrySeparators)
+                        match unavoidable with
+                        | None -> ()
+                        | Some blocking ->
+                            let blocking = blocking |> List.map (sprintf "'%s'") |> String.concat " or "
+
+                            failwith
+                                $"Field '%s{fieldName.idText}' has map %s{role} type %s{union.Name.idText}, whose case '%s{case.Name.idText}' cannot be spelled without using a separator (%s{blocking}). No command line could express that %s{role}, so choose a different separator."
+
+            let entrySeparators = Option.toList entrySeparator
+
+            checkEnumSpellings "key" keyTy (keyValueSeparator :: entrySeparators)
 
             checkEnumSpellings "value" valueTy entrySeparators
 
@@ -1303,8 +1327,25 @@ module internal ArgParserGenerator =
                             identifyAsEnum ambient.EnumDus parseTy
 
                     let displayType =
+                        // Each half of an entry is spelled exactly as it would be were it a
+                        // scalar leaf, so describe it the same way: a flag DU accepts true/false,
+                        // and an enumerated value accepts one of its case names. Naming the bare
+                        // type instead would leave the user guessing.
+                        let describeComponent (ty : SynType) : string =
+                            match identifyAsFlag ambient.FlagDus ty with
+                            | Some _ -> "bool"
+                            | None ->
+
+                            match identifyAsEnum ambient.EnumDus ty with
+                            | Some union ->
+                                let values = checkedEnumCaseNames union |> String.concat "|"
+
+                                $"%s{describeType ty} [one of: %s{values}]"
+                            | None -> describeType ty
+
                         match accumulation with
-                        | Accumulation.Map spec -> Some $"map<%s{describeType spec.KeyType}, %s{describeType parseTy}>"
+                        | Accumulation.Map spec ->
+                            Some $"map<%s{describeComponent spec.KeyType}, %s{describeComponent parseTy}>"
                         | Accumulation.Required
                         | Accumulation.Optional
                         | Accumulation.Choice _
@@ -1616,51 +1657,69 @@ module internal ArgParserGenerator =
 
         let bindings =
             nonPos
-            |> List.map (fun pf ->
+            |> List.collect (fun pf ->
+                let slot =
+                    match pf.Accumulation with
+                    | Accumulation.Choice _ ->
+                        // The slot holds the already-wrapped value: Choice1Of2 for a user-supplied
+                        // value, Choice2Of2 for a default.
+                        SynExpr.createIdent "None"
+                        |> SynBinding.basic [ pf.TargetVariable ] []
+                        |> SynBinding.withMutability true
+                        |> SynBinding.withReturnAnnotation (
+                            SynType.appPostfix "option" (SynType.app "Choice" [ pf.TargetType ; pf.TargetType ])
+                        )
+                    | Accumulation.Required
+                    | Accumulation.Optional ->
+                        SynExpr.createIdent "None"
+                        |> SynBinding.basic [ pf.TargetVariable ] []
+                        |> SynBinding.withMutability true
+                        |> SynBinding.withReturnAnnotation (SynType.appPostfix "option" pf.TargetType)
+                    | Accumulation.List (Accumulation.List _)
+                    | Accumulation.List Accumulation.Optional
+                    | Accumulation.List (Accumulation.Choice _)
+                    | Accumulation.List (Accumulation.Map _) ->
+                        failwith
+                            "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists or maps."
+                    | Accumulation.Map spec ->
+                        // Entries accumulate as key-value pairs and become a Map at the end, so that
+                        // a duplicate key can be spotted (and reported against the offending
+                        // occurrence) rather than silently overwriting.
+                        SynExpr.createIdent "ResizeArray"
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        |> SynBinding.basic [ pf.TargetVariable ] []
+                        |> SynBinding.withReturnAnnotation (
+                            SynType.appPostfix
+                                "ResizeArray"
+                                (SynType.tupleNoParen [ spec.KeyType ; pf.TargetType ]
+                                 |> Option.defaultWith (fun () ->
+                                     failwith
+                                         "WoofWare.Myriad internal error: could not build the key-value pair type for a map field"
+                                 )
+                                 |> SynType.paren)
+                        )
+                    | Accumulation.List Accumulation.Required ->
+                        SynExpr.createIdent "ResizeArray"
+                        |> SynExpr.applyTo (SynExpr.CreateConst ())
+                        |> SynBinding.basic [ pf.TargetVariable ] []
+                        |> SynBinding.withReturnAnnotation (SynType.appPostfix "ResizeArray" pf.TargetType)
+
                 match pf.Accumulation with
-                | Accumulation.Choice _ ->
-                    // The slot holds the already-wrapped value: Choice1Of2 for a user-supplied
-                    // value, Choice2Of2 for a default.
-                    SynExpr.createIdent "None"
-                    |> SynBinding.basic [ pf.TargetVariable ] []
-                    |> SynBinding.withMutability true
-                    |> SynBinding.withReturnAnnotation (
-                        SynType.appPostfix "option" (SynType.app "Choice" [ pf.TargetType ; pf.TargetType ])
-                    )
-                | Accumulation.Required
-                | Accumulation.Optional ->
-                    SynExpr.createIdent "None"
-                    |> SynBinding.basic [ pf.TargetVariable ] []
-                    |> SynBinding.withMutability true
-                    |> SynBinding.withReturnAnnotation (SynType.appPostfix "option" pf.TargetType)
-                | Accumulation.List (Accumulation.List _)
-                | Accumulation.List Accumulation.Optional
-                | Accumulation.List (Accumulation.Choice _)
-                | Accumulation.List (Accumulation.Map _) ->
-                    failwith
-                        "WoofWare.Myriad invariant violated: expected a list to contain only a Required accumulation. Non-positional lists cannot be optional or Choice, nor can they themselves contain lists or maps."
                 | Accumulation.Map spec ->
-                    // Entries accumulate as key-value pairs and become a Map at the end, so that
-                    // a duplicate key can be spotted (and reported against the offending
-                    // occurrence) rather than silently overwriting.
-                    SynExpr.createIdent "ResizeArray"
-                    |> SynExpr.applyTo (SynExpr.CreateConst ())
-                    |> SynBinding.basic [ pf.TargetVariable ] []
-                    |> SynBinding.withReturnAnnotation (
-                        SynType.appPostfix
-                            "ResizeArray"
-                            (SynType.tupleNoParen [ spec.KeyType ; pf.TargetType ]
-                             |> Option.defaultWith (fun () ->
-                                 failwith
-                                     "WoofWare.Myriad internal error: could not build the key-value pair type for a map field"
-                             )
-                             |> SynType.paren)
-                    )
-                | Accumulation.List Accumulation.Required ->
-                    SynExpr.createIdent "ResizeArray"
-                    |> SynExpr.applyTo (SynExpr.CreateConst ())
-                    |> SynBinding.basic [ pf.TargetVariable ] []
-                    |> SynBinding.withReturnAnnotation (SynType.appPostfix "ResizeArray" pf.TargetType)
+                    // The keys supplied so far, carried between occurrences rather than rebuilt
+                    // from the accumulator each time: a map is often filled by many repeated
+                    // occurrences, and rebuilding would make that quadratic.
+                    let seen =
+                        SynExpr.createLongIdent [ "Set" ; "empty" ]
+                        |> SynBinding.basic [ seenVariable pf.TargetVariable ] []
+                        |> SynBinding.withMutability true
+                        |> SynBinding.withReturnAnnotation (SynType.app "Set" [ spec.KeyType ])
+
+                    [ slot ; seen ]
+                | Accumulation.Required
+                | Accumulation.Optional
+                | Accumulation.Choice _
+                | Accumulation.List _ -> [ slot ]
             )
 
         let bindings =
@@ -1946,17 +2005,17 @@ module internal ArgParserGenerator =
                     )
                     |> SynBinding.basic [ Ident.create "parser_pending" ] []
 
-                    SynExpr.createIdent' pf.TargetVariable
-                    |> SynExpr.pipeThroughFunction (
-                        SynExpr.applyFunction (SynExpr.createLongIdent [ "Seq" ; "map" ]) (SynExpr.createIdent "fst")
-                    )
-                    |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Set" ; "ofSeq" ])
+                    // A persistent set, so starting from the field's accumulated keys is O(1)
+                    // rather than a rebuild from every entry stored so far.
+                    SynExpr.createIdent' (seenVariable pf.TargetVariable)
                     |> SynBinding.basic [ Ident.create "parser_seen" ] []
                     |> SynBinding.withMutability true
                 ]
                 (SynExpr.sequential
                     [
                         duplicateCheck
+                        // Both mutations happen only once every entry has been parsed and found
+                        // fresh, so a failure partway leaves the field exactly as it was.
                         pending
                         |> SynExpr.pipeThroughFunction (
                             SynExpr.applyFunction
@@ -1967,6 +2026,7 @@ module internal ArgParserGenerator =
                         |> SynExpr.applyFunction (
                             SynExpr.createLongIdent' [ pf.TargetVariable ; Ident.create "AddRange" ]
                         )
+                        seen |> SynExpr.assign (SynLongIdent.createI (seenVariable pf.TargetVariable))
                     ])
             |> tryStore (occurrenceField "Source")
 

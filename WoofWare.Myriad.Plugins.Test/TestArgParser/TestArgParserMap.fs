@@ -226,6 +226,51 @@ module TestArgParserMap =
 
         exc.Message |> shouldContainText "map<string, bool>"
 
+    // ------------------------------------------------------- component syntax in help
+
+    [<Test>]
+    let ``Help text describes each side of a map in the syntax that side accepts`` () =
+        let exc =
+            Assert.Throws<exn> (fun () -> MapDisplayArgs.parse' noEnv [ "--help" ] |> ignore<MapDisplayArgs>)
+
+        // A flag DU is spelled true/false, and an enumerated value by case name, exactly as they
+        // would be if they were scalar leaves rather than halves of a map entry.
+        exc.Message |> shouldContainText "map<Severity [one of: Low|High], bool>"
+
+    [<Test>]
+    let ``A cased separator does not make an enumerated case unspellable`` () =
+        // 'A' is the separator and the case is named `Apple`, but values are matched
+        // case-insensitively, so `apple` names the case while avoiding the separator.
+        let args = MapDisplayArgs.parse' noEnv [ "--casing=appleAvalue" ]
+
+        args.Casing |> shouldEqual (Map.ofList [ Alpha.Apple, "value" ])
+
+    [<Test>]
+    let ``A flag-valued map parses its values as booleans`` () =
+        let args =
+            MapDisplayArgs.parse' noEnv [ "--features=Low:true" ; "--features=High:false" ]
+
+        args.Features
+        |> shouldEqual (Map.ofList [ Severity.Low, Enabled.Yes ; Severity.High, Enabled.No ])
+
+    // ------------------------------------------------------- accumulating many occurrences
+
+    [<Test>]
+    let ``Many occurrences accumulate, and a late duplicate is still caught`` () =
+        // The seen-key set is carried between occurrences rather than rebuilt from the
+        // accumulator each time; this exercises that it is actually kept up to date.
+        let entries = List.init 500 (fun i -> $"k%i{i}", $"v%i{i}")
+
+        parseLabels entries |> shouldEqual (Map.ofList entries)
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                MapArgs.parse' noEnv (renderLabels entries @ [ "--labels=k0:again" ])
+                |> ignore<MapArgs>
+            )
+
+        exc.Message |> shouldContainText "Key 'k0' was supplied more than once"
+
     // ------------------------------------------------------- reference implementation
 
     [<Test>]

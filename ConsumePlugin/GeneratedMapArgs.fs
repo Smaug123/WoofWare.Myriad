@@ -1439,7 +1439,7 @@ module MapArgs =
                 (sprintf
                     "%s  %s%s%s"
                     (sprintf "--%s" "thresholds")
-                    "map<Severity, int32>"
+                    "map<Severity [one of: Low|High], int32>"
                     " (KEY:VALUE; can be repeated)"
                     "")
                 (sprintf "%s  %s%s%s" (sprintf "--%s" "switches") "map<string, bool>" " (KEY:VALUE; can be repeated)" "")
@@ -1448,9 +1448,13 @@ module MapArgs =
 
         let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
         let arg_0 : (string * string) ResizeArray = ResizeArray ()
+        let mutable arg_0_seen : Set<string> = Set.empty
         let arg_1 : (string * string) ResizeArray = ResizeArray ()
+        let mutable arg_1_seen : Set<string> = Set.empty
         let arg_2 : (Severity * int) ResizeArray = ResizeArray ()
+        let mutable arg_2_seen : Set<Severity> = Set.empty
         let arg_3 : (string * bool) ResizeArray = ResizeArray ()
+        let mutable arg_3_seen : Set<string> = Set.empty
 
         let parser_schema : ArgParserRuntime_MapArgs.ErasedSchema =
             {
@@ -1540,7 +1544,7 @@ module MapArgs =
                                 )
                             )
 
-                        let mutable parser_seen = arg_0 |> Seq.map fst |> Set.ofSeq
+                        let mutable parser_seen = arg_0_seen
 
                         for parser_entry in parser_pending do
                             if Set.contains (fst (fst parser_entry)) parser_seen then
@@ -1556,6 +1560,7 @@ module MapArgs =
                             parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
 
                         arg_0.AddRange (parser_pending |> List.map fst)
+                        arg_0_seen <- parser_seen
                         None
                     with _ as exc ->
                         (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
@@ -1589,7 +1594,7 @@ module MapArgs =
                                 )
                             )
 
-                        let mutable parser_seen = arg_1 |> Seq.map fst |> Set.ofSeq
+                        let mutable parser_seen = arg_1_seen
 
                         for parser_entry in parser_pending do
                             if Set.contains (fst (fst parser_entry)) parser_seen then
@@ -1605,6 +1610,7 @@ module MapArgs =
                             parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
 
                         arg_1.AddRange (parser_pending |> List.map fst)
+                        arg_1_seen <- parser_seen
                         None
                     with _ as exc ->
                         (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
@@ -1662,7 +1668,7 @@ module MapArgs =
                                 )
                             )
 
-                        let mutable parser_seen = arg_2 |> Seq.map fst |> Set.ofSeq
+                        let mutable parser_seen = arg_2_seen
 
                         for parser_entry in parser_pending do
                             if Set.contains (fst (fst parser_entry)) parser_seen then
@@ -1678,6 +1684,7 @@ module MapArgs =
                             parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
 
                         arg_2.AddRange (parser_pending |> List.map fst)
+                        arg_2_seen <- parser_seen
                         None
                     with _ as exc ->
                         (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
@@ -1710,7 +1717,7 @@ module MapArgs =
                                 )
                             )
 
-                        let mutable parser_seen = arg_3 |> Seq.map fst |> Set.ofSeq
+                        let mutable parser_seen = arg_3_seen
 
                         for parser_entry in parser_pending do
                             if Set.contains (fst (fst parser_entry)) parser_seen then
@@ -1726,6 +1733,7 @@ module MapArgs =
                             parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
 
                         arg_3.AddRange (parser_pending |> List.map fst)
+                        arg_3_seen <- parser_seen
                         None
                     with _ as exc ->
                         (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
@@ -1777,6 +1785,268 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type MapDisplayArgs
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module MapDisplayArgs =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : MapDisplayArgs =
+        let helpText () =
+            [
+                (sprintf
+                    "%s  %s%s%s"
+                    (sprintf "--%s" "features")
+                    "map<Severity [one of: Low|High], bool>"
+                    " (KEY:VALUE; can be repeated)"
+                    "")
+                (sprintf
+                    "%s  %s%s%s"
+                    (sprintf "--%s" "casing")
+                    "map<Alpha [one of: Apple|Pear], string>"
+                    " (KEYAVALUE; can be repeated)"
+                    "")
+            ]
+            |> String.concat "\n"
+
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let arg_0 : (Severity * Enabled) ResizeArray = ResizeArray ()
+        let mutable arg_0_seen : Set<Severity> = Set.empty
+        let arg_1 : (Alpha * string) ResizeArray = ResizeArray ()
+        let mutable arg_1_seen : Set<Alpha> = Set.empty
+
+        let parser_schema : ArgParserRuntime_MapArgs.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "features" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_MapArgs.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_MapArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 1
+                            Forms = [ "casing" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_MapArgs.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_MapArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_MapArgs.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_MapArgs.ErasedTree.Leaf 0
+                            ArgParserRuntime_MapArgs.ErasedTree.Leaf 1
+                        ]
+                    ))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_MapArgs.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        let parser_pending =
+                            [ value ]
+                            |> List.map (
+                                (fun entry ->
+                                    let parser_sep = entry.IndexOf (":", System.StringComparison.Ordinal)
+
+                                    if parser_sep < 0 then
+                                        failwith (
+                                            sprintf
+                                                "Entry '%s' for '%s' does not contain the separator '%s'"
+                                                entry
+                                                (sprintf "--%s" "features")
+                                                ":"
+                                        )
+                                    else
+                                        let parser_key = entry.Substring (0, parser_sep)
+
+                                        ((parser_key
+                                          |> (fun x ->
+                                              if
+                                                  System.String.Equals (
+                                                      x,
+                                                      "Low",
+                                                      System.StringComparison.OrdinalIgnoreCase
+                                                  )
+                                              then
+                                                  Severity.Low
+                                              else if
+                                                  System.String.Equals (
+                                                      x,
+                                                      "High",
+                                                      System.StringComparison.OrdinalIgnoreCase
+                                                  )
+                                              then
+                                                  Severity.High
+                                              else
+                                                  (sprintf
+                                                      "Unrecognised value '%s' for %s: expected one of %s"
+                                                      x
+                                                      "Severity"
+                                                      "Low, High")
+                                                  |> failwith
+                                          ),
+                                          (entry.Substring (parser_sep + 1))
+                                          |> (fun x ->
+                                              if System.Boolean.Parse x = true then
+                                                  Enabled.Yes
+                                              else
+                                                  Enabled.No
+                                          )),
+                                         parser_key)
+                                )
+                            )
+
+                        let mutable parser_seen = arg_0_seen
+
+                        for parser_entry in parser_pending do
+                            if Set.contains (fst (fst parser_entry)) parser_seen then
+                                failwith (
+                                    sprintf
+                                        "Key '%s' was supplied more than once for '%s'"
+                                        (snd parser_entry)
+                                        (sprintf "--%s" "features")
+                                )
+                            else
+                                ()
+
+                            parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
+
+                        arg_0.AddRange (parser_pending |> List.map fst)
+                        arg_0_seen <- parser_seen
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        let parser_pending =
+                            [ value ]
+                            |> List.map (
+                                (fun entry ->
+                                    let parser_sep = entry.IndexOf ("A", System.StringComparison.Ordinal)
+
+                                    if parser_sep < 0 then
+                                        failwith (
+                                            sprintf
+                                                "Entry '%s' for '%s' does not contain the separator '%s'"
+                                                entry
+                                                (sprintf "--%s" "casing")
+                                                "A"
+                                        )
+                                    else
+                                        let parser_key = entry.Substring (0, parser_sep)
+
+                                        ((parser_key
+                                          |> (fun x ->
+                                              if
+                                                  System.String.Equals (
+                                                      x,
+                                                      "Apple",
+                                                      System.StringComparison.OrdinalIgnoreCase
+                                                  )
+                                              then
+                                                  Alpha.Apple
+                                              else if
+                                                  System.String.Equals (
+                                                      x,
+                                                      "Pear",
+                                                      System.StringComparison.OrdinalIgnoreCase
+                                                  )
+                                              then
+                                                  Alpha.Pear
+                                              else
+                                                  (sprintf
+                                                      "Unrecognised value '%s' for %s: expected one of %s"
+                                                      x
+                                                      "Alpha"
+                                                      "Apple, Pear")
+                                                  |> failwith
+                                          ),
+                                          (entry.Substring (parser_sep + 1)) |> (fun x -> x)),
+                                         parser_key)
+                                )
+                            )
+
+                        let mutable parser_seen = arg_1_seen
+
+                        for parser_entry in parser_pending do
+                            if Set.contains (fst (fst parser_entry)) parser_seen then
+                                failwith (
+                                    sprintf
+                                        "Key '%s' was supplied more than once for '%s'"
+                                        (snd parser_entry)
+                                        (sprintf "--%s" "casing")
+                                )
+                            else
+                                ()
+
+                            parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
+
+                        arg_1.AddRange (parser_pending |> List.map fst)
+                        arg_1_seen <- parser_seen
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_MapArgs.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_MapArgs.runParse
+                (ArgParserRuntime_MapArgs.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_MapArgs.ParseOutcome.Success parser_selection ->
+            {
+                Casing = (arg_1 |> Map.ofSeq)
+                Features = (arg_0 |> Map.ofSeq)
+            }
+        | ArgParserRuntime_MapArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_MapArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_MapArgs.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : MapDisplayArgs =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type MapInUnion
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module MapInUnion =
@@ -1793,6 +2063,7 @@ module MapInUnion =
 
         let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
         let arg_1 : (string * string) ResizeArray = ResizeArray ()
+        let mutable arg_1_seen : Set<string> = Set.empty
         let mutable arg_2 : string option = None
 
         let parser_schema : ArgParserRuntime_MapArgs.ErasedSchema =
@@ -1866,7 +2137,7 @@ module MapInUnion =
                                 )
                             )
 
-                        let mutable parser_seen = arg_1 |> Seq.map fst |> Set.ofSeq
+                        let mutable parser_seen = arg_1_seen
 
                         for parser_entry in parser_pending do
                             if Set.contains (fst (fst parser_entry)) parser_seen then
@@ -1882,6 +2153,7 @@ module MapInUnion =
                             parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
 
                         arg_1.AddRange (parser_pending |> List.map fst)
+                        arg_1_seen <- parser_seen
                         None
                     with _ as exc ->
                         (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some

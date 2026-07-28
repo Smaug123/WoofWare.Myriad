@@ -1608,7 +1608,7 @@ type Args =
     }
 """
         |> shouldRejectWith
-            "Field 'Blah' uses ':' as its [<ArgumentKeyValueSeparator>], but its map key type Weird has a case named 'a:b' which contains that character. No command line could express that key, so choose a different separator."
+            "Field 'Blah' has map key type Weird, whose case 'a:b' cannot be spelled without using a separator (':'). No command line could express that key, so choose a different separator."
 
     [<Test>]
     let ``A key whose enumerated case contains the entry separator is rejected`` () =
@@ -1629,7 +1629,7 @@ type Args =
     }
 """
         |> shouldRejectWith
-            "Field 'Blah' uses ',' as its [<ArgumentMapEntrySeparator>], but its map key type Weird has a case named 'a,b' which contains that character. No command line could express that key, so choose a different separator."
+            "Field 'Blah' has map key type Weird, whose case 'a,b' cannot be spelled without using a separator (','). No command line could express that key, so choose a different separator."
 
     [<Test>]
     let ``A value whose enumerated case contains the entry separator is rejected`` () =
@@ -1652,7 +1652,7 @@ type Args =
     }
 """
         |> shouldRejectWith
-            "Field 'Blah' uses ',' as its [<ArgumentMapEntrySeparator>], but its map value type Weird has a case named 'a,b' which contains that character. No command line could express that value, so choose a different separator."
+            "Field 'Blah' has map value type Weird, whose case 'a,b' cannot be spelled without using a separator (','). No command line could express that value, so choose a different separator."
 
     [<Test>]
     let ``A value whose enumerated case contains the key-value separator is accepted`` () =
@@ -1676,3 +1676,51 @@ type Args =
 """
 
         List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``A cased separator does not make an enumerated case unrepresentable`` () =
+        // Enumerated values are matched with OrdinalIgnoreCase while the entry is split
+        // ordinally, so a case named ``A`` may be spelled ``a``, which avoids the separator 'A'.
+        // Only a separator which no spelling can avoid makes a case unrepresentable.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Weird =
+    | A
+    | Other
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator 'A'>]
+        Blah : Map<Weird, string>
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``Separators which between them cover both spellings of a case are rejected`` () =
+        // 'a' and 'A' are distinct separators, so the sole case name has no spelling avoiding
+        // both of them.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Weird =
+    | A
+    | Other
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator 'a'>]
+        [<ArgumentMapEntrySeparator 'A'>]
+        Blah : Map<Weird, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Blah' has map key type Weird, whose case 'A' cannot be spelled without using a separator ('a' or 'A'). No command line could express that key, so choose a different separator."

@@ -289,8 +289,9 @@ For key types which cannot spell the separator in the first place (like an `int`
 Do note that some types spell themselves with punctuation: `TimeSpan` uses colons and `Guid` uses hyphens, so choose a separator accordingly.
 If you need to express keys containing arbitrary characters, take a `string list` field and do the splitting yourself with whatever logic is appropriate to your domain.
 
-Where the spellings are known at generation time, we check rather than trust: a key or value which is an enumerated union has its case names checked against the separators, and generation fails if one of them contains a separator it must avoid.
-(Case names are arbitrary identifiers, so ``` ``a:b`` ``` is a perfectly legal case name which no command line could express as a key when `:` is the separator.)
+Where the spellings are known at generation time, we check rather than trust: a key or value which is an enumerated union has its case names checked against the separators, and generation fails for a case which no spelling can express.
+(Case names are arbitrary identifiers, so ``` ``a:b`` ``` is a perfectly legal case name, and no command line could express it as a key when `:` is the separator.)
+Note "no spelling": enumerated values are matched case-insensitively while entries are split case-sensitively, so a case named `Apple` survives the separator `A` — spell it `apple` — and only a character whose every casing is a separator is fatal.
 
 ### Help text
 

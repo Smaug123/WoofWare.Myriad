@@ -10,7 +10,8 @@ An unsupplied `Map` is empty, so (like a `list`) it may not be an `option` or ca
 Supplying the same key twice is an error rather than an overwrite.
 Each entry is split at its *first* key-value separator, so a value may contain that separator but a key may not.
 This means e.g. that some `Map<string, string>` are inexpressible (if the key contains the key-value separator); use `string list` and parse it yourself into a map if you need something smarter.
-Where the spellings are known at generation time we check them: an enumerated key or value whose case name contains a separator it must avoid is rejected rather than silently misparsed.
+Where the spellings are known at generation time we check them: an enumerated key or value with a case that no spelling can express is rejected rather than silently misparsed.
+Help text describes each half of an entry in the syntax that half accepts, so a flag-valued map advertises `map<..., bool>` and an enumerated one lists its case names.
 
 # WoofWare.Myriad.Plugins 10.3.1
 
