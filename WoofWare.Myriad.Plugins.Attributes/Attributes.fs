@@ -95,6 +95,20 @@ type HttpClientAttribute (isExtensionMethod : bool) =
     /// Shorthand for the "isExtensionMethod = false" constructor; see documentation there for details.
     new () = HttpClientAttribute HttpClientAttribute.DefaultIsExtensionMethod
 
+/// Attribute indicating that this interface member sets the given header on its own requests,
+/// taking the value from the named parameterless property of the same interface (which the
+/// "create HTTP client" generator turns into a `unit -> _` argument, re-evaluated on every request).
+///
+/// This differs from `[<RestEase.Header>]` on a property, which sets its header on *every*
+/// member's requests: this attribute applies the header only to the members which name the property.
+/// It is how the OpenAPI generator expresses per-operation security requirements, where two
+/// operations of the same API may require different credentials, or none at all.
+///
+/// The named property must exist on the same interface, and must not itself carry a
+/// `[<RestEase.Header>]` attribute (which would apply it everywhere anyway).
+type HeaderFromPropertyAttribute (header : string, propertyName : string) =
+    inherit Attribute ()
+
 /// Attribute indicating a DU type to which the "create catamorphism" Myriad
 /// generator should apply during build.
 /// Supply the `typeName` for the name of the record type we will generate, which contains

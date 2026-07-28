@@ -1,5 +1,24 @@
 Notable changes are recorded here.
 
+# Unreleased
+
+The `swagger-client` generator now accepts OpenAPI 3.0 JSON documents as well as Swagger 2.0 documents.
+It generates DTO records and a chained `HttpClient` interface from component schemas, paths, parameters, request bodies, responses, and root server definitions.
+Unsupported or structurally ambiguous OpenAPI constructs fail with structured, JSON-pointer-located diagnostics; unconstrained JSON values preserve `null`, and unbounded integers use `BigInteger`.
+
+The OpenAPI 3.0 generator now applies `security` requirements, rather than ignoring them.
+Each security scheme an operation requires becomes a `unit -> string` argument of the generated `make`, evaluated afresh per request, and each operation sends exactly the credentials its own requirement asks for (an operation with `security: []` sends none).
+Supported schemes are the header-carried ones: `apiKey` in a header, `http` of any scheme, and `oauth2`/`openIdConnect` (for which you supply the `Authorization` header value; no token flow is performed).
+Where an operation can be authenticated in more than one way, the generator refuses to guess: name the one you want in the new `SecuritySchemes` Myriad parameter (or set it empty to send no credentials wherever the document permits that).
+An operation with no satisfiable requirement is now a build failure rather than a silently unauthenticated client.
+
+Fixes a latent bug in the `HttpClient` generator: an interface property named `Client` collided with the `HttpClient` argument of the generated `make`, so the generated source did not compile.
+
+Adds the `[<HeaderFromProperty(header, propertyName)>]` attribute for the `HttpClient` generator, which sets a header on one member's requests, taking its value from a property of the same interface.
+(`[<RestEase.Header>]` on a property continues to set its header on every member's requests.)
+The property may be named either by a string literal or by `nameof Unchecked.defaultof<IMyApi>.TheProperty`.
+This is how the OpenAPI generator expresses per-operation security requirements.
+
 # WoofWare.Myriad.Plugins 10.3.1
 
 The `ArgParserGenerator` now supports positional args together with arbitrary discriminated-union args.

@@ -753,6 +753,7 @@ module internal SwaggerClientGenerator =
 
 open Myriad.Core
 open System.IO
+open System.Text.Json.Nodes
 
 [<RequireQualifiedAccess>]
 module internal SwaggerV2Generator =
@@ -1022,8 +1023,18 @@ type SwaggerClientGenerator () =
             if pars.IsEmpty then
                 failwith "No parameters given. You must supply the <ClassName /> parameter in <MyriadParams />."
 
-            let contents = File.ReadAllText context.InputFilename |> SwaggerV2.parse
+            let source = File.ReadAllText context.InputFilename
 
-            match contents with
-            | Ok contents -> SwaggerV2Generator.generate pars contents
-            | Error node -> failwith "Input was not a Swagger 2 spec"
+            let root =
+                try
+                    JsonNode.Parse source
+                with :? System.Text.Json.JsonException as ex ->
+                    failwith $"[InvalidJson] #: %s{ex.Message}"
+
+            match root with
+            | :? JsonObject as root when root.ContainsKey "swagger" ->
+                match SwaggerV2.parse source with
+                | Ok contents -> SwaggerV2Generator.generate pars contents
+                | Error _ -> failwith "Input was not a Swagger 2 spec"
+            | :? JsonObject as root when root.ContainsKey "openapi" -> OpenApiClientGenerator.generate pars source
+            | _ -> failwith "Input was neither a Swagger 2 nor an OpenAPI 3 spec"

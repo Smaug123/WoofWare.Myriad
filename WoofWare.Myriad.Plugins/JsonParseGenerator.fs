@@ -464,7 +464,6 @@ module internal JsonParseGenerator =
                         SynExpr.createLongIdent [ "System" ; "Globalization" ; "CultureInfo" ; "InvariantCulture" ]
                     ]
             )
-
         | Measure (_measure, primType) ->
             parseNumberType options propertyName node primType
             |> SynExpr.pipeThroughFunction (Measure.getLanguagePrimitivesMeasure primType)

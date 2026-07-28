@@ -15,7 +15,7 @@ Currently implemented:
 * `HttpClient` (to stamp out a [RestEase](https://github.com/canton7/RestEase)-style HTTP client).
 * `GenerateMock` and `GenerateCapturingMock` (to stamp out a record type corresponding to an interface, like a compile-time [Foq](https://github.com/fsprojects/Foq)).
 * `ArgParser` (to stamp out a basic argument parser).
-* `SwaggerClient` (to stamp out an HTTP client for a Swagger API).
+* `SwaggerClient` (to stamp out an HTTP client for a Swagger 2.0 or OpenAPI 3.0 API).
 * `CreateCatamorphism` (to stamp out a non-stack-overflowing [catamorphism](https://fsharpforfunandprofit.com/posts/recursive-types-and-folds/) for a discriminated union).
 * `RemoveOptions` (to strip `option` modifiers from a type) - this one is particularly half-baked!
 
@@ -285,7 +285,7 @@ It should work fine if you just want to compose a few primitive types, though.
 
 ## `SwaggerClient`
 
-Takes a JSON-schema definition of a [Swagger API](https://swagger.io/), and stamps out a client like this:
+Takes a JSON definition of a [Swagger 2.0 or OpenAPI 3.0 API](https://swagger.io/), and stamps out a client like this:
 
 ```fsharp
 /// A type which was defined in the Swagger spec
@@ -349,6 +349,71 @@ so that the following manoeuvre will result in a generated mock:
 
 (Note that you do have to create the `GeneratedSwaggerGitea.fs` file manually before code generation happens. Myriad will throw if that file isn't there, because `Generated2SwaggerGitea.fs` depends on it so Myriad wants to compute its hash. Just make an empty file.)
 
+### OpenAPI 3.0
+
+The generator detects the document version from the root `swagger` or `openapi` field, so OpenAPI 3.0 uses the same project configuration as Swagger 2.0.
+OpenAPI 3.1 is rejected at build time.
+
+The OpenAPI 3.0 path supports:
+
+* local component references for schemas, parameters, request bodies, and responses;
+* primitive schemas and formats, arrays, objects, required properties, `nullable`, `additionalProperties`, compatible object `allOf` intersections, and self-recursive records;
+* inherited and operation-level path/query parameters, with operation-level overrides;
+* JSON and plain-text request bodies, successful JSON/plain-text/binary responses, and no-content responses;
+* root server URLs, including expansion of server-variable defaults;
+* root and operation-level `security` requirements, for header-carried security schemes; and
+* deterministic sanitisation and collision handling for generated F# identifiers.
+
+The planner fails with a located diagnostic for structural constructs which the generated HTTP/JSON layer cannot represent.
+This currently includes OpenAPI 3.1, external references, `oneOf`/`anyOf`/`not`, optional-and-nullable three-state values, mutually recursive groups of records, header/cookie parameters, non-default parameter styles, optional or binary request bodies, and operations whose possible successful responses have incompatible body shapes.
+
+#### Security requirements
+
+Each security scheme some operation requires becomes an abstract property on the generated interface,
+and hence a `unit -> string` argument of the generated `make`, which is called afresh on every request
+that needs that credential (so a token can be refreshed between calls).
+Each operation sends exactly the credentials its own `security` demands: an operation with `security: []`
+sends none and doesn't even ask for them, and one whose requirement names several schemes sends all of them.
+An operation's `security` replaces the root's rather than adding to it, as the specification says.
+
+Supported schemes are the ones whose credential is a request header whose entire value the caller supplies:
+`apiKey` with `in: header`, `http` with any scheme (the value must include the scheme name, e.g. `"Bearer eyJ…"`),
+and `oauth2`/`openIdConnect` (which supply the `Authorization` header value: the generated client runs no
+token flow of its own, so you remain responsible for acquiring and refreshing tokens).
+`apiKey` with `in: query` or `in: cookie` is not supported.
+
+Where an operation can be authenticated in more than one way, the generator **refuses to guess**, because
+a document lists its alternatives in no particular order, and choosing between them chooses how you
+authenticate.
+Say which you want with the `SecuritySchemes` Myriad parameter, which takes a comma-separated list of
+scheme names:
+
+```xml
+<MyriadParams>
+  <ClassName>Petstore</ClassName>
+  <SecuritySchemes>bearerAuth,apiKeyAuth</SecuritySchemes>
+</MyriadParams>
+```
+
+This includes the case where one of the alternatives is the empty requirement `{}`, i.e. "no credentials":
+sending nothing is a choice too, and a silently unauthenticated client is exactly what this is here to
+prevent. Set `SecuritySchemes` to the empty string to take that alternative wherever the document offers it.
+
+An operation with no satisfiable requirement is a build failure, rather than a client which silently
+issues unauthenticated requests.
+If you would rather authenticate the `HttpClient` yourself (with a `DelegatingHandler`, say), the way to
+say so is `security: []`, or to remove the security schemes from the document you generate from.
+
+This is only a typed client generator, not a complete OpenAPI validator or policy engine:
+
+* schema validation keywords such as `enum`, patterns, and numeric bounds are not enforced by the generated F# types;
+* OAuth 2.0 and OpenID Connect flows, scopes, and token endpoints are not implemented: the generated client sends the `Authorization` header value you give it and nothing more;
+* the existing JSON codecs represent both an absent optional field and an explicit JSON `null` as `None`, and likewise cannot distinguish a missing required-nullable field from `null` (schemas which require all three states are rejected); and
+* optional query parameters are emitted as `option` arguments, with wire-level omission delegated to the chained `HttpClient` generator.
+
+Unconstrained JSON schemas use `JsonNode option` so that JSON `null` remains representable, and unformatted or extension-formatted integers use `System.Numerics.BigInteger` rather than silently narrowing their range.
+Unformatted or unknown-format `number` schemas are rejected because `float` cannot preserve the full JSON number range; explicit `float`, `double`, and `decimal` formats are supported.
+
 ### What's the point?
 
 [`SwaggerProvider`](https://github.com/fsprojects/SwaggerProvider) is *absolutely magical*, but it's kind of witchcraft.
@@ -358,7 +423,7 @@ Also, builds using `SwaggerProvider` appear to be inherently nondeterministic, e
 
 ## Limitations
 
-Swagger API specs appear to be pretty cowboy in the wild.
+Swagger and OpenAPI specs appear to be pretty cowboy in the wild.
 I try to cope with invalid schemas I have seen, but I can't guarantee I do so correctly.
 Definitely do perform integration tests and let me know of weird specs you encounter, and bits of the (very extensive) Swagger spec I have omitted!
 
@@ -475,6 +540,19 @@ The motivating example is again ahead-of-time compilation: we wish to avoid the 
 
 * Variable and constant header values are supported:
   see [the definition of `IApiWithHeaders`](./ConsumePlugin/RestApiExample.fs).
+* A `[<Header>]` property sets its header on *every* request. To set one on only some of them,
+  declare a property with no `[<Header>]` attribute and name it from the members which want it:
+  `[<WoofWare.Myriad.Plugins.HeaderFromProperty("Authorization", "BearerToken")>]`.
+  The property still becomes a `unit -> _` argument of `make`, re-evaluated per request, but it is
+  only called by the members which name it.
+  You can name the property with `nameof` instead of a literal, so that renaming it is a compile
+  error rather than a header which silently stops being sent; since `nameof` needs an instance for a
+  non-static member, the spelling is
+  `[<HeaderFromProperty("Authorization", nameof Unchecked.defaultof<IMyApi>.BearerToken)>]`.
+  (The OpenAPI generator emits the literal form: Fantomas cannot print that chain from a generated
+  syntax tree, and there both sides come from the same string in any case.)
+  See [the definition of `IApiWithPerEndpointHeaders`](./ConsumePlugin/RestApiExample.fs);
+  this is what the OpenAPI generator emits for per-operation security requirements.
 
 ### Limitations
 
