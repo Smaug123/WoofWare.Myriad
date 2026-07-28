@@ -247,12 +247,12 @@ Default arguments are handled as `Choice<'a, 'a>`:
 you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
 
 `[<ArgumentDefaultValue foo>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant.
-Since `foo` is an ordinary .NET attribute argument, F# restricts it to compile-time constants: literals, `[<Literal>]` bindings, and enum cases.
-(A discriminated union case, such as a flag DU's, is not one of those, so those still need `[<ArgumentDefaultFunction>]`.)
-Note that F# requires parentheses around an attribute argument which is not a bare literal: `[<ArgumentDefaultValue(Consts.Foo)>]`, but `[<ArgumentDefaultValue 4>]`.
+`foo` must be a literal written out in full.
 
-The value is spliced into the generated file rather than evaluated at your attribute, so we recognise the constant forms and refuse anything else.
-In particular F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`) are rejected despite being valid attribute arguments: they would be resolved against the generated file rather than yours.
+The value is reproduced in the generated file rather than evaluated at your attribute, so anything whose meaning depends on where it is written is rejected.
+That includes a name standing for a constant (a `[<Literal>]` binding, an enum case): the generated file hoists every `open` in your source above the parser, so a name need not resolve to the same binding there as here, and a later `open` which shadows an earlier one would silently change the default's value.
+It also includes F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`), which would be resolved against the generated file rather than yours.
+Use `[<ArgumentDefaultFunction>]` for any of those, and for anything which is not a constant at all (such as a flag DU's case): that function is evaluated in your own file.
 
 You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
 

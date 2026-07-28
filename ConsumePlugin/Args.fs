@@ -197,8 +197,8 @@ type ContainsFlagDefaultValue =
     static member DefaultDryRun () = DryRunMode.Wet
 
 /// `[<ArgumentDefaultValue>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function
-/// returns a constant. The value is any valid .NET attribute argument: a literal, a `[<Literal>]`
-/// binding, or an enum case.
+/// returns a constant. The value must be written out as a literal: we splice it into the generated
+/// file, where a name would not necessarily mean what it means here.
 [<ArgParser true>]
 type ContainsLiteralDefault =
     {
@@ -206,10 +206,12 @@ type ContainsLiteralDefault =
         IntVar : Choice<int, int>
         [<ArgumentDefaultValue "hello world">]
         StringVar : Choice<string, string>
-        // A non-literal argument requires parens: F#'s attribute syntax otherwise reads the
-        // identifier as the start of a named argument.
-        [<ArgumentDefaultValue(Consts.TRUE)>]
+        [<ArgumentDefaultValue true>]
         BoolVar : Choice<bool, bool>
+        // Chars are the one literal Fantomas will not round-trip through a spliced node, so we
+        // rebuild the constant rather than passing the user's through.
+        [<ArgumentDefaultValue 'q'>]
+        CharVar : Choice<char, char>
     }
 
 [<ArgParser true>]

@@ -608,7 +608,12 @@ Required argument '--exact' received no value"""
         // user typed nothing. Fields must not interfere with each other.
         let getEnvVar (_ : string) = failwith "do not call"
 
-        let property (intVar : int option) (stringVar : NonNull<string> option) (boolVar : bool option) =
+        let property
+            (intVar : int option)
+            (stringVar : NonNull<string> option)
+            (boolVar : bool option)
+            (charVar : char option)
+            =
             // The `--key=value` spelling, so that a generated value which itself looks like a flag
             // (or is empty) is still unambiguously this argument's value.
             let args =
@@ -621,6 +626,9 @@ Required argument '--exact' received no value"""
                     | None -> ()
                     match boolVar with
                     | Some b -> $"--bool-var=%b{b}"
+                    | None -> ()
+                    match charVar with
+                    | Some c -> $"--char-var=%c{c}"
                     | None -> ()
                 ]
 
@@ -637,7 +645,11 @@ Required argument '--exact' received no value"""
                     BoolVar =
                         match boolVar with
                         | Some b -> Choice1Of2 b
-                        | None -> Choice2Of2 Consts.TRUE
+                        | None -> Choice2Of2 true
+                    CharVar =
+                        match charVar with
+                        | Some c -> Choice1Of2 c
+                        | None -> Choice2Of2 'q'
                 }
 
             ContainsLiteralDefault.parse' getEnvVar args = expected
@@ -659,7 +671,8 @@ Required argument '--exact' received no value"""
             """Help text requested.
 --int-var  int32 (default value: 3)
 --string-var  string (default value: hello world)
---bool-var  bool (default value: True)"""
+--bool-var  bool (default value: True)
+--char-var  char (default value: q)"""
 
     [<Test>]
     let ``Help text for flag DU`` () =

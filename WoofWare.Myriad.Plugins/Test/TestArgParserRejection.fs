@@ -35,6 +35,12 @@ module TestArgParserRejection =
     let private defaultAttrOnNonChoice (field : string) : string =
         $"Field '%s{field}' has a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
 
+    let private contextSensitiveDefault (field : string) (constant : string) : string =
+        $"Field '%s{field}' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant %s{constant}. Its value depends on where it is written, and we reproduce it in the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+
+    let private namedDefault (field : string) (name : string) : string =
+        $"Field '%s{field}' has an [<ArgumentDefaultValue>] whose value names something (%s{name}) rather than writing out a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the constant out literally, or use [<ArgumentDefaultFunction>]: that function is evaluated in your own file."
+
     let private defaultAttrOnPositional (field : string) : string =
         $"Field '%s{field}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
 
@@ -1267,8 +1273,7 @@ type ContextSensitiveDefault =
         Where : Choice<string, string>
     }}
 """
-        |> shouldRejectWith
-            $"Field 'Where' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant %s{constant}. Its value depends on where it is written, and we splice it into the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+        |> shouldRejectWith (contextSensitiveDefault "Where" constant)
 
     [<Test>]
     let ``ArgumentDefaultValue sees through redundant parentheses`` () =
@@ -1285,8 +1290,37 @@ type DoublyParenthesisedDefault =
         Where : Choice<string, string>
     }
 """
-        |> shouldRejectWith
-            "Field 'Where' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant __SOURCE_FILE__. Its value depends on where it is written, and we splice it into the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+        |> shouldRejectWith (contextSensitiveDefault "Where" "__SOURCE_FILE__")
+
+    /// The two ways to name a constant rather than write one out.
+    let identifierDefaults : TestCaseData list =
+        [
+            // A [<Literal>] binding, opened into scope.
+            "Sentinel"
+            // A qualified [<Literal>] binding, or an enum case.
+            "Consts.Sentinel"
+        ]
+        |> List.map TestCaseData
+
+    [<TestCaseSource(nameof identifierDefaults)>]
+    let ``ArgumentDefaultValue naming a constant is rejected`` (name : string) =
+        // The generated module hoists every `open` in the file above the parser, so a name resolves
+        // there against a different set of bindings than at the attribute: a later `open` which
+        // shadows an earlier one silently changes which constant the default means, and a file-local
+        // module abbreviation is not in scope at all. We have no type checker, so we cannot tell
+        // which binding was meant; refuse to guess.
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type NamedDefault =
+    {{
+        [<ArgumentDefaultValue(%s{name})>]
+        Which : Choice<string, string>
+    }}
+"""
+        |> shouldRejectWith (namedDefault "Which" name)
 
     [<Test>]
     let ``ArgumentDefaultValue with an unrecognised expression is rejected`` () =
@@ -1305,7 +1339,7 @@ type ComputedDefault =
     }
 """
         |> shouldRejectWith
-            "Field 'Count' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We splice the value into the generated file rather than evaluating it at your attribute, so we accept only a literal, or a reference to a [<Literal>] binding or an enum case (each optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
+            "Field 'Count' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, so we accept only a literal written out in full (optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
 
     // Exactly one source may supply a field's default. With two, the generator would have to
     // invent a precedence order which is invisible at the use site, so it refuses instead.

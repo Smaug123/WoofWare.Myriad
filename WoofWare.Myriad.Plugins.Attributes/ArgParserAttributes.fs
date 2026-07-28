@@ -76,16 +76,20 @@ type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
 /// `[<ArgumentDefaultValue 3L>]` on a `Choice<int64, int64>`. A mismatch is a compile error in
 /// the generated file rather than at the attribute itself.
 ///
-/// Since this is an ordinary .NET attribute argument, F# restricts you to compile-time constants:
-/// literals, `[<Literal>]` values, and enum cases. (Anything else, and in particular a discriminated
-/// union case such as a flag DU's, needs `[<ArgumentDefaultFunction>]` instead.) Note that F#'s
-/// attribute syntax requires parentheses around an argument which is not a bare literal:
-/// `[<ArgumentDefaultValue(Consts.Foo)>]`, but `[<ArgumentDefaultValue 3>]`.
+/// The value must be a literal written out in full. We reproduce it in the generated file rather
+/// than evaluating it at your attribute, so anything whose meaning depends on where it is written
+/// is rejected:
 ///
-/// F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`) are
-/// rejected, even though they are valid attribute arguments: since we splice rather than evaluate,
-/// they would be resolved against the generated file instead of yours. Use
-/// `[<ArgumentDefaultFunction>]`, whose function is evaluated in your own file, if you want one.
+/// * A name standing for a constant (a `[<Literal>]` binding, an enum case) is rejected. The
+///   generated file hoists every `open` in your source above the parser, so a name need not resolve
+///   to the same binding there as here -- a later `open` which shadows an earlier one would silently
+///   change the default's value.
+/// * F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`) are
+///   rejected: they would be resolved against the generated file instead of yours.
+///
+/// Use `[<ArgumentDefaultFunction>]` for any of those, and for anything which is not a constant at
+/// all (in particular a discriminated union case, such as a flag DU's): that function is evaluated
+/// in your own file, so it means what you wrote.
 type ArgumentDefaultValueAttribute (defaultValue : obj) =
     inherit Attribute ()
 

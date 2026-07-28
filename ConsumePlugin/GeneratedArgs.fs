@@ -4798,11 +4798,18 @@ module ContainsLiteralDefaultArgParse =
                         "string"
                         (("hello world").ToString () |> sprintf " (default value: %s)")
                         "")
+
                     (sprintf
                         "%s  %s%s%s"
                         (sprintf "--%s" "bool-var")
                         "bool"
-                        (((Consts.TRUE)).ToString () |> sprintf " (default value: %s)")
+                        ((true).ToString () |> sprintf " (default value: %s)")
+                        "")
+                    (sprintf
+                        "%s  %s%s%s"
+                        (sprintf "--%s" "char-var")
+                        "char"
+                        (((char 113)).ToString () |> sprintf " (default value: %s)")
                         "")
                 ]
                 |> String.concat "\n"
@@ -4811,6 +4818,7 @@ module ContainsLiteralDefaultArgParse =
             let mutable arg_0 : Choice<int, int> option = None
             let mutable arg_1 : Choice<string, string> option = None
             let mutable arg_2 : Choice<bool, bool> option = None
+            let mutable arg_3 : Choice<char, char> option = None
 
             let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
@@ -4837,11 +4845,22 @@ module ContainsLiteralDefaultArgParse =
                                 TypeDescription = ""
                                 Help = None
                             }
+
                             {
                                 Id = 2
                                 Forms = [ "bool-var" ]
                                 AcceptsNegation = false
                                 Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 3
+                                Forms = [ "char-var" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
                                 Repeatable = false
                                 Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
                                 TypeDescription = ""
@@ -4854,6 +4873,7 @@ module ContainsLiteralDefaultArgParse =
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
                             ]
                         ))
                     Positionals = List.empty
@@ -4908,6 +4928,20 @@ module ContainsLiteralDefaultArgParse =
                         | None ->
                             arg_2 <- Some (Choice1Of2 ((if occurrence.Negated then false else true)))
                             None
+                | 3 ->
+                    match arg_3 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_3 <- Some (Choice1Of2 (value |> (fun x -> System.Char.Parse x)))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
                 | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
             let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
@@ -4930,6 +4964,11 @@ module ContainsLiteralDefaultArgParse =
                     | Some (Choice1Of2 x) -> x.ToString ()
                     | Some (Choice2Of2 x) -> x.ToString ()
                     | None -> "<no value>"
+                | 3 ->
+                    match arg_3 with
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
                 | _ -> "<no value>"
 
             let parser_applyDefault (leafId : int) : string option =
@@ -4941,7 +4980,10 @@ module ContainsLiteralDefaultArgParse =
                     arg_1 <- Some (Choice2Of2 (("hello world")))
                     None
                 | 2 ->
-                    arg_2 <- Some (Choice2Of2 (((Consts.TRUE))))
+                    arg_2 <- Some (Choice2Of2 ((true)))
+                    None
+                | 3 ->
+                    arg_3 <- Some (Choice2Of2 (((char 113))))
                     None
                 | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
 
@@ -4964,6 +5006,12 @@ module ContainsLiteralDefaultArgParse =
                 {
                     BoolVar =
                         (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    CharVar =
+                        (match arg_3 with
                          | Some x -> x
                          | None ->
                              failwith
