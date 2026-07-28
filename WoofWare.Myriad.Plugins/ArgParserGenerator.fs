@@ -970,6 +970,22 @@ module internal ArgParserGenerator =
                     $"Field '%s{fieldName.idText}' uses '%s{keyValueSeparator}' as both its [<ArgumentKeyValueSeparator>] and its [<ArgumentMapEntrySeparator>]. They must differ, or no entry could be split into a key and a value."
             | _ -> ()
 
+            // A separator is a single UTF-16 code unit, so it could in principle be half of a
+            // surrogate pair. Splitting there would cut a character in two, and it would also
+            // invalidate the code-unit-by-code-unit reasoning below about which spellings of an
+            // enumerated value remain available. Refuse it rather than reason about it.
+            for separator, attributeName in
+                [
+                    keyValueSeparator, "ArgumentKeyValueSeparator"
+                    yield!
+                        entrySeparator
+                        |> Option.map (fun e -> e, "ArgumentMapEntrySeparator")
+                        |> Option.toList
+                ] do
+                if Char.IsSurrogate separator.[0] then
+                    failwith
+                        $"Field '%s{fieldName.idText}' uses the unpaired surrogate U+%04X{int separator.[0]} as its [<%s{attributeName}>]. A separator must be a whole character: splitting on half of a surrogate pair would cut a character in two."
+
             // A key and a value each occupy one entry, so each must be a scalar leaf: anything
             // which accumulates (a list), or which is satisfiable by absence (an option, a
             // choice, a map), has no spelling inside a single entry.
@@ -1010,6 +1026,12 @@ module internal ArgParserGenerator =
                 match identifyAsEnum ambient.EnumDus ty with
                 | None -> ()
                 | Some union ->
+                    // Working a code unit at a time is sound only because separators are not
+                    // surrogates (rejected above): a supplementary character encodes to
+                    // surrogates alone, so no separator can occur inside one, and such a
+                    // character therefore never needs an alternative spelling. Case mapping for
+                    // the pair as a whole — `𐐀` against `𐐨`, whose low surrogates differ — is
+                    // consequently never a question we have to answer.
                     /// Every character the generated parser would accept in this one's place.
                     let alternativeSpellings (c : char) : string list =
                         let c = string<char> c
@@ -1932,8 +1954,19 @@ module internal ArgParserGenerator =
                 match spec.EntrySeparator with
                 | None -> SynExpr.listLiteral [ SynExpr.createIdent "value" ]
                 | Some entrySeparator ->
+                    // The `string []` overload, rather than the tidier `Split (string)`: the
+                    // latter arrived with .NET Core 2.0, and generated code has to compile
+                    // wherever the consumer targets, including netstandard2.0 and .NET Framework.
+                    // `StringSplitOptions.None` keeps empty entries, which then fail as entries
+                    // with no separator rather than vanishing.
                     SynExpr.createIdent "value"
-                    |> SynExpr.callMethodArg "Split" (SynExpr.CreateConst entrySeparator)
+                    |> SynExpr.callMethodArg
+                        "Split"
+                        (SynExpr.tuple
+                            [
+                                SynExpr.arrayLiteral [ SynExpr.CreateConst entrySeparator ]
+                                SynExpr.createLongIdent [ "System" ; "StringSplitOptions" ; "None" ]
+                            ])
                     |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Array" ; "toList" ])
 
             let parseEntry =

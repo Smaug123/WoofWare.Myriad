@@ -362,6 +362,16 @@ Entry 'oops' for '--labels' does not contain the separator ':' (at arg --labels=
 Entry 'oops' for '--env' does not contain the separator '=' (at arg --env=a=1,oops)"""
 
     [<Test>]
+    let ``An empty entry is reported rather than skipped`` () =
+        // Empty entries are kept by the split, so a stray separator is a mistake the user hears
+        // about rather than one which silently vanishes.
+        let exc =
+            Assert.Throws<exn> (fun () -> MapArgs.parse' noEnv [ "--env=a=1,,b=2" ] |> ignore<MapArgs>)
+
+        exc.Message
+        |> shouldContainText "Entry '' for '--env' does not contain the separator '='"
+
+    [<Test>]
     let ``An unparseable value reports the underlying failure`` () =
         let exc =
             Assert.Throws<exn> (fun () -> MapArgs.parse' noEnv [ "--thresholds=Low:banana" ] |> ignore<MapArgs>)

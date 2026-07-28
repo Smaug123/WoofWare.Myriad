@@ -1571,7 +1571,7 @@ module MapArgs =
                 | Some value ->
                     try
                         let parser_pending =
-                            value.Split ","
+                            value.Split ([| "," |], System.StringSplitOptions.None)
                             |> Array.toList
                             |> List.map (
                                 (fun entry ->

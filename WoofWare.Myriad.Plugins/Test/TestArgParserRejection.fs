@@ -1774,3 +1774,51 @@ type Args =
 """
 
         List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``A surrogate separator is rejected`` () =
+        // The low surrogate here is half of the case name's own encoding. Splitting on it would
+        // cut a character in two, and the per-code-unit reasoning about which spellings are
+        // available stops being valid, so refuse the separator outright.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Weird =
+    | ``𐐀``
+    | Other
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        [<ArgumentMapEntrySeparator '\uDC00'>]
+        Blah : Map<Weird, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Blah' uses the unpaired surrogate U+DC00 as its [<ArgumentMapEntrySeparator>]. A separator must be a whole character: splitting on half of a surrogate pair would cut a character in two."
+
+    [<Test>]
+    let ``A supplementary character in a case name is not confused for a separator`` () =
+        // The case name is a surrogate pair; an ordinary separator cannot occur inside it, because
+        // a supplementary character encodes to surrogates only.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Weird =
+    | ``𐐀``
+    | Other
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator ':'>]
+        Blah : Map<Weird, string>
+    }
+"""
+
+        List.length modules |> shouldEqual 2
