@@ -112,8 +112,12 @@ type private ParseFunction<'acc> =
         /// This is allowed to throw if it fails to parse.
         Parser : SynExpr
         /// If `Accumulation` is `List`, then this is the type of the list *element*; analogously for optionals
-        /// and choices and so on.
+        /// and choices and so on. For a `Map` this is the *value* type, so it does not on its own describe
+        /// the field: see `DisplayType`.
         TargetType : SynType
+        /// How to name this argument's type in help text, when `TargetType` would misdescribe it.
+        /// A map's `TargetType` is only half the story, so it supplies the whole `map<K, V>` here.
+        DisplayType : string option
         Accumulation : 'acc
         /// If true, this boolean/flag field accepts --no- prefix for negation (has [<ArgumentNegateWithPrefix>])
         AcceptsNegation : bool
@@ -716,6 +720,24 @@ module internal ArgParserGenerator =
     /// configured something. This is checked against the *accumulation* rather than the declared
     /// type, so that e.g. `Map<_, _> option` is reported as an unsupported optional map — the
     /// nearer problem — rather than as a misplaced attribute.
+    let private rejectSeparatorAttributes (fieldName : Ident) (fieldType : SynType) (attrs : SynAttribute list) : unit =
+        let reject (names : string list) (display : string) (purpose : string) : unit =
+            match charAttribute names fieldName attrs with
+            | None -> ()
+            | Some _ ->
+                failwith
+                    $"[<%s{display}>] can only be applied to map fields, but was applied to field '%s{fieldName.idText}' of type %s{describeType fieldType}. %s{purpose}"
+
+        reject
+            [ "ArgumentKeyValueSeparator" ; "ArgumentKeyValueSeparatorAttribute" ]
+            "ArgumentKeyValueSeparator"
+            "It controls how one entry of a map is split into a key and a value."
+
+        reject
+            [ "ArgumentMapEntrySeparator" ; "ArgumentMapEntrySeparatorAttribute" ]
+            "ArgumentMapEntrySeparator"
+            "It controls how one occurrence of a map is split into several entries."
+
     let private checkSeparatorAttributesPlacement
         (fieldName : Ident)
         (fieldType : SynType)
@@ -728,23 +750,7 @@ module internal ArgParserGenerator =
         | Accumulation.Required
         | Accumulation.Optional
         | Accumulation.Choice _
-        | Accumulation.List _ ->
-            let reject (names : string list) (display : string) (purpose : string) : unit =
-                match charAttribute names fieldName attrs with
-                | None -> ()
-                | Some _ ->
-                    failwith
-                        $"[<%s{display}>] can only be applied to map fields, but was applied to field '%s{fieldName.idText}' of type %s{describeType fieldType}. %s{purpose}"
-
-            reject
-                [ "ArgumentKeyValueSeparator" ; "ArgumentKeyValueSeparatorAttribute" ]
-                "ArgumentKeyValueSeparator"
-                "It controls how one entry of a map is split into a key and a value."
-
-            reject
-                [ "ArgumentMapEntrySeparator" ; "ArgumentMapEntrySeparatorAttribute" ]
-                "ArgumentMapEntrySeparator"
-                "It controls how one occurrence of a map is split into several entries."
+        | Accumulation.List _ -> rejectSeparatorAttributes fieldName fieldType attrs
 
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
     /// for example, maybe it returns a `ty option` or a `ty list`).
@@ -979,6 +985,31 @@ module internal ArgParserGenerator =
             let keyParser, keyParsedTy = scalar "key" keyTy
             let valueParser, valueParsedTy = scalar "value" valueTy
 
+            // Case names are arbitrary identifiers: a double-backtick name may contain any
+            // character, including a separator, and such a value would have no spelling on any
+            // command line. Where the spellings are known at generation time we can say so
+            // instead of silently misparsing. The key-value separator constrains only keys
+            // (entries split at the *first* one, so a value may contain it); the entry separator
+            // is stripped before that split, so it constrains both.
+            let checkEnumSpellings (role : string) (ty : SynType) (separators : (string * string) list) : unit =
+                match identifyAsEnum ambient.EnumDus ty with
+                | None -> ()
+                | Some union ->
+                    for separator, attributeName in separators do
+                        for case in union.Cases do
+                            if case.Name.idText.Contains separator then
+                                failwith
+                                    $"Field '%s{fieldName.idText}' uses '%s{separator}' as its [<%s{attributeName}>], but its map %s{role} type %s{union.Name.idText} has a case named '%s{case.Name.idText}' which contains that character. No command line could express that %s{role}, so choose a different separator."
+
+            let entrySeparators =
+                match entrySeparator with
+                | None -> []
+                | Some entry -> [ entry, "ArgumentMapEntrySeparator" ]
+
+            checkEnumSpellings "key" keyTy ((keyValueSeparator, "ArgumentKeyValueSeparator") :: entrySeparators)
+
+            checkEnumSpellings "value" valueTy entrySeparators
+
             let spec =
                 {
                     KeyValueSeparator = keyValueSeparator
@@ -1144,6 +1175,11 @@ module internal ArgParserGenerator =
 
                 match ambientRecordMatch with
                 | Some childRecord ->
+                    // The structural branches are taken before any leaf machinery runs, so they
+                    // must reject the map-only attributes themselves; otherwise an author who
+                    // misplaced one would be told nothing at all.
+                    rejectSeparatorAttributes ident fieldType attrs
+
                     // This field has a type we need to obtain from parsing another record.
                     let spec, counter = toParseSpec ancestors counter ambient childRecord
 
@@ -1152,6 +1188,8 @@ module internal ArgParserGenerator =
 
                 match ambientUnionMatch with
                 | Some union ->
+                    rejectSeparatorAttributes ident fieldType attrs
+
                     // A discriminated union of alternative argument sets: exactly one case's
                     // arguments must be supplied. (Flag-like and data-free unions are argument
                     // leaves, not alternatives, and are not in StructuralUnions.)
@@ -1191,6 +1229,7 @@ module internal ArgParserGenerator =
                             TargetVariable = Ident.create $"arg_%i{counter}"
                             Accumulation = ChoicePositional.Choice includeFlagLike
                             TargetType = parseTy
+                            DisplayType = None
                             ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
@@ -1205,6 +1244,7 @@ module internal ArgParserGenerator =
                             TargetVariable = Ident.create $"arg_%i{counter}"
                             Accumulation = ChoicePositional.Normal includeFlagLike
                             TargetType = parseTy
+                            DisplayType = None
                             ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
@@ -1233,13 +1273,42 @@ module internal ArgParserGenerator =
 
                     checkSeparatorAttributesPlacement ident fieldType attrs accumulation
 
+                    // A map's `parseTy` describes its *values*, not the field, so the boolean and
+                    // enumerated metadata derived from it would misdescribe the argument. In
+                    // particular a bool-valued map must keep arity one: an occurrence always
+                    // carries an encoded entry, so `--thing` alone is missing its value rather
+                    // than meaning "true", and negation would have nothing to negate.
+                    let isMap =
+                        match accumulation with
+                        | Accumulation.Map _ -> true
+                        | Accumulation.Required
+                        | Accumulation.Optional
+                        | Accumulation.Choice _
+                        | Accumulation.List _ -> false
+
                     let isBoolLike =
+                        if isMap then
+                            None
+                        else
+
                         match parseTy with
                         | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
                             Some (Choice2Of2 ())
                         | parseTy -> identifyAsFlag ambient.FlagDus parseTy |> Option.map Choice1Of2
 
-                    let enumCases = identifyAsEnum ambient.EnumDus parseTy
+                    let enumCases =
+                        if isMap then
+                            None
+                        else
+                            identifyAsEnum ambient.EnumDus parseTy
+
+                    let displayType =
+                        match accumulation with
+                        | Accumulation.Map spec -> Some $"map<%s{describeType spec.KeyType}, %s{describeType parseTy}>"
+                        | Accumulation.Required
+                        | Accumulation.Optional
+                        | Accumulation.Choice _
+                        | Accumulation.List _ -> None
 
                     let hasNegateAttr =
                         attrs
@@ -1258,7 +1327,7 @@ module internal ArgParserGenerator =
                             | Some _ -> true
                             | None ->
                                 failwith
-                                    $"[<ArgumentNegateWithPrefix>] can only be applied to boolean or flag DU fields, but was applied to field %s{ident.idText} of type %O{fieldType}"
+                                    $"[<ArgumentNegateWithPrefix>] can only be applied to boolean or flag DU fields, but was applied to field %s{ident.idText} of type %s{describeType fieldType}"
                         else
                             false
 
@@ -1268,6 +1337,7 @@ module internal ArgParserGenerator =
                         TargetVariable = Ident.create $"arg_%i{counter}"
                         Accumulation = accumulation
                         TargetType = parseTy
+                        DisplayType = displayType
                         ArgForm = longForms
                         Help = helpText
                         BoolCases = isBoolLike
@@ -1391,6 +1461,10 @@ module internal ArgParserGenerator =
         /// `depth` is the nesting depth in union alternatives; each level indents by two spaces.
         let toPrintable (depth : int) (describe : ParseFunction<'a> -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
             let ty =
+                match arg.DisplayType with
+                | Some display -> display
+                | None ->
+
                 match arg.BoolCases, arg.EnumCases with
                 | Some _, _ -> "bool"
                 // The type's name alone says nothing about how to spell one of its values.

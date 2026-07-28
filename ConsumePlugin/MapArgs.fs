@@ -29,6 +29,12 @@ type MapArgs =
         /// any scalar argument type — here an enumerated value and an int.
         [<ArgumentKeyValueSeparator ':'>]
         Thresholds : Map<Severity, int>
+
+        /// A boolean *value* must not make the field itself boolean-like: an occurrence of a map
+        /// always carries an encoded entry, so `--switches` alone is missing its value rather
+        /// than meaning "true".
+        [<ArgumentKeyValueSeparator ':'>]
+        Switches : Map<string, bool>
     }
 
 type DeployArgs =

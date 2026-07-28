@@ -1425,12 +1425,24 @@ module MapArgs =
                 (sprintf
                     "%s  %s%s%s"
                     (sprintf "--%s" "labels")
-                    "string"
+                    "map<string, string>"
                     " (KEY:VALUE; can be repeated)"
                     (sprintf " : %s" ("Labels to attach")))
 
-                (sprintf "%s  %s%s%s" (sprintf "--%s" "env") "string" " (KEY=VALUE[,KEY=VALUE...]; can be repeated)" "")
-                (sprintf "%s  %s%s%s" (sprintf "--%s" "thresholds") "int32" " (KEY:VALUE; can be repeated)" "")
+                (sprintf
+                    "%s  %s%s%s"
+                    (sprintf "--%s" "env")
+                    "map<string, string>"
+                    " (KEY=VALUE[,KEY=VALUE...]; can be repeated)"
+                    "")
+
+                (sprintf
+                    "%s  %s%s%s"
+                    (sprintf "--%s" "thresholds")
+                    "map<Severity, int32>"
+                    " (KEY:VALUE; can be repeated)"
+                    "")
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "switches") "map<string, bool>" " (KEY:VALUE; can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -1438,6 +1450,7 @@ module MapArgs =
         let arg_0 : (string * string) ResizeArray = ResizeArray ()
         let arg_1 : (string * string) ResizeArray = ResizeArray ()
         let arg_2 : (Severity * int) ResizeArray = ResizeArray ()
+        let arg_3 : (string * bool) ResizeArray = ResizeArray ()
 
         let parser_schema : ArgParserRuntime_MapArgs.ErasedSchema =
             {
@@ -1464,9 +1477,20 @@ module MapArgs =
                             TypeDescription = ""
                             Help = None
                         }
+
                         {
                             Id = 2
                             Forms = [ "thresholds" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_MapArgs.ErasedArity.One
+                            Repeatable = true
+                            Requirement = ArgParserRuntime_MapArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 3
+                            Forms = [ "switches" ]
                             AcceptsNegation = false
                             Arity = ArgParserRuntime_MapArgs.ErasedArity.One
                             Repeatable = true
@@ -1481,6 +1505,7 @@ module MapArgs =
                             ArgParserRuntime_MapArgs.ErasedTree.Leaf 0
                             ArgParserRuntime_MapArgs.ErasedTree.Leaf 1
                             ArgParserRuntime_MapArgs.ErasedTree.Leaf 2
+                            ArgParserRuntime_MapArgs.ErasedTree.Leaf 3
                         ]
                     ))
                 Positionals = List.empty
@@ -1658,6 +1683,54 @@ module MapArgs =
                         (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
                 | None ->
                     failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 3 ->
+                match occurrence.Value with
+                | Some value ->
+                    try
+                        let parser_pending =
+                            [ value ]
+                            |> List.map (
+                                (fun entry ->
+                                    let parser_sep = entry.IndexOf (":", System.StringComparison.Ordinal)
+
+                                    if parser_sep < 0 then
+                                        failwith (
+                                            sprintf
+                                                "Entry '%s' for '%s' does not contain the separator '%s'"
+                                                entry
+                                                (sprintf "--%s" "switches")
+                                                ":"
+                                        )
+                                    else
+                                        let parser_key = entry.Substring (0, parser_sep)
+
+                                        ((parser_key |> (fun x -> x),
+                                          (entry.Substring (parser_sep + 1)) |> (fun x -> System.Boolean.Parse x)),
+                                         parser_key)
+                                )
+                            )
+
+                        let mutable parser_seen = arg_3 |> Seq.map fst |> Set.ofSeq
+
+                        for parser_entry in parser_pending do
+                            if Set.contains (fst (fst parser_entry)) parser_seen then
+                                failwith (
+                                    sprintf
+                                        "Key '%s' was supplied more than once for '%s'"
+                                        (snd parser_entry)
+                                        (sprintf "--%s" "switches")
+                                )
+                            else
+                                ()
+
+                            parser_seen <- Set.add (fst (fst parser_entry)) parser_seen
+
+                        arg_3.AddRange (parser_pending |> List.map fst)
+                        None
+                    with _ as exc ->
+                        (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                | None ->
+                    failwith "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
             | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
         let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
@@ -1690,6 +1763,7 @@ module MapArgs =
             {
                 Env = (arg_1 |> Map.ofSeq)
                 Labels = (arg_0 |> Map.ofSeq)
+                Switches = (arg_3 |> Map.ofSeq)
                 Thresholds = (arg_2 |> Map.ofSeq)
             }
         | ArgParserRuntime_MapArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
@@ -1711,7 +1785,7 @@ module MapInUnion =
             [
                 "exactly one of the following sets of arguments:"
                 "Deploy:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "tags") "string" " (KEY:VALUE; can be repeated)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "tags") "map<string, string>" " (KEY:VALUE; can be repeated)" "")
                 "Rollback:"
                 (sprintf "  %s  %s%s%s" (sprintf "--%s" "to") "string" "" "")
             ]
