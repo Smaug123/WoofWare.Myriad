@@ -1187,3 +1187,150 @@ type WithDefault =
 
         // One namespace for the embedded runtime module, one for the generated parser module.
         List.length modules |> shouldEqual 2
+
+    // ------------------------------------------------------------------------------------------
+    // Data-free unions are argument *values*, spelled by case name (`--blah=a`), rather than sets
+    // of alternative arguments: with no arguments to tell its cases apart, no command line could
+    // select among them. The classification is by shape, so the shapes on either side of the
+    // boundary must be rejected clearly.
+
+    [<Test>]
+    let ``A data-free union field generates successfully`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooDto =
+    | A
+    | B
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : FooDto
+    }
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``A data-free union may not be the tagged type`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type FooDto =
+    | A
+    | B
+"""
+        |> shouldRejectWith
+            "No case of [<ArgParser>] union FooDto has any data, so it is an enumerated value rather than a set of alternative argument sets: an empty command line could not choose between its cases. Use it as the type of a field of an [<ArgParser>] record instead, where it is supplied as `--field-name=a`."
+
+    [<Test>]
+    let ``A data-free case alongside cases with payloads is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+[<ArgParser>]
+type BadDu =
+    | FooCase of FooArgs
+    | BarCase
+"""
+        |> shouldRejectWith
+            "Case BarCase of [<ArgParser>] union BadDu has no data. A union whose cases *all* have no data is parsed as an enumerated value, and a union of alternative argument sets needs a record payload on every case; a mixture of the two is not yet supported."
+
+    [<Test>]
+    let ``Enumerated case names which differ only by case are rejected`` () =
+        // The generated parser matches values case-insensitively, exactly as the scanner matches
+        // argument names, so `--blah=ab` would otherwise silently pick whichever case is first.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooDto =
+    | Ab
+    | AB
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : FooDto
+    }
+"""
+        |> shouldRejectWith
+            "Conflicting case names detected in the data-free union FooDto, whose cases are argument values (values are matched case-insensitively):\nThe value 'Ab' is claimed by cases: Ab; AB"
+
+    [<Test>]
+    let ``Case names the generated parser distinguishes are not collisions`` () =
+        // OrdinalIgnoreCase, not ToUpperInvariant keying: "s" and "ſ" (long s) uppercase to
+        // the same string but are distinct to the generated parser, so they do not collide.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooDto =
+    | S
+    | ``ſ``
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : FooDto
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``ArgumentFlag on a union which does not have two cases is rejected`` () =
+        // Without this check the attributes are silently ignored, and the union is parsed as an
+        // enumerated value instead.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooDto =
+    | [<ArgumentFlag true>] A
+    | [<ArgumentFlag false>] B
+    | C
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : FooDto
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
+
+    [<Test>]
+    let ``Negation is not available on an enumerated field`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooDto =
+    | A
+    | B
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentNegateWithPrefix>]
+        Blah : FooDto
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentNegateWithPrefix>] can only be applied to boolean or flag DU fields, but was applied to field Blah of type LongIdent (SynLongIdent ([FooDto], [], [None]))"

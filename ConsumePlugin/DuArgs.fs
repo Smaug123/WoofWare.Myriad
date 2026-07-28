@@ -152,3 +152,70 @@ type StatusArgs =
 type GitLike =
     | Pull of PullArgs
     | Status of StatusArgs
+
+/// A union with no data in any case is an argument *value*, spelled by case name and matched
+/// case-insensitively (`--verbosity=quiet`, `--verbosity=Quiet`, `--verbosity=QUIET`), rather than
+/// a set of alternative argument sets: with no arguments to tell its cases apart, no command line
+/// could select among them.
+type Verbosity =
+    | Quiet
+    | Normal
+    | ExtremelyLoud
+
+type Colour =
+    | Red
+    | Green
+
+/// An enumerated value is an ordinary argument leaf, so it composes with every leaf modifier:
+/// optionality, repetition, defaults and the positional stream.
+[<ArgParser>]
+type EnumArgs =
+    {
+        Verbosity : Verbosity
+
+        [<ArgumentHelpText "Which colour to paint it">]
+        Colour : Colour option
+
+        Palette : Colour list
+
+        [<ArgumentDefaultFunction>]
+        Fallback : Choice<Verbosity, Verbosity>
+
+        [<ArgumentDefaultEnvironmentVariable "CONSUMEPLUGIN_ENUM_COLOUR">]
+        EnvColour : Choice<Colour, Colour>
+
+        [<PositionalArgs>]
+        Rest : Colour list
+    }
+
+    static member DefaultFallback () = Verbosity.Normal
+
+/// Type and case names are arbitrary identifiers, so they may contain characters which are
+/// meaningful inside an F# format string: `%E` and `%B` are both format specifiers. Such a name
+/// must reach `sprintf` as an argument rather than being spliced into the format literal.
+type ``Percent%Enum`` =
+    | ``A%B``
+    | Half
+
+[<ArgParser>]
+type PercentArgs =
+    {
+        Ratio : ``Percent%Enum``
+    }
+
+type BuildArgs =
+    {
+        Verbosity : Verbosity
+    }
+
+type CleanArgs =
+    {
+        Force : bool option
+    }
+
+/// An enumerated value inside a union case. Selection happens before any conversion, so the
+/// *value* supplied to `--verbosity` never influences which case wins; only its presence does.
+[<ArgParser>]
+type EnumInUnion =
+    | Build of BuildArgs
+    | Clean of CleanArgs

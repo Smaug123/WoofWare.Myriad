@@ -28,6 +28,19 @@ type internal FlagDu =
             (SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case2Name ])
             (SynExpr.createLongIdent' [ flagDu.Name ; flagDu.Case1Name ])
 
+/// The types defined alongside the [<ArgParser>]-tagged type, classified by the role each plays in
+/// an argument schema. A union is an argument *leaf* if it is flag-like ([<ArgumentFlag>] on both
+/// cases of a two-case data-free union) or enum-like (no case has any data, so a case name is the
+/// argument's value); every other union is a set of alternative argument sets. The three classes
+/// are disjoint, and together they exhaust the unions defined alongside the tagged type.
+type private AmbientTypes =
+    {
+        FlagDus : FlagDu list
+        EnumDus : UnionType list
+        StructuralUnions : UnionType list
+        Records : RecordType list
+    }
+
 /// The default value of an argument which admits default values can be pulled from different sources.
 /// This defines which source a particular default value comes from.
 type private ArgumentDefaultSpec =
@@ -62,6 +75,12 @@ type private ParseFunction<'acc> =
         /// In that case, `boolCases` is Some, and contains the construction of the flag (or boolean, in which case
         /// you get no data).
         BoolCases : Choice<FlagDu, unit> option
+        /// If this is a data-free union (an enumerated value), the union whose case names are the
+        /// values this argument accepts. The help text must list them: the type's name alone tells
+        /// the user nothing about how to spell one. It must also render a *default* value through
+        /// this union rather than through `ToString`, which under `--reflectionfree` reports the
+        /// type's name instead of the case's.
+        EnumCases : UnionType option
         Help : SynExpr option
         /// A function string -> %TargetType%, where TargetVariable is probably a `%TargetType% option`.
         /// (Depending on `Accumulation`, we'll remove the `option` at the end of the parse, asserting that the
@@ -503,13 +522,143 @@ module internal ArgParserGenerator =
         | Some name -> flagDus |> List.tryFind (fun du -> du.Name.idText = name)
         | None -> None
 
+    let private identifyAsEnum (enumDus : UnionType list) (ty : SynType) : UnionType option =
+        match localTypeName ty with
+        | Some name -> enumDus |> List.tryFind (fun du -> du.Name.idText = name)
+        | None -> None
+
+    /// The values a data-free union's cases are spelled by on the command line. These are matched
+    /// case-insensitively, exactly as the scanner matches argument names, so two case names which
+    /// differ only by case would leave the earlier one silently claiming both spellings.
+    ///
+    /// This is checked here, at the point of *use*, rather than for every data-free union defined
+    /// alongside the tagged type: enum-ness is inferred from shape, so a union which happens to sit
+    /// in the same namespace without ever being an argument must not fail anyone's build.
+    let private checkedEnumCaseNames (union : UnionType) : string list =
+        let names = union.Cases |> List.map (fun case -> case.Name.idText)
+
+        let conflicts =
+            let indexOf =
+                System.Collections.Generic.Dictionary<string, int> (StringComparer.OrdinalIgnoreCase)
+
+            let buckets = ResizeArray<ResizeArray<string>> ()
+
+            for name in names do
+                match indexOf.TryGetValue name with
+                | true, index -> buckets.[index].Add name
+                | false, _ ->
+                    indexOf.[name] <- buckets.Count
+                    let bucket = ResizeArray ()
+                    bucket.Add name
+                    buckets.Add bucket
+
+            buckets
+            |> Seq.choose (fun bucket ->
+                if bucket.Count < 2 then
+                    None
+                else
+                    bucket
+                    |> String.concat "; "
+                    |> sprintf "The value '%s' is claimed by cases: %s" bucket.[0]
+                    |> Some
+            )
+            |> List.ofSeq
+
+        match conflicts with
+        | [] -> names
+        | conflicts ->
+            let conflictMessages = conflicts |> String.concat "\n"
+
+            failwith
+                $"Conflicting case names detected in the data-free union %s{union.Name.idText}, whose cases are argument values (values are matched case-insensitively):\n%s{conflictMessages}"
+
+    /// `fun x -> if System.String.Equals (x, "A", OrdinalIgnoreCase) then FooDto.A elif ... else failwith ...`
+    let private createEnumParser (union : UnionType) : SynExpr =
+        let names = checkedEnumCaseNames union
+
+        let unrecognised =
+            SynExpr.createIdent "sprintf"
+            |> SynExpr.applyTo (SynExpr.CreateConst "Unrecognised value '%s' for %s: expected one of %s")
+            |> SynExpr.applyTo (SynExpr.createIdent "x")
+            // The type and case names are supplied as arguments rather than baked into the format
+            // string: a name is an arbitrary F# identifier, and one containing a '%' would
+            // otherwise make the generated code's format string invalid.
+            |> SynExpr.applyTo (SynExpr.CreateConst union.Name.idText)
+            |> SynExpr.applyTo (SynExpr.CreateConst (names |> String.concat ", "))
+            |> SynExpr.paren
+            |> SynExpr.pipeThroughFunction (SynExpr.createIdent "failwith")
+
+        (union.Cases, unrecognised)
+        ||> List.foldBack (fun case ifNoMatch ->
+            let isThisCase =
+                SynExpr.applyFunction
+                    (SynExpr.createLongIdent [ "System" ; "String" ; "Equals" ])
+                    (SynExpr.tuple
+                        [
+                            SynExpr.createIdent "x"
+                            SynExpr.CreateConst case.Name.idText
+                            SynExpr.createLongIdent [ "System" ; "StringComparison" ; "OrdinalIgnoreCase" ]
+                        ])
+
+            // Note the argument order: SynExpr.ifThenElse takes the *false* branch first.
+            SynExpr.ifThenElse isThisCase ifNoMatch (SynExpr.createLongIdent' [ union.Name ; case.Name ])
+        )
+        |> SynExpr.createLambda "x"
+
+    /// `match {value} with | FooDto.A -> "A" | FooDto.B -> "B"`: the spelling the user would have
+    /// to type for each case. `ToString` would do under normal compilation, but not under
+    /// `--reflectionfree`, which drops the structural override a union would otherwise get.
+    let private renderEnumCase (union : UnionType) (value : SynExpr) : SynExpr =
+        union.Cases
+        |> List.map (fun case ->
+            SynMatchClause.create
+                (SynPat.identWithArgs [ union.Name ; case.Name ] (SynArgPats.create []))
+                (SynExpr.CreateConst case.Name.idText)
+        )
+        |> SynExpr.createMatch value
+
+    /// Render a stored value as the string the user would have had to type to supply it. That is
+    /// not the same as `ToString`: a flag DU is displayed to the user as a bool, and an enumerated
+    /// union by case name. `ToString` is also actively wrong for either under `--reflectionfree`,
+    /// which drops the structural override and leaves only the type's name.
+    let private renderLeafValue
+        (boolCases : Choice<FlagDu, unit> option)
+        (enumCases : UnionType option)
+        (value : SynExpr)
+        : SynExpr
+        =
+        match boolCases, enumCases with
+        | Some (Choice1Of2 flagDu), _ ->
+            // Care required here: the value is not a bool, but we display it as one.
+            [
+                SynMatchClause.create
+                    (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case1Name ] (SynArgPats.create []))
+                    // Note the argument order: SynExpr.ifThenElse takes the *false* branch first.
+                    (SynExpr.ifThenElse
+                        (SynExpr.equals flagDu.Case1Arg (SynExpr.CreateConst true))
+                        (SynExpr.CreateConst "false")
+                        (SynExpr.CreateConst "true"))
+                SynMatchClause.create
+                    (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case2Name ] (SynArgPats.create []))
+                    (SynExpr.ifThenElse
+                        (SynExpr.equals flagDu.Case2Arg (SynExpr.CreateConst true))
+                        (SynExpr.CreateConst "false")
+                        (SynExpr.CreateConst "true"))
+            ]
+            |> SynExpr.createMatch value
+        | None, Some union -> renderEnumCase union value
+        // A plain bool, or a type we know nothing special about: `ToString` is all we have, and
+        // for the primitives this reaches it agrees with the spelling the user types.
+        | Some (Choice2Of2 ()), _
+        | None, None -> SynExpr.callMethod "ToString" value
+
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
     /// is the list element.
     let rec private createParseFunction<'choice>
         (choice : ArgumentDefaultSpec option -> 'choice)
-        (flagDus : FlagDu list)
+        (ambient : AmbientTypes)
         (owner : Ident)
         (fieldName : Ident)
         (attrs : SynAttribute list)
@@ -604,7 +753,7 @@ module internal ArgParserGenerator =
             ty
         | OptionType eltTy ->
             let parseElt, acc, childTy =
-                createParseFunction choice flagDus owner fieldName attrs eltTy
+                createParseFunction choice ambient owner fieldName attrs eltTy
 
             match acc with
             | Accumulation.Optional ->
@@ -624,7 +773,7 @@ module internal ArgParserGenerator =
                         $"ArgParser was unable to prove types %O{elt1} and %O{elt2} to be equal in a Choice. We require them to be equal."
 
                 let parseElt, acc, childTy =
-                    createParseFunction choice flagDus owner fieldName attrs elt1
+                    createParseFunction choice ambient owner fieldName attrs elt1
 
                 match acc with
                 | Accumulation.Optional ->
@@ -683,12 +832,11 @@ module internal ArgParserGenerator =
                     $"ArgParser requires Choice to be of the form Choice<'a, 'a>; that is, two arguments, both the same. For field %s{fieldName.idText}, got: %s{elts}"
         | ListType eltTy ->
             let parseElt, acc, childTy =
-                createParseFunction choice flagDus owner fieldName attrs eltTy
+                createParseFunction choice ambient owner fieldName attrs eltTy
 
             parseElt, Accumulation.List acc, childTy
         | ty ->
-            match identifyAsFlag flagDus ty with
-            | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
+            match identifyAsFlag ambient.FlagDus ty with
             | Some flagDu ->
                 // Parse as a bool, and then do the `if-then` dance.
                 let parser =
@@ -698,6 +846,13 @@ module internal ArgParserGenerator =
                     |> SynExpr.createLambda "x"
 
                 parser, Accumulation.Required, ty
+            | None ->
+
+            // A union with no data in any case is an enumerated value: the user names the case
+            // they want, matched case-insensitively.
+            match identifyAsEnum ambient.EnumDus ty with
+            | Some enumDu -> createEnumParser enumDu, Accumulation.Required, ty
+            | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
     /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being
@@ -716,9 +871,7 @@ module internal ArgParserGenerator =
     let rec private toParseSpec
         (ancestors : string list)
         (counter : int)
-        (flagDus : FlagDu list)
-        (ambientUnions : UnionType list)
-        (ambientRecords : RecordType list)
+        (ambient : AmbientTypes)
         (finalRecord : RecordType)
         : ParseTree * int
         =
@@ -828,19 +981,18 @@ module internal ArgParserGenerator =
 
                 let ambientRecordMatch =
                     match localTypeName fieldType with
-                    | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                    | Some target -> ambient.Records |> List.tryFind (fun r -> r.Name.idText = target)
                     | None -> None
 
                 let ambientUnionMatch =
                     match localTypeName fieldType with
-                    | Some target -> ambientUnions |> List.tryFind (fun u -> u.Name.idText = target)
+                    | Some target -> ambient.StructuralUnions |> List.tryFind (fun u -> u.Name.idText = target)
                     | None -> None
 
                 match ambientRecordMatch with
-                | Some ambient ->
+                | Some childRecord ->
                     // This field has a type we need to obtain from parsing another record.
-                    let spec, counter =
-                        toParseSpec ancestors counter flagDus ambientUnions ambientRecords ambient
+                    let spec, counter = toParseSpec ancestors counter ambient childRecord
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -848,9 +1000,9 @@ module internal ArgParserGenerator =
                 match ambientUnionMatch with
                 | Some union ->
                     // A discriminated union of alternative argument sets: exactly one case's
-                    // arguments must be supplied.
-                    let spec, counter =
-                        unionToParseSpec ancestors counter flagDus ambientUnions ambientRecords union
+                    // arguments must be supplied. (Flag-like and data-free unions are argument
+                    // leaves, not alternatives, and are not in StructuralUnions.)
+                    let spec, counter = unionToParseSpec ancestors counter ambient union
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -862,13 +1014,15 @@ module internal ArgParserGenerator =
                     let getChoice (_ : ArgumentDefaultSpec option) : unit = ()
 
                     let parser, accumulation, parseTy =
-                        createParseFunction<unit> getChoice flagDus finalRecord.Name ident attrs fieldType
+                        createParseFunction<unit> getChoice ambient finalRecord.Name ident attrs fieldType
 
                     let isBoolLike =
                         match parseTy with
                         | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
                             Some (Choice2Of2 ())
-                        | parseTy -> identifyAsFlag flagDus parseTy |> Option.map Choice1Of2
+                        | parseTy -> identifyAsFlag ambient.FlagDus parseTy |> Option.map Choice1Of2
+
+                    let enumCases = identifyAsEnum ambient.EnumDus parseTy
 
                     match accumulation with
                     | Accumulation.List (Accumulation.List _) ->
@@ -885,6 +1039,7 @@ module internal ArgParserGenerator =
                             ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
+                            EnumCases = enumCases
                             AcceptsNegation = false
                         }
                         |> ParseTree.PositionalLeaf
@@ -898,6 +1053,7 @@ module internal ArgParserGenerator =
                             ArgForm = longForms
                             Help = helpText
                             BoolCases = isBoolLike
+                            EnumCases = enumCases
                             AcceptsNegation = false
                         }
                         |> ParseTree.PositionalLeaf
@@ -914,13 +1070,15 @@ module internal ArgParserGenerator =
                         | Some spec -> spec
 
                     let parser, accumulation, parseTy =
-                        createParseFunction getChoice flagDus finalRecord.Name ident attrs fieldType
+                        createParseFunction getChoice ambient finalRecord.Name ident attrs fieldType
 
                     let isBoolLike =
                         match parseTy with
                         | PrimitiveType ident when ident |> List.map _.idText = [ "System" ; "Boolean" ] ->
                             Some (Choice2Of2 ())
-                        | parseTy -> identifyAsFlag flagDus parseTy |> Option.map Choice1Of2
+                        | parseTy -> identifyAsFlag ambient.FlagDus parseTy |> Option.map Choice1Of2
+
+                    let enumCases = identifyAsEnum ambient.EnumDus parseTy
 
                     let hasNegateAttr =
                         attrs
@@ -952,6 +1110,7 @@ module internal ArgParserGenerator =
                         ArgForm = longForms
                         Help = helpText
                         BoolCases = isBoolLike
+                        EnumCases = enumCases
                         AcceptsNegation = acceptsNegation
                     }
                     |> ParseTree.NonPositionalLeaf
@@ -977,9 +1136,7 @@ module internal ArgParserGenerator =
     and private unionToParseSpec
         (ancestors : string list)
         (counter : int)
-        (flagDus : FlagDu list)
-        (ambientUnions : UnionType list)
-        (ambientRecords : RecordType list)
+        (ambient : AmbientTypes)
         (union : UnionType)
         : ParseTree * int
         =
@@ -996,7 +1153,7 @@ module internal ArgParserGenerator =
                     | [ field ] ->
                         let payload =
                             match localTypeName field.Type with
-                            | Some target -> ambientRecords |> List.tryFind (fun r -> r.Name.idText = target)
+                            | Some target -> ambient.Records |> List.tryFind (fun r -> r.Name.idText = target)
                             | None -> None
 
                         match payload with
@@ -1004,12 +1161,17 @@ module internal ArgParserGenerator =
                         | None ->
                             failwith
                                 $"Case %s{case.Name.idText} of [<ArgParser>] union %s{union.Name.idText} must have a payload which is a record defined alongside the union."
+                    | [] ->
+                        // Every case being data-free is the enumerated-value schema, which is a
+                        // leaf and so never reaches this function; a mixture of the two shapes has
+                        // no meaning yet.
+                        failwith
+                            $"Case %s{case.Name.idText} of [<ArgParser>] union %s{union.Name.idText} has no data. A union whose cases *all* have no data is parsed as an enumerated value, and a union of alternative argument sets needs a record payload on every case; a mixture of the two is not yet supported."
                     | _ ->
                         failwith
                             $"Case %s{case.Name.idText} of [<ArgParser>] union %s{union.Name.idText} must have exactly one field: a record holding that case's arguments."
 
-                let spec, counter =
-                    toParseSpec ancestors counter flagDus ambientUnions ambientRecords payloadRecord
+                let spec, counter = toParseSpec ancestors counter ambient payloadRecord
 
                 counter, (case.Name, spec) :: acc
             )
@@ -1022,12 +1184,10 @@ module internal ArgParserGenerator =
         ParseTree.Sum (sumId, cases, assemble), counter
 
     let private helpText (typeHelp : SynExpr option) (tree : ParseTree) : SynBinding =
-        let describeNonPositional
-            (acc : Accumulation<ArgumentDefaultSpec>)
-            (flagCases : Choice<FlagDu, unit> option)
-            : SynExpr
-            =
-            match acc with
+        let describeNonPositional (arg : ParseFunctionNonPositional) : SynExpr =
+            let flagCases = arg.BoolCases
+
+            match arg.Accumulation with
             | Accumulation.Required -> SynExpr.CreateConst ""
             | Accumulation.Optional -> SynExpr.CreateConst " (optional)"
             | Accumulation.Choice (ArgumentDefaultSpec.EnvironmentVariable var) ->
@@ -1041,52 +1201,32 @@ module internal ArgParserGenerator =
                 )
                 |> SynExpr.paren
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
-                match flagCases with
-                | None -> SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
-                | Some (Choice2Of2 ()) -> SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
-                | Some (Choice1Of2 flagDu) ->
-                    // Care required here. The return value from the Default call is not a bool,
-                    // but we should display it as such to the user!
-                    [
-                        SynMatchClause.create
-                            (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case1Name ] (SynArgPats.create []))
-                            (SynExpr.ifThenElse
-                                (SynExpr.equals flagDu.Case1Arg (SynExpr.CreateConst true))
-                                (SynExpr.CreateConst "false")
-                                (SynExpr.CreateConst "true"))
-                        SynMatchClause.create
-                            (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case2Name ] (SynArgPats.create []))
-                            (SynExpr.ifThenElse
-                                (SynExpr.equals flagDu.Case2Arg (SynExpr.CreateConst true))
-                                (SynExpr.CreateConst "false")
-                                (SynExpr.CreateConst "true"))
-                    ]
-                    |> SynExpr.createMatch (SynExpr.callMethod var.idText (SynExpr.createIdent' owner))
-                |> SynExpr.pipeThroughFunction (
-                    SynExpr.createLambda "x" (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
-                )
+                // Display the spelling the user would have to type to supply this value.
+                SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
                 )
                 |> SynExpr.paren
             | Accumulation.List _ -> SynExpr.CreateConst " (can be repeated)"
 
-        let describePositional _ _ =
+        let describePositional (_ : ParseFunctionPositional) =
             SynExpr.CreateConst " (positional args) (can be repeated)"
 
-        /// We may sometimes lie about the type name, if e.g. this is a flag DU which we're pretending is a boolean.
-        /// So the `renderTypeName` takes the Accumulation which tells us whether we're lying.
+        /// We may sometimes lie about the type name, if e.g. this is a flag DU which we're pretending is a boolean;
+        /// and a data-free union's name is augmented with the values it accepts. So the whole `ParseFunction` is in
+        /// scope here, not just its `Accumulation`.
         /// `depth` is the nesting depth in union alternatives; each level indents by two spaces.
-        let toPrintable
-            (depth : int)
-            (describe : 'a -> Choice<FlagDu, unit> option -> SynExpr)
-            (arg : ParseFunction<'a>)
-            : SynExpr
-            =
+        let toPrintable (depth : int) (describe : ParseFunction<'a> -> SynExpr) (arg : ParseFunction<'a>) : SynExpr =
             let ty =
-                match arg.BoolCases with
-                | None -> SynType.toHumanReadableString arg.TargetType
-                | Some _ -> "bool"
+                match arg.BoolCases, arg.EnumCases with
+                | Some _, _ -> "bool"
+                // The type's name alone says nothing about how to spell one of its values.
+                | None, Some union ->
+                    let values = checkedEnumCaseNames union |> String.concat "|"
+
+                    SynType.toHumanReadableString arg.TargetType + $" [one of: %s{values}]"
+                | None, None -> SynType.toHumanReadableString arg.TargetType
 
             let helpText =
                 match arg.Help with
@@ -1096,12 +1236,17 @@ module internal ArgParserGenerator =
                     |> SynExpr.applyTo (SynExpr.paren helpText)
                     |> SynExpr.paren
 
-            let descriptor = describe arg.Accumulation arg.BoolCases
+            let descriptor = describe arg
 
             let indent = String.replicate depth "  "
 
-            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%s{indent}%%s  %s{ty}%%s%%s")
+            // `ty` is passed as an argument rather than spliced into the format literal: it is
+            // derived from user-chosen type and case names, and `%` is legal in a backticked
+            // identifier, so splicing it would emit uncompilable format specifiers. (`indent` is
+            // whitespace by construction, so it is safe to splice.)
+            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%s{indent}%%s  %%s%%s%%s")
             |> SynExpr.applyTo arg.HumanReadableArgForm
+            |> SynExpr.applyTo (SynExpr.CreateConst ty)
             |> SynExpr.applyTo descriptor
             |> SynExpr.applyTo helpText
             |> SynExpr.paren
@@ -1602,6 +1747,10 @@ module internal ArgParserGenerator =
             let branches =
                 indexed
                 |> List.choose (fun (index, pf) ->
+                    // The duplicate-argument message names the value the user already supplied,
+                    // so render it the way they spelled it rather than with `ToString`.
+                    let rendered = renderLeafValue pf.BoolCases pf.EnumCases (SynExpr.createIdent "x")
+
                     match pf.Accumulation with
                     | Accumulation.List _ -> None
                     | Accumulation.Choice _ ->
@@ -1614,12 +1763,12 @@ module internal ArgParserGenerator =
                                     (SynPat.nameWithArgs
                                         "Some"
                                         [ SynPat.paren (SynPat.nameWithArgs "Choice1Of2" [ SynPat.named "x" ]) ])
-                                    (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                                    rendered
                                 SynMatchClause.create
                                     (SynPat.nameWithArgs
                                         "Some"
                                         [ SynPat.paren (SynPat.nameWithArgs "Choice2Of2" [ SynPat.named "x" ]) ])
-                                    (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                                    rendered
                                 SynMatchClause.create (SynPat.named "None") (SynExpr.CreateConst "<no value>")
                             ]
                         |> SynMatchClause.create (SynPat.createConst (SynConst.Int32 index))
@@ -1629,9 +1778,7 @@ module internal ArgParserGenerator =
                         SynExpr.createMatch
                             (SynExpr.createIdent' pf.TargetVariable)
                             [
-                                SynMatchClause.create
-                                    (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
-                                    (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                                SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "x" ]) rendered
                                 SynMatchClause.create (SynPat.named "None") (SynExpr.CreateConst "<no value>")
                             ]
                         |> SynMatchClause.create (SynPat.createConst (SynConst.Int32 index))
@@ -1837,32 +1984,24 @@ module internal ArgParserGenerator =
         (allRecordTypes : RecordType list)
         : SynModuleOrNamespace
         =
+        let argumentFlagAttr (case : UnionCase<Ident option>) : SynExpr option =
+            case.Attributes
+            |> List.tryPick (fun attr ->
+                match attr.TypeName with
+                | SynLongIdent.SynLongIdent (id, _, _) ->
+                    match id |> List.last |> _.idText with
+                    | "ArgumentFlagAttribute"
+                    | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
+                    | _ -> None
+            )
+
         let flagDus =
             allUnionTypes
             |> List.choose (fun ty ->
                 match ty.Cases with
                 | [ c1 ; c2 ] ->
-                    let c1Attr =
-                        c1.Attributes
-                        |> List.tryPick (fun attr ->
-                            match attr.TypeName with
-                            | SynLongIdent.SynLongIdent (id, _, _) ->
-                                match id |> List.last |> _.idText with
-                                | "ArgumentFlagAttribute"
-                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
-                                | _ -> None
-                        )
-
-                    let c2Attr =
-                        c2.Attributes
-                        |> List.tryPick (fun attr ->
-                            match attr.TypeName with
-                            | SynLongIdent.SynLongIdent (id, _, _) ->
-                                match id |> List.last |> _.idText with
-                                | "ArgumentFlagAttribute"
-                                | "ArgumentFlag" -> Some (SynExpr.stripOptionalParen attr.ArgExpr)
-                                | _ -> None
-                        )
+                    let c1Attr = argumentFlagAttr c1
+                    let c2Attr = argumentFlagAttr c2
 
                     match c1Attr, c2Attr with
                     | Some _, None
@@ -1892,14 +2031,39 @@ module internal ArgParserGenerator =
                         |> Some
                     | _, _ ->
                         failwith "[<ArgumentFlag>] may only be placed on discriminated union members with no data."
-                | _ -> None
+                | cases ->
+                    // Without this check the attribute would be silently ignored, and (every case
+                    // being data-free) the union would quietly become an enumerated value instead.
+                    if cases |> List.exists (fun case -> (argumentFlagAttr case).IsSome) then
+                        failwith
+                            "[<ArgumentFlag>] must be placed on both cases of a two-case discriminated union, with opposite argument values on each case."
+
+                    None
             )
 
-        // Unions whose cases are alternative argument records; flag DUs are argument *leaves*
-        // and are excluded.
+        let isDataFree (u : UnionType) =
+            u.Cases |> List.forall (fun case -> List.isEmpty case.Fields)
+
+        let isFlagDu (u : UnionType) =
+            flagDus |> List.exists (fun f -> f.Name.idText = u.Name.idText)
+
+        // A union with no data in any case has no arguments to tell its cases apart, so it cannot
+        // be a set of alternative argument sets: it is an argument *value*, spelled by case name.
+        let enumDus =
+            allUnionTypes |> List.filter (fun u -> not (isFlagDu u) && isDataFree u)
+
+        // Unions whose cases are alternative argument records; flag DUs and data-free unions are
+        // argument leaves, and are excluded.
         let structuralUnions =
-            allUnionTypes
-            |> List.filter (fun u -> flagDus |> List.forall (fun f -> f.Name.idText <> u.Name.idText))
+            allUnionTypes |> List.filter (fun u -> not (isFlagDu u) && not (isDataFree u))
+
+        let ambient =
+            {
+                FlagDus = flagDus
+                EnumDus = enumDus
+                StructuralUnions = structuralUnions
+                Records = allRecordTypes
+            }
 
         let taggedTypeName, typeHelpText, parseSpec =
             let typeHelp (attrs : SynAttributes) =
@@ -1921,7 +2085,7 @@ module internal ArgParserGenerator =
                                        _) ->
                 let record = RecordType.OfRecord sci smd access fields
 
-                let spec, _ = toParseSpec [] 0 flagDus structuralUnions allRecordTypes record
+                let spec, _ = toParseSpec [] 0 ambient record
 
                 record.Name, typeHelp attrs, spec
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
@@ -1932,7 +2096,13 @@ module internal ArgParserGenerator =
                                        _) ->
                 let union = UnionType.OfUnion sci smd access cases
 
-                let spec, _ = unionToParseSpec [] 0 flagDus structuralUnions allRecordTypes union
+                if isDataFree union then
+                    // An enumerated value is a *leaf*: it is one argument's value, so it has
+                    // nowhere to live at the root, which must consume a whole command line.
+                    failwith
+                        $"No case of [<ArgParser>] union %s{union.Name.idText} has any data, so it is an enumerated value rather than a set of alternative argument sets: an empty command line could not choose between its cases. Use it as the type of a field of an [<ArgParser>] record instead, where it is supplied as `--field-name=a`."
+
+                let spec, _ = unionToParseSpec [] 0 ambient union
 
                 union.Name, typeHelp attrs, spec
             | _ ->

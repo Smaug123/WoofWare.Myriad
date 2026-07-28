@@ -1421,7 +1421,8 @@ open WoofWare.Myriad.Plugins
 module LeakArgs =
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : LeakArgs =
         let helpText () =
-            [ (sprintf "%s  int32%s%s" (sprintf "--%s" "foo") "" "") ] |> String.concat "\n"
+            [ (sprintf "%s  %s%s%s" (sprintf "--%s" "foo") "int32" "" "") ]
+            |> String.concat "\n"
 
         let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
         let mutable arg_0 : int option = None
