@@ -1422,10 +1422,11 @@ module SameBaseNameArgs =
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : SameBaseNameArgs =
         let helpText () =
             [
-                (sprintf "%s  int32%s%s" (sprintf "--%s" "value") "" "")
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "value") "int32" "" "")
                 (sprintf
-                    "%s  string%s%s"
+                    "%s  %s%s%s"
                     (sprintf "--%s / --%s" "rest" "others")
+                    "string"
                     " (positional args) (can be repeated)"
                     "")
             ]

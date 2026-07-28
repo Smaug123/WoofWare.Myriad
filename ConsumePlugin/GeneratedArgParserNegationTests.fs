@@ -1425,7 +1425,7 @@ module BoolNegationArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : BoolNegation =
             let helpText () =
                 [
-                    (sprintf "%s  bool%s%s" (sprintf "--%s / --no-%s" "enable-feature" "enable-feature") "" "")
+                    (sprintf "%s  %s%s%s" (sprintf "--%s / --no-%s" "enable-feature" "enable-feature") "bool" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -1534,7 +1534,7 @@ module FlagNegationArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : FlagNegation =
             let helpText () =
                 [
-                    (sprintf "%s  bool%s%s" (sprintf "--%s / --no-%s" "dry-run" "dry-run") "" "")
+                    (sprintf "%s  %s%s%s" (sprintf "--%s / --no-%s" "dry-run" "dry-run") "bool" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -1611,7 +1611,10 @@ module FlagNegationArgParse =
                 match leafId with
                 | 0 ->
                     match arg_0 with
-                    | Some x -> x.ToString ()
+                    | Some x ->
+                        match x with
+                        | TestDryRunMode.Wet -> if false = true then "true" else "false"
+                        | TestDryRunMode.Dry -> if true = true then "true" else "false"
                     | None -> "<no value>"
                 | _ -> "<no value>"
 
@@ -1669,8 +1672,9 @@ module MultipleFormsNegationArgParse =
             let helpText () =
                 [
                     (sprintf
-                        "%s  bool%s%s"
+                        "%s  %s%s%s"
                         (sprintf "--%s / --%s / --no-%s / --no-%s" "verbose" "v" "verbose" "v")
+                        "bool"
                         ""
                         "")
                 ]
@@ -1786,19 +1790,19 @@ module CombinedFeaturesArgParse =
             let helpText () =
                 [
                     (sprintf
-                        "%s  bool%s%s"
+                        "%s  %s%s%s"
                         (sprintf "--%s / --no-%s" "verbose" "verbose")
-                        (CombinedFeatures.DefaultVerbose ()
-                         |> (fun x -> x.ToString ())
-                         |> sprintf " (default value: %s)")
+                        "bool"
+                        (CombinedFeatures.DefaultVerbose().ToString () |> sprintf " (default value: %s)")
                         "")
 
                     (sprintf
-                        "%s  bool%s%s"
+                        "%s  %s%s%s"
                         (sprintf "--%s / --no-%s" "debug" "debug")
+                        "bool"
                         ""
                         (sprintf " : %s" ("Enable debug mode")))
-                    (sprintf "%s  bool%s%s" (sprintf "--%s" "normal-bool") "" "")
+                    (sprintf "%s  %s%s%s" (sprintf "--%s" "normal-bool") "bool" "" "")
                 ]
                 |> String.concat "\n"
 

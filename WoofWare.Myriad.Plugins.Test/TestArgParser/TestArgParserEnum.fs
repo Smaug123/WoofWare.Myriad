@@ -106,6 +106,34 @@ Required argument '--verbosity' received no value"""
 Unrecognised value 'purple' for Colour: expected one of Red, Green (from environment variable CONSUMEPLUGIN_ENUM_COLOUR)"""
 
     [<Test>]
+    let ``A duplicated enumerated argument names both values`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                EnumArgs.parse' noEnv ("--verbosity=Quiet" :: "--verbosity=normal" :: otherArgs)
+                |> ignore<EnumArgs>
+            )
+
+        // The first value must be named by the spelling the user would type, not by its type:
+        // ConsumePlugin is built `--reflectionfree`, so `ToString` gives "ConsumePlugin.Verbosity".
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Argument '--verbosity' was supplied multiple times: Quiet and normal"""
+
+    [<Test>]
+    let ``A duplicated defaultable enumerated argument names both values`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                EnumArgs.parse' noEnv ("--verbosity=Quiet" :: "--fallback=Normal" :: "--fallback=quiet" :: otherArgs)
+                |> ignore<EnumArgs>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Argument '--fallback' was supplied multiple times: Normal and quiet"""
+
+    [<Test>]
     let ``An enumerated argument can collect the positional stream`` () =
         let args =
             EnumArgs.parse' noEnv ("--verbosity=Normal" :: "red" :: "GREEN" :: otherArgs)
@@ -126,6 +154,40 @@ Unrecognised value 'purple' for Colour: expected one of Red, Green (from environ
 --fallback  Verbosity [one of: Quiet|Normal|ExtremelyLoud] (default value: Normal)
 --env-colour  Colour [one of: Red|Green] (default value populated from env var CONSUMEPLUGIN_ENUM_COLOUR)
 --rest  Colour [one of: Red|Green] (positional args) (can be repeated)"""
+
+    [<Test>]
+    let ``A duplicated flag DU argument names both values`` () =
+        // A flag DU is displayed to the user as a bool everywhere else, so it must be here too.
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                WithFlagDu.parse' noEnv [ "--dry-run=true" ; "--dry-run=true" ]
+                |> ignore<WithFlagDu>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Argument '--dry-run' was supplied multiple times: true and true"""
+
+    // Type and case names are arbitrary identifiers, and may contain characters which are
+    // meaningful inside an F# format string. That `PercentArgs` compiles at all is most of this
+    // test; `%E` and `%B` in the names would otherwise emit bad format specifiers.
+
+    [<Test>]
+    let ``A name containing a percent sign is not a format specifier`` () =
+        PercentArgs.parse' noEnv [ "--ratio=a%b" ]
+        |> shouldEqual
+            {
+                Ratio = ``Percent%Enum``.``A%B``
+            }
+
+        let exc =
+            Assert.Throws<exn> (fun () -> PercentArgs.parse' noEnv [ "--help" ] |> ignore<PercentArgs>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--ratio  Percent%Enum [one of: A%B|Half]"""
 
     // An enumerated value inside a union case. Case selection is by which arguments were
     // supplied, and happens before any value is converted, so the value can never influence it.

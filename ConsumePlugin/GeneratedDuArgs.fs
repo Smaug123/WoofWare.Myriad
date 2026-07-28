@@ -1424,10 +1424,10 @@ module DuArgs =
             [
                 "exactly one of the following sets of arguments:"
                 "FooCase:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "foo") "" (sprintf " : %s" ("The foo argument")))
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "foo") "int32" "" (sprintf " : %s" ("The foo argument")))
                 "BarCase:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "baz") "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "bar") "int32" "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "baz") "int32" "" "")
             ]
             |> String.concat "\n"
 
@@ -1624,12 +1624,12 @@ module WithModeArgs =
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithModeArgs =
         let helpText () =
             [
-                (sprintf "%s  bool%s%s" (sprintf "--%s" "verbose") "" "")
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "verbose") "bool" "" "")
                 "exactly one of the following sets of arguments:"
                 "Auto:"
-                (sprintf "  %s  bool%s%s" (sprintf "--%s" "quiet") " (optional)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
                 "Manual:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "level") "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
             ]
             |> String.concat "\n"
 
@@ -1836,15 +1836,14 @@ module DuWithDefaultArgs =
                 "Defaulted:"
 
                 (sprintf
-                    "  %s  int32%s%s"
+                    "  %s  %s%s%s"
                     (sprintf "--%s" "retries")
-                    (DefaultedArgs.DefaultRetries ()
-                     |> (fun x -> x.ToString ())
-                     |> sprintf " (default value: %s)")
+                    "int32"
+                    (DefaultedArgs.DefaultRetries().ToString () |> sprintf " (default value: %s)")
                     "")
 
                 "Plain:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "value") "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "value") "int32" "" "")
             ]
             |> String.concat "\n"
 
@@ -2006,10 +2005,10 @@ module ModeAndPositionals =
             [
                 "exactly one of the following sets of arguments:"
                 "Auto:"
-                (sprintf "  %s  bool%s%s" (sprintf "--%s" "quiet") " (optional)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
                 "Manual:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "level") "" "")
-                (sprintf "%s  int32%s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "rest") "int32" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -2193,11 +2192,11 @@ module CommandAndPositionals =
             [
                 "exactly one of the following sets of arguments:"
                 "Fetch:"
-                (sprintf "  %s  string%s%s" (sprintf "--%s" "url") "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "url") "string" "" "")
                 "Push:"
-                (sprintf "  %s  string%s%s" (sprintf "--%s" "remote") "" "")
-                (sprintf "  %s  bool%s%s" (sprintf "--%s" "force") "" "")
-                (sprintf "%s  string%s%s" (sprintf "--%s" "paths") " (positional args) (can be repeated)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "remote") "string" "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "force") "bool" "" "")
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "paths") "string" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -2429,11 +2428,11 @@ module FooBarMode =
             [
                 "exactly one of the following sets of arguments:"
                 "FooMode:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "foo") "" "")
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "foo") "int32" "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "rest") "int32" " (positional args) (can be repeated)" "")
                 "BarMode:"
-                (sprintf "  %s  int32%s%s" (sprintf "--%s" "bar") "" "")
-                (sprintf "  %s  string%s%s" (sprintf "--%s" "rest") " (positional args) (can be repeated)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "bar") "int32" "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "rest") "string" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
 
@@ -2633,10 +2632,10 @@ module GitLike =
             [
                 "exactly one of the following sets of arguments:"
                 "Pull:"
-                (sprintf "  %s  string%s%s" (sprintf "--%s" "source") "" "")
-                (sprintf "  %s  string%s%s" (sprintf "--%s" "refs") " (positional args) (can be repeated)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "source") "string" "" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "refs") "string" " (positional args) (can be repeated)" "")
                 "Status:"
-                (sprintf "  %s  bool%s%s" (sprintf "--%s" "verbose") " (optional)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "verbose") "bool" " (optional)" "")
             ]
             |> String.concat "\n"
 
@@ -2811,36 +2810,44 @@ module EnumArgs =
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : EnumArgs =
         let helpText () =
             [
-                (sprintf "%s  Verbosity [one of: Quiet|Normal|ExtremelyLoud]%s%s" (sprintf "--%s" "verbosity") "" "")
+                (sprintf
+                    "%s  %s%s%s"
+                    (sprintf "--%s" "verbosity")
+                    "Verbosity [one of: Quiet|Normal|ExtremelyLoud]"
+                    ""
+                    "")
 
                 (sprintf
-                    "%s  Colour [one of: Red|Green]%s%s"
+                    "%s  %s%s%s"
                     (sprintf "--%s" "colour")
+                    "Colour [one of: Red|Green]"
                     " (optional)"
                     (sprintf " : %s" ("Which colour to paint it")))
 
-                (sprintf "%s  Colour [one of: Red|Green]%s%s" (sprintf "--%s" "palette") " (can be repeated)" "")
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "palette") "Colour [one of: Red|Green]" " (can be repeated)" "")
 
                 (sprintf
-                    "%s  Verbosity [one of: Quiet|Normal|ExtremelyLoud]%s%s"
+                    "%s  %s%s%s"
                     (sprintf "--%s" "fallback")
+                    "Verbosity [one of: Quiet|Normal|ExtremelyLoud]"
                     (match EnumArgs.DefaultFallback () with
                      | Verbosity.Quiet -> "Quiet"
                      | Verbosity.Normal -> "Normal"
                      | Verbosity.ExtremelyLoud -> "ExtremelyLoud"
-                     |> (fun x -> x.ToString ())
                      |> sprintf " (default value: %s)")
                     "")
 
                 (sprintf
-                    "%s  Colour [one of: Red|Green]%s%s"
+                    "%s  %s%s%s"
                     (sprintf "--%s" "env-colour")
+                    "Colour [one of: Red|Green]"
                     ("CONSUMEPLUGIN_ENUM_COLOUR"
                      |> sprintf " (default value populated from env var %s)")
                     "")
                 (sprintf
-                    "%s  Colour [one of: Red|Green]%s%s"
+                    "%s  %s%s%s"
                     (sprintf "--%s" "rest")
+                    "Colour [one of: Red|Green]"
                     " (positional args) (can be repeated)"
                     "")
             ]
@@ -3180,21 +3187,42 @@ module EnumArgs =
             match leafId with
             | 0 ->
                 match arg_0 with
-                | Some x -> x.ToString ()
+                | Some x ->
+                    match x with
+                    | Verbosity.Quiet -> "Quiet"
+                    | Verbosity.Normal -> "Normal"
+                    | Verbosity.ExtremelyLoud -> "ExtremelyLoud"
                 | None -> "<no value>"
             | 1 ->
                 match arg_1 with
-                | Some x -> x.ToString ()
+                | Some x ->
+                    match x with
+                    | Colour.Red -> "Red"
+                    | Colour.Green -> "Green"
                 | None -> "<no value>"
             | 3 ->
                 match arg_3 with
-                | Some (Choice1Of2 x) -> x.ToString ()
-                | Some (Choice2Of2 x) -> x.ToString ()
+                | Some (Choice1Of2 x) ->
+                    match x with
+                    | Verbosity.Quiet -> "Quiet"
+                    | Verbosity.Normal -> "Normal"
+                    | Verbosity.ExtremelyLoud -> "ExtremelyLoud"
+                | Some (Choice2Of2 x) ->
+                    match x with
+                    | Verbosity.Quiet -> "Quiet"
+                    | Verbosity.Normal -> "Normal"
+                    | Verbosity.ExtremelyLoud -> "ExtremelyLoud"
                 | None -> "<no value>"
             | 4 ->
                 match arg_4 with
-                | Some (Choice1Of2 x) -> x.ToString ()
-                | Some (Choice2Of2 x) -> x.ToString ()
+                | Some (Choice1Of2 x) ->
+                    match x with
+                    | Colour.Red -> "Red"
+                    | Colour.Green -> "Green"
+                | Some (Choice2Of2 x) ->
+                    match x with
+                    | Colour.Red -> "Red"
+                    | Colour.Green -> "Green"
                 | None -> "<no value>"
             | _ -> "<no value>"
 
@@ -3297,6 +3325,130 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type PercentArgs
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module PercentArgs =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : PercentArgs =
+        let helpText () =
+            [
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "ratio") "Percent%Enum [one of: A%B|Half]" "" "")
+            ]
+            |> String.concat "\n"
+
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_0 : ``Percent%Enum`` option = None
+
+        let parser_schema : ArgParserRuntime_DuArgs.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "ratio" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree = (ArgParserRuntime_DuArgs.ErasedTree.Product ([ ArgParserRuntime_DuArgs.ErasedTree.Leaf 0 ]))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_DuArgs.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_0 <-
+                                Some (
+                                    value
+                                    |> (fun x ->
+                                        if
+                                            System.String.Equals (x, "A%B", System.StringComparison.OrdinalIgnoreCase)
+                                        then
+                                            ``Percent%Enum``.``A%B``
+                                        else if
+                                            System.String.Equals (x, "Half", System.StringComparison.OrdinalIgnoreCase)
+                                        then
+                                            ``Percent%Enum``.Half
+                                        else
+                                            (sprintf
+                                                "Unrecognised value '%s' for %s: expected one of %s"
+                                                x
+                                                "Percent%Enum"
+                                                "A%B, Half")
+                                            |> failwith
+                                    )
+                                )
+
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x ->
+                    match x with
+                    | ``Percent%Enum``.``A%B`` -> "A%B"
+                    | ``Percent%Enum``.Half -> "Half"
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_DuArgs.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_DuArgs.runParse
+                (ArgParserRuntime_DuArgs.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_DuArgs.ParseOutcome.Success parser_selection ->
+            {
+                Ratio =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_DuArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_DuArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_DuArgs.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : PercentArgs =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type EnumInUnion
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module EnumInUnion =
@@ -3305,9 +3457,16 @@ module EnumInUnion =
             [
                 "exactly one of the following sets of arguments:"
                 "Build:"
-                (sprintf "  %s  Verbosity [one of: Quiet|Normal|ExtremelyLoud]%s%s" (sprintf "--%s" "verbosity") "" "")
+
+                (sprintf
+                    "  %s  %s%s%s"
+                    (sprintf "--%s" "verbosity")
+                    "Verbosity [one of: Quiet|Normal|ExtremelyLoud]"
+                    ""
+                    "")
+
                 "Clean:"
-                (sprintf "  %s  bool%s%s" (sprintf "--%s" "force") " (optional)" "")
+                (sprintf "  %s  %s%s%s" (sprintf "--%s" "force") "bool" " (optional)" "")
             ]
             |> String.concat "\n"
 
@@ -3431,7 +3590,11 @@ module EnumInUnion =
             match leafId with
             | 0 ->
                 match arg_1 with
-                | Some x -> x.ToString ()
+                | Some x ->
+                    match x with
+                    | Verbosity.Quiet -> "Quiet"
+                    | Verbosity.Normal -> "Normal"
+                    | Verbosity.ExtremelyLoud -> "ExtremelyLoud"
                 | None -> "<no value>"
             | 1 ->
                 match arg_2 with

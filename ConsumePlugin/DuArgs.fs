@@ -190,6 +190,19 @@ type EnumArgs =
 
     static member DefaultFallback () = Verbosity.Normal
 
+/// Type and case names are arbitrary identifiers, so they may contain characters which are
+/// meaningful inside an F# format string: `%E` and `%B` are both format specifiers. Such a name
+/// must reach `sprintf` as an argument rather than being spliced into the format literal.
+type ``Percent%Enum`` =
+    | ``A%B``
+    | Half
+
+[<ArgParser>]
+type PercentArgs =
+    {
+        Ratio : ``Percent%Enum``
+    }
+
 type BuildArgs =
     {
         Verbosity : Verbosity

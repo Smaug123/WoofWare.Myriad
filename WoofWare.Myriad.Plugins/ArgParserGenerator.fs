@@ -617,6 +617,41 @@ module internal ArgParserGenerator =
         )
         |> SynExpr.createMatch value
 
+    /// Render a stored value as the string the user would have had to type to supply it. That is
+    /// not the same as `ToString`: a flag DU is displayed to the user as a bool, and an enumerated
+    /// union by case name. `ToString` is also actively wrong for either under `--reflectionfree`,
+    /// which drops the structural override and leaves only the type's name.
+    let private renderLeafValue
+        (boolCases : Choice<FlagDu, unit> option)
+        (enumCases : UnionType option)
+        (value : SynExpr)
+        : SynExpr
+        =
+        match boolCases, enumCases with
+        | Some (Choice1Of2 flagDu), _ ->
+            // Care required here: the value is not a bool, but we display it as one.
+            [
+                SynMatchClause.create
+                    (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case1Name ] (SynArgPats.create []))
+                    // Note the argument order: SynExpr.ifThenElse takes the *false* branch first.
+                    (SynExpr.ifThenElse
+                        (SynExpr.equals flagDu.Case1Arg (SynExpr.CreateConst true))
+                        (SynExpr.CreateConst "false")
+                        (SynExpr.CreateConst "true"))
+                SynMatchClause.create
+                    (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case2Name ] (SynArgPats.create []))
+                    (SynExpr.ifThenElse
+                        (SynExpr.equals flagDu.Case2Arg (SynExpr.CreateConst true))
+                        (SynExpr.CreateConst "false")
+                        (SynExpr.CreateConst "true"))
+            ]
+            |> SynExpr.createMatch value
+        | None, Some union -> renderEnumCase union value
+        // A plain bool, or a type we know nothing special about: `ToString` is all we have, and
+        // for the primitives this reaches it agrees with the spelling the user types.
+        | Some (Choice2Of2 ()), _
+        | None, None -> SynExpr.callMethod "ToString" value
+
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
@@ -1166,33 +1201,9 @@ module internal ArgParserGenerator =
                 )
                 |> SynExpr.paren
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
-                match flagCases, arg.EnumCases with
-                | None, None -> SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
-                | Some (Choice2Of2 ()), _ -> SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
-                | None, Some union ->
-                    // Display the spelling the user would have to type to supply this value.
-                    renderEnumCase union (SynExpr.callMethod var.idText (SynExpr.createIdent' owner))
-                | Some (Choice1Of2 flagDu), _ ->
-                    // Care required here. The return value from the Default call is not a bool,
-                    // but we should display it as such to the user!
-                    [
-                        SynMatchClause.create
-                            (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case1Name ] (SynArgPats.create []))
-                            (SynExpr.ifThenElse
-                                (SynExpr.equals flagDu.Case1Arg (SynExpr.CreateConst true))
-                                (SynExpr.CreateConst "false")
-                                (SynExpr.CreateConst "true"))
-                        SynMatchClause.create
-                            (SynPat.identWithArgs [ flagDu.Name ; flagDu.Case2Name ] (SynArgPats.create []))
-                            (SynExpr.ifThenElse
-                                (SynExpr.equals flagDu.Case2Arg (SynExpr.CreateConst true))
-                                (SynExpr.CreateConst "false")
-                                (SynExpr.CreateConst "true"))
-                    ]
-                    |> SynExpr.createMatch (SynExpr.callMethod var.idText (SynExpr.createIdent' owner))
-                |> SynExpr.pipeThroughFunction (
-                    SynExpr.createLambda "x" (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
-                )
+                // Display the spelling the user would have to type to supply this value.
+                SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
                 )
@@ -1229,8 +1240,13 @@ module internal ArgParserGenerator =
 
             let indent = String.replicate depth "  "
 
-            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%s{indent}%%s  %s{ty}%%s%%s")
+            // `ty` is passed as an argument rather than spliced into the format literal: it is
+            // derived from user-chosen type and case names, and `%` is legal in a backticked
+            // identifier, so splicing it would emit uncompilable format specifiers. (`indent` is
+            // whitespace by construction, so it is safe to splice.)
+            SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst $"%s{indent}%%s  %%s%%s%%s")
             |> SynExpr.applyTo arg.HumanReadableArgForm
+            |> SynExpr.applyTo (SynExpr.CreateConst ty)
             |> SynExpr.applyTo descriptor
             |> SynExpr.applyTo helpText
             |> SynExpr.paren
@@ -1731,6 +1747,10 @@ module internal ArgParserGenerator =
             let branches =
                 indexed
                 |> List.choose (fun (index, pf) ->
+                    // The duplicate-argument message names the value the user already supplied,
+                    // so render it the way they spelled it rather than with `ToString`.
+                    let rendered = renderLeafValue pf.BoolCases pf.EnumCases (SynExpr.createIdent "x")
+
                     match pf.Accumulation with
                     | Accumulation.List _ -> None
                     | Accumulation.Choice _ ->
@@ -1743,12 +1763,12 @@ module internal ArgParserGenerator =
                                     (SynPat.nameWithArgs
                                         "Some"
                                         [ SynPat.paren (SynPat.nameWithArgs "Choice1Of2" [ SynPat.named "x" ]) ])
-                                    (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                                    rendered
                                 SynMatchClause.create
                                     (SynPat.nameWithArgs
                                         "Some"
                                         [ SynPat.paren (SynPat.nameWithArgs "Choice2Of2" [ SynPat.named "x" ]) ])
-                                    (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                                    rendered
                                 SynMatchClause.create (SynPat.named "None") (SynExpr.CreateConst "<no value>")
                             ]
                         |> SynMatchClause.create (SynPat.createConst (SynConst.Int32 index))
@@ -1758,9 +1778,7 @@ module internal ArgParserGenerator =
                         SynExpr.createMatch
                             (SynExpr.createIdent' pf.TargetVariable)
                             [
-                                SynMatchClause.create
-                                    (SynPat.nameWithArgs "Some" [ SynPat.named "x" ])
-                                    (SynExpr.callMethod "ToString" (SynExpr.createIdent "x"))
+                                SynMatchClause.create (SynPat.nameWithArgs "Some" [ SynPat.named "x" ]) rendered
                                 SynMatchClause.create (SynPat.named "None") (SynExpr.CreateConst "<no value>")
                             ]
                         |> SynMatchClause.create (SynPat.createConst (SynConst.Int32 index))
