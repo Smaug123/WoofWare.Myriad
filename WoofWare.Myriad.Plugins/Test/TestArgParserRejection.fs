@@ -1724,3 +1724,53 @@ type Args =
 """
         |> shouldRejectWith
             "Field 'Blah' has map key type Weird, whose case 'A' cannot be spelled without using a separator ('a' or 'A'). No command line could express that key, so choose a different separator."
+
+    [<Test>]
+    let ``A separator which no alternative spelling escapes is rejected`` () =
+        // Invariant casing would say this case has an alternative spelling: ToUpperInvariant of
+        // ſ is 'S'. But the parser matches with OrdinalIgnoreCase, which holds ſ and 'S'
+        // distinct, so ſ is the case's only spelling and the separator makes it unreachable.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Weird =
+    | ``ſ``
+    | Other
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator 'ſ'>]
+        Blah : Map<Weird, string>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Blah' has map key type Weird, whose case 'ſ' cannot be spelled without using a separator ('ſ'). No command line could express that key, so choose a different separator."
+
+    [<Test>]
+    let ``A separator some alternative spelling escapes is accepted`` () =
+        // Both the lower and the upper case of Greek mu are separators here, so modelling the
+        // accepted spellings with invariant casing would conclude this case is unreachable. But
+        // OrdinalIgnoreCase also holds the micro sign equal to mu, and that is neither case of
+        // it, so the key does have a spelling and generation must succeed.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Weird =
+    | ``μ``
+    | Other
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator 'μ'>]
+        [<ArgumentMapEntrySeparator 'Μ'>]
+        Blah : Map<Weird, string>
+    }
+"""
+
+        List.length modules |> shouldEqual 2

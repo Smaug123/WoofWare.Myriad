@@ -291,7 +291,8 @@ If you need to express keys containing arbitrary characters, take a `string list
 
 Where the spellings are known at generation time, we check rather than trust: a key or value which is an enumerated union has its case names checked against the separators, and generation fails for a case which no spelling can express.
 (Case names are arbitrary identifiers, so ``` ``a:b`` ``` is a perfectly legal case name, and no command line could express it as a key when `:` is the separator.)
-Note "no spelling": enumerated values are matched case-insensitively while entries are split case-sensitively, so a case named `Apple` survives the separator `A` — spell it `apple` — and only a character whose every casing is a separator is fatal.
+Note "no spelling": enumerated values are matched with `OrdinalIgnoreCase` while entries are split ordinally, so a case named `Apple` survives the separator `A` — spell it `apple` — and a case is fatal only when some character of it has no accepted alternative which avoids the separators.
+That question is put to `OrdinalIgnoreCase` itself rather than answered from `ToUpperInvariant`, which does not agree with it in either direction.
 
 ### Help text
 

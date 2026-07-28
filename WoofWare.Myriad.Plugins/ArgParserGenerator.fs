@@ -993,10 +993,15 @@ module internal ArgParserGenerator =
             // character, including a separator. Where the spellings are known at generation time
             // we can reject the unspellable ones instead of silently misparsing.
             //
-            // An enumerated value is matched with OrdinalIgnoreCase but an entry is split
-            // ordinally, so *every* casing of a case name is an accepted spelling, and only a
-            // character whose casings are all separators is unavoidable. (A case named `A`
-            // survives the separator 'A', because it may be spelled `a`.)
+            // An enumerated value is matched with OrdinalIgnoreCase, so every character which that
+            // comparison holds equal to one of the case name's is an alternative spelling, and a
+            // position is only fatal when all of its alternatives are separators. (A case named
+            // `A` survives the separator 'A', because it may be spelled `a`.)
+            //
+            // Invariant casing does *not* model that relation, in either direction: 'ſ'
+            // uppercases to 'S' although OrdinalIgnoreCase holds them distinct, while the micro
+            // sign is held equal to Greek mu despite being neither its upper nor its lower case.
+            // So ask the comparison itself rather than reimplementing it.
             //
             // The key-value separator constrains only keys, since entries split at the *first*
             // one and so a value may contain it; the entry separator is stripped before that
@@ -1005,25 +1010,41 @@ module internal ArgParserGenerator =
                 match identifyAsEnum ambient.EnumDus ty with
                 | None -> ()
                 | Some union ->
+                    /// Every character the generated parser would accept in this one's place.
+                    let alternativeSpellings (c : char) : string list =
+                        let c = string<char> c
+
+                        [ 0..0xFFFF ]
+                        |> List.map (char >> string<char>)
+                        |> List.filter (fun d -> String.Equals (d, c, StringComparison.OrdinalIgnoreCase))
+
                     for case in union.Cases do
                         let unavoidable =
                             case.Name.idText
                             |> Seq.tryPick (fun c ->
-                                let spellings =
-                                    [ Char.ToLowerInvariant c ; Char.ToUpperInvariant c ]
-                                    |> List.map string<char>
-                                    |> List.distinct
-
-                                if spellings |> List.forall (fun s -> List.contains s separators) then
-                                    Some spellings
+                                // A character spells itself, so unless it is a separator this
+                                // position already has an escape and the search is over. Only on
+                                // the rare path do we pay for the sweep.
+                                if not (List.contains (string<char> c) separators) then
+                                    None
+                                elif alternativeSpellings c |> List.forall (fun d -> List.contains d separators) then
+                                    Some c
                                 else
                                     None
                             )
 
                         match unavoidable with
                         | None -> ()
-                        | Some blocking ->
-                            let blocking = blocking |> List.map (sprintf "'%s'") |> String.concat " or "
+                        | Some c ->
+                            // Name the separators in the order they were declared, so the message
+                            // points at attributes the author can see.
+                            let blocking =
+                                let accepted = alternativeSpellings c
+
+                                separators
+                                |> List.filter (fun s -> List.contains s accepted)
+                                |> List.map (sprintf "'%s'")
+                                |> String.concat " or "
 
                             failwith
                                 $"Field '%s{fieldName.idText}' has map %s{role} type %s{union.Name.idText}, whose case '%s{case.Name.idText}' cannot be spelled without using a separator (%s{blocking}). No command line could express that %s{role}, so choose a different separator."
