@@ -196,6 +196,22 @@ type ContainsFlagDefaultValue =
 
     static member DefaultDryRun () = DryRunMode.Wet
 
+/// `[<ArgumentDefaultValue>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function
+/// returns a constant. The value is any valid .NET attribute argument: a literal, a `[<Literal>]`
+/// binding, or an enum case.
+[<ArgParser true>]
+type ContainsLiteralDefault =
+    {
+        [<ArgumentDefaultValue 3>]
+        IntVar : Choice<int, int>
+        [<ArgumentDefaultValue "hello world">]
+        StringVar : Choice<string, string>
+        // A non-literal argument requires parens: F#'s attribute syntax otherwise reads the
+        // identifier as the start of a named argument.
+        [<ArgumentDefaultValue(Consts.TRUE)>]
+        BoolVar : Choice<bool, bool>
+    }
+
 [<ArgParser true>]
 type ManyLongForms =
     {

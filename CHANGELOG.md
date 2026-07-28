@@ -13,6 +13,9 @@ This means e.g. that some `Map<string, string>` are inexpressible (if the key co
 Where the spellings are known at generation time we check them: an enumerated key or value with a case that no spelling can express is rejected rather than silently misparsed.
 Help text describes each half of an entry in the syntax that half accepts, so a flag-valued map advertises `map<..., bool>` and an enumerated one lists its case names.
 
+The `ArgParserGenerator` gains `[<ArgumentDefaultValue foo>]`: shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant.
+`foo` is an ordinary .NET attribute argument, so F# restricts it to compile-time constants (literals, `[<Literal>]` bindings, and enum cases); anything else, including a discriminated union case, still needs `[<ArgumentDefaultFunction>]`.
+
 # WoofWare.Myriad.Plugins 10.3.1
 
 The `ArgParserGenerator` now supports positional args together with arbitrary discriminated-union args.

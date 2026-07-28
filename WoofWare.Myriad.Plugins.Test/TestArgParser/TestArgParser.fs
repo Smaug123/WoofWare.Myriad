@@ -602,6 +602,66 @@ Required argument '--exact' received no value"""
             }
 
     [<Test>]
+    let ``Literal defaults are taken exactly when the argument is absent`` () =
+        // The defining property of [<ArgumentDefaultValue>]: each field independently reports
+        // Choice1Of2 of whatever the user typed, or Choice2Of2 of the attribute's literal when the
+        // user typed nothing. Fields must not interfere with each other.
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let property (intVar : int option) (stringVar : NonNull<string> option) (boolVar : bool option) =
+            // The `--key=value` spelling, so that a generated value which itself looks like a flag
+            // (or is empty) is still unambiguously this argument's value.
+            let args =
+                [
+                    match intVar with
+                    | Some i -> $"--int-var=%i{i}"
+                    | None -> ()
+                    match stringVar with
+                    | Some (NonNull s) -> $"--string-var=%s{s}"
+                    | None -> ()
+                    match boolVar with
+                    | Some b -> $"--bool-var=%b{b}"
+                    | None -> ()
+                ]
+
+            let expected =
+                {
+                    IntVar =
+                        match intVar with
+                        | Some i -> Choice1Of2 i
+                        | None -> Choice2Of2 3
+                    StringVar =
+                        match stringVar with
+                        | Some (NonNull s) -> Choice1Of2 s
+                        | None -> Choice2Of2 "hello world"
+                    BoolVar =
+                        match boolVar with
+                        | Some b -> Choice1Of2 b
+                        | None -> Choice2Of2 Consts.TRUE
+                }
+
+            ContainsLiteralDefault.parse' getEnvVar args = expected
+
+        Check.QuickThrowOnFailure property
+
+    [<Test>]
+    let ``Help text renders literal defaults`` () =
+        let getEnvVar (_ : string) = failwith "do not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ContainsLiteralDefault.parse' getEnvVar [ "--help" ]
+                |> ignore<ContainsLiteralDefault>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--int-var  int32 (default value: 3)
+--string-var  string (default value: hello world)
+--bool-var  bool (default value: True)"""
+
+    [<Test>]
     let ``Help text for flag DU`` () =
         let getEnvVar (_ : string) = failwith "do not call"
 

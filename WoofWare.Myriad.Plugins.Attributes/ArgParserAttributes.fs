@@ -62,6 +62,28 @@ type ArgumentDefaultFunctionAttribute () =
 type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
     inherit Attribute ()
 
+/// Attribute indicating that this field shall have the given constant default value.
+/// This is shorthand for `[<ArgumentDefaultFunction>]` in the common case where the default function
+/// would simply return a constant.
+///
+/// This attribute can only be placed on fields of type `Choice<_, _>` where both type parameters
+/// are the same.
+/// After a successful parse, the value is Choice1Of2 if the user supplied an input,
+/// or Choice2Of2 if the input was this constant.
+///
+/// The value you supply is spliced verbatim into the generated code, so it must have the field's
+/// element type: `[<ArgumentDefaultValue 3>]` on a `Choice<int, int>`, but
+/// `[<ArgumentDefaultValue 3L>]` on a `Choice<int64, int64>`. A mismatch is a compile error in
+/// the generated file rather than at the attribute itself.
+///
+/// Since this is an ordinary .NET attribute argument, F# restricts you to compile-time constants:
+/// literals, `[<Literal>]` values, and enum cases. (Anything else, and in particular a discriminated
+/// union case such as a flag DU's, needs `[<ArgumentDefaultFunction>]` instead.) Note that F#'s
+/// attribute syntax requires parentheses around an argument which is not a bare literal:
+/// `[<ArgumentDefaultValue(Consts.Foo)>]`, but `[<ArgumentDefaultValue 3>]`.
+type ArgumentDefaultValueAttribute (defaultValue : obj) =
+    inherit Attribute ()
+
 /// Attribute indicating that this field or type shall have the given help text, when `--help` is invoked
 /// or when a parse error causes us to print help text.
 /// When applied to a record type, the help text appears at the top of the help output, before the field descriptions.

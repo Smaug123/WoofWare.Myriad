@@ -52,6 +52,11 @@ type private ArgumentDefaultSpec =
     /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
     /// we would use `MyArgs.DefaultThing () : int`.
     | FunctionCall of owner : Ident * name : Ident
+    /// From the constant the user wrote in `[<ArgumentDefaultValue 3>]`. F# restricts custom
+    /// attribute arguments to compile-time constants, so this expression is a literal, a
+    /// `[<Literal>]` binding, or an enum case; we splice it into the generated code verbatim,
+    /// exactly as we do the flag values of `[<ArgumentFlag>]`.
+    | Literal of value : SynExpr
 
 /// How a `Map`-typed field spells its entries on the command line.
 ///
@@ -923,6 +928,17 @@ module internal ArgParserGenerator =
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ] ->
 
                             ArgumentDefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
+                        | [ "ArgumentDefaultValue" ]
+                        | [ "ArgumentDefaultValueAttribute" ]
+                        | [ "Plugins" ; "ArgumentDefaultValue" ]
+                        | [ "Plugins" ; "ArgumentDefaultValueAttribute" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultValue" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultValueAttribute" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultValue" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultValueAttribute" ] ->
+                            // Parenthesised, because the expression lands in positions such as
+                            // `(3).ToString ()` where a bare literal would lex wrongly.
+                            ArgumentDefaultSpec.Literal (SynExpr.paren attr.ArgExpr) |> Some
                         | _ -> None
                     )
 
@@ -1215,6 +1231,8 @@ module internal ArgParserGenerator =
                         match (List.last attr.TypeName.LongIdent).idText with
                         | "ArgumentDefaultFunction"
                         | "ArgumentDefaultFunctionAttribute"
+                        | "ArgumentDefaultValue"
+                        | "ArgumentDefaultValueAttribute"
                         | "ArgumentDefaultEnvironmentVariable"
                         | "ArgumentDefaultEnvironmentVariableAttribute" -> true
                         | _ -> false
@@ -1224,11 +1242,11 @@ module internal ArgParserGenerator =
                     match positionalArgAttr, fieldType with
                     | Some _, _ ->
                         failwith
-                            $"Field '%s{ident.idText}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
+                            $"Field '%s{ident.idText}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
                     | None, ChoiceType _ -> ()
                     | None, _ ->
                         failwith
-                            $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+                            $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
 
                 let ambientRecordMatch =
                     match localTypeName fieldType with
@@ -1518,6 +1536,16 @@ module internal ArgParserGenerator =
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
                 // Display the spelling the user would have to type to supply this value.
                 SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                |> renderLeafValue flagCases arg.EnumCases
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
+                )
+                |> SynExpr.paren
+            | Accumulation.Choice (ArgumentDefaultSpec.Literal value) ->
+                // A literal written in the user's own source is not a secret, so unlike the env-var
+                // case we can display it; as for a default function, display the spelling the user
+                // would have to type to supply it.
+                value
                 |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
@@ -2373,6 +2401,10 @@ module internal ArgParserGenerator =
                                     storeDefault (SynExpr.callMethod name.idText (SynExpr.createIdent' owner))
                                     SynExpr.createIdent "None"
                                 ]
+                        | ArgumentDefaultSpec.Literal value ->
+                            // The literal already has the field's element type, so unlike the
+                            // env-var case there is nothing to parse and nothing which can fail.
+                            SynExpr.sequential [ storeDefault value ; SynExpr.createIdent "None" ]
                         | ArgumentDefaultSpec.EnvironmentVariable name ->
                             // Environment variables permit the laxer boolean grammar: "1" and "0"
                             // as well as the usual literals.

@@ -186,6 +186,8 @@ type Foo =
         B : Choice<int, int>
         [<ArgumentDefaultEnvironmentVariable "MY_ENV_VAR">]
         BWithEnv : Choice<int, int>
+        [<ArgumentDefaultValue 4>]
+        BWithConstant : Choice<int, int>
         [<ArgumentDefaultFunction>]
         DryRun : Choice<DryRunMode, DryRunMode>
         AnimalPart : AnimalArgs
@@ -225,6 +227,7 @@ and you get back respectively these objects:
     A = None
     B = Choice2Of2 4
     BWithEnv = Choice2Of2 100 // whatever the value of $MY_ENV_VAR was, or a failed parse
+    BWithConstant = Choice2Of2 4
     DryRun = Choice2Of2 DryRunMode.Wet
     AnimalPart = AnimalArgs.Fowl { Species = "pheasant" }
 }
@@ -234,6 +237,7 @@ and you get back respectively these objects:
     A = None
     B = Choice2Of2 4
     BWithEnv = Choice1Of2 8
+    BWithConstant = Choice2Of2 4
     DryRun = Choice1Of2 DryRunMode.Dry
     AnimalPart = AnimalArgs.Fish { Fins = 39 }
 }
@@ -241,6 +245,11 @@ and you get back respectively these objects:
 
 Default arguments are handled as `Choice<'a, 'a>`:
 you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
+
+`[<ArgumentDefaultValue foo>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant.
+Since `foo` is an ordinary .NET attribute argument, F# restricts it to compile-time constants: literals, `[<Literal>]` bindings, and enum cases.
+(A discriminated union case, such as a flag DU's, is not one of those, so those still need `[<ArgumentDefaultFunction>]`.)
+Note that F# requires parentheses around an attribute argument which is not a bare literal: `[<ArgumentDefaultValue(Consts.Foo)>]`, but `[<ArgumentDefaultValue 4>]`.
 
 You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
 
