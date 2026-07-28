@@ -17,6 +17,7 @@ The `ArgParserGenerator` gains `[<ArgumentDefaultValue foo>]`: shorthand for an 
 `foo` must be a literal written out in full: the value is reproduced in the generated file rather than evaluated at your attribute, so anything whose meaning depends on where it is written is rejected.
 That covers names standing for constants (a `[<Literal>]` binding or an enum case), since the generated file hoists every `open` in your source above the parser and so a name need not resolve to the same binding there; and F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`).
 Use `[<ArgumentDefaultFunction>]` for those, and for anything which is not a constant at all.
+(`null` counts as a literal, so it is accepted, in the projects whose nullness settings let you write it at all.)
 
 # WoofWare.Myriad.Plugins 10.3.1
 

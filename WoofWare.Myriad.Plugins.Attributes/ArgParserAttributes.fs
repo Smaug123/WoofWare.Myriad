@@ -71,7 +71,7 @@ type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
 /// After a successful parse, the value is Choice1Of2 if the user supplied an input,
 /// or Choice2Of2 if the input was this constant.
 ///
-/// The value you supply is spliced verbatim into the generated code, so it must have the field's
+/// The value you supply is reproduced in the generated code, so it must have the field's
 /// element type: `[<ArgumentDefaultValue 3>]` on a `Choice<int, int>`, but
 /// `[<ArgumentDefaultValue 3L>]` on a `Choice<int64, int64>`. A mismatch is a compile error in
 /// the generated file rather than at the attribute itself.
@@ -90,6 +90,10 @@ type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
 /// Use `[<ArgumentDefaultFunction>]` for any of those, and for anything which is not a constant at
 /// all (in particular a discriminated union case, such as a flag DU's): that function is evaluated
 /// in your own file, so it means what you wrote.
+///
+/// `null` is a literal like any other here. Note though that F# will only let you write it if your
+/// own project is not checking nullness (an `obj`-typed attribute argument does not admit null when
+/// it is), and that the `FS3559` warning, if you have turned it on, fires on the attribute too.
 type ArgumentDefaultValueAttribute (defaultValue : obj) =
     inherit Attribute ()
 

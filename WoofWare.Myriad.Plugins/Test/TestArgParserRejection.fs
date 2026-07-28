@@ -1250,6 +1250,28 @@ type WithLiteralDefault =
         // One namespace for the embedded runtime module, one for the generated parser module.
         List.length modules |> shouldEqual 2
 
+    [<Test>]
+    let ``ArgumentDefaultValue null generates successfully`` () =
+        // `null` is a written-out literal like any other -- F# admits it as an object-valued
+        // attribute argument -- so it must not fall through to the "unrecognised" rejection. It is
+        // the one literal whose help text cannot be rendered by calling `ToString` on it.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type WithNullDefault =
+    {
+        [<ArgumentDefaultValue null>]
+        Missing : Choice<string, string>
+    }
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
+
     /// F#'s context-sensitive constants: valid attribute arguments, but their value depends on
     /// where they are written.
     let sourceIdentifiers : TestCaseData list =
