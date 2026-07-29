@@ -62,6 +62,27 @@ type ArgumentDefaultFunctionAttribute () =
 type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
     inherit Attribute ()
 
+/// Attribute indicating that this field shall have the given constant default value.
+/// This is shorthand for `[<ArgumentDefaultFunction>]` in the common case where the default function
+/// would simply return a constant.
+///
+/// This attribute can only be placed on fields of type `Choice<_, _>` where both type parameters
+/// are the same.
+/// After a successful parse, the value is Choice1Of2 if the user supplied an input,
+/// or Choice2Of2 if the input was not supplied and defaulted to the constant.
+///
+/// The value you supply is reproduced in the generated code, so it must have the field's
+/// element type: `[<ArgumentDefaultValue 3>]` on a `Choice<int, int>`, but
+/// `[<ArgumentDefaultValue 3L>]` on a `Choice<int64, int64>`. A mismatch is a compile error in
+/// the generated file.
+///
+/// The value must be a literal written out in full.
+/// The generator rejects names (e.g. a `[<Literal>]` binding or an enum case), because their meanings may change
+/// depending on what `open` statements are present.
+/// You can fall back to using `[<ArgumentDefaultFunction>]` for those.
+type ArgumentDefaultValueAttribute (defaultValue : obj) =
+    inherit Attribute ()
+
 /// Attribute indicating that this field or type shall have the given help text, when `--help` is invoked
 /// or when a parse error causes us to print help text.
 /// When applied to a record type, the help text appears at the top of the help output, before the field descriptions.

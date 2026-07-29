@@ -52,6 +52,14 @@ type private ArgumentDefaultSpec =
     /// For example, if `type MyArgs = { Thing : Choice<int, int> }`, then
     /// we would use `MyArgs.DefaultThing () : int`.
     | FunctionCall of owner : Ident * name : Ident
+    /// From the constant the user wrote in `[<ArgumentDefaultValue 3>]`. We rebuild the literal
+    /// rather than reusing the user's expression, so that nothing about where it lands in the
+    /// generated file can change what it means.
+    | Literal of value : SynExpr
+    /// From `[<ArgumentDefaultValue null>]`. This is a literal like any other, but it is kept apart
+    /// from `Literal` because it is the one we cannot describe in help text the way we describe the
+    /// rest: `(null).ToString ()` does not even compile.
+    | NullLiteral
 
 /// How a `Map`-typed field spells its entries on the command line.
 ///
@@ -756,6 +764,93 @@ module internal ArgParserGenerator =
         | Accumulation.Choice _
         | Accumulation.List _ -> rejectSeparatorAttributes fieldName fieldType attrs
 
+    /// What we found in the argument of an `[<ArgumentDefaultValue>]`.
+    type private DefaultValueExpr =
+        /// A constant written out in full. It denotes the same value wherever it appears, so we can
+        /// reproduce it in the generated file.
+        | Constant of SynConst
+        /// The `null` literal, which F# admits as an object-valued attribute argument.
+        | Null
+        /// One of F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`,
+        /// `__SOURCE_DIRECTORY__`), whose value depends on where it is written.
+        | ContextSensitive of name : string
+        /// A name standing for a constant, such as a `[<Literal>]` binding or an enum case.
+        | Identifier of name : string
+        /// Some other shape, which we decline to reproduce sight-unseen.
+        | Unrecognised
+
+    /// An `[<ArgumentDefaultValue>]`'s value has to be reproduced in the generated file, so we accept
+    /// only expressions which denote the same value there as here. This recognises the shapes rather
+    /// than searching for bad ones: an expression we have not anticipated must be refused, not
+    /// emitted blind.
+    ///
+    /// F# has already restricted a custom-attribute argument to a compile-time constant by the time
+    /// the whole compilation unit type-checks, so in practice this sees a literal, a name standing
+    /// for one, or a context-sensitive constant.
+    let rec private classifyDefaultValue (expr : SynExpr) : DefaultValueExpr =
+        match expr with
+        // F#'s attribute syntax requires parentheses around an argument which is not a bare literal,
+        // and the user may add more of their own.
+        | SynExpr.Paren (expr = e) -> classifyDefaultValue e
+        | SynExpr.Const (constant = c) ->
+            let rec ofConst (c : SynConst) : DefaultValueExpr =
+                match c with
+                | SynConst.SourceIdentifier (constant = name) -> ContextSensitive name
+                // A measure annotation such as `3.0<m>` wraps the constant it annotates.
+                | SynConst.Measure (constant = inner) -> ofConst inner
+                | c -> Constant c
+
+            ofConst c
+        | SynExpr.Null _ -> Null
+        // A `[<Literal>]` binding or an enum case. We have no type checker, so we cannot tell which
+        // binding is meant; and the generated file hoists every `open` in the source above the
+        // parser, so the name need not resolve to the same one there anyway.
+        | SynExpr.Ident ident -> Identifier ident.idText
+        | SynExpr.LongIdent (longDotId = SynLongIdent (id = ids)) ->
+            ids |> List.map _.idText |> String.concat "." |> Identifier
+        | _ -> Unrecognised
+
+    /// Rewrite a string so that it can be dropped between the quotes of a generated regular string
+    /// literal and read back as itself.
+    ///
+    /// This is not simply "the F# escaping rules", because Fantomas has its own view: it emits a
+    /// `SynConst.String`'s text between quotes having escaped the quotes and nothing else. Anything
+    /// else which needs escaping is therefore ours to do (otherwise `C:\temp` would be emitted as
+    /// `"C:\temp"`, whose `\t` is a tab), and we escape the quote as `\u0022` rather than `\"` so
+    /// that Fantomas finds no quote to escape and hands our text through unaltered.
+    let private escapeStringConstant (s : string) : string =
+        s
+        |> String.collect (fun c ->
+            match c with
+            | '\\' -> @"\\"
+            | '"' -> @"\u0022"
+            // Everything outside printable ASCII goes out as an escape: `\uXXXX` is a UTF-16 code
+            // unit, which is exactly what a char of a .NET string is, so this is faithful even for
+            // an unpaired surrogate, and it keeps the generated file free of any dependence on how
+            // it is encoded.
+            | c when c >= ' ' && c <= '~' -> System.Char.ToString c
+            | c -> sprintf @"\u%04x" (int c)
+        )
+
+    /// Build the expression for a recognised constant default.
+    ///
+    /// A `SynConst.Char` needs care: Fantomas renders one without its quotes, so `'a'` reaches the
+    /// generated file as a bare `a` and fails to compile (or, worse, picks up an unrelated binding
+    /// of that name). Giving the node a synthetic range does not help -- it is the rendering of the
+    /// constant itself, not its range, which drops them -- so emit the code point converted instead,
+    /// which needs no escaping and cannot be mistaken for an identifier.
+    ///
+    /// A `SynConst.String` needs care for the opposite reason: it holds the *decoded* text, so
+    /// re-emitting it demands the escaping the user's own source supplied. We emit a regular string
+    /// whatever the user wrote, since a verbatim or triple-quoted spelling could not express the
+    /// escapes we need.
+    let private defaultValueExpr (c : SynConst) : SynExpr =
+        match c with
+        | SynConst.Char c -> SynExpr.CreateConst c
+        | SynConst.String (text = s) ->
+            SynExpr.Const (SynConst.String (escapeStringConstant s, SynStringKind.Regular, range0), range0)
+        | c -> SynExpr.Const (c, range0)
+
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
     /// for example, maybe it returns a `ty option` or a `ty list`).
     /// The resulting SynType is the type of the *element* being parsed; so if the Accumulation is List, the SynType
@@ -923,6 +1018,32 @@ module internal ArgParserGenerator =
                         | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultEnvironmentVariableAttribute" ] ->
 
                             ArgumentDefaultSpec.EnvironmentVariable attr.ArgExpr |> Some
+                        | [ "ArgumentDefaultValue" ]
+                        | [ "ArgumentDefaultValueAttribute" ]
+                        | [ "Plugins" ; "ArgumentDefaultValue" ]
+                        | [ "Plugins" ; "ArgumentDefaultValueAttribute" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultValue" ]
+                        | [ "Myriad" ; "Plugins" ; "ArgumentDefaultValueAttribute" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultValue" ]
+                        | [ "WoofWare" ; "Myriad" ; "Plugins" ; "ArgumentDefaultValueAttribute" ] ->
+                            let spec =
+                                match classifyDefaultValue attr.ArgExpr with
+                                | DefaultValueExpr.ContextSensitive name ->
+                                    failwith
+                                        $"Field '%s{fieldName.idText}' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant %s{name}. Its value depends on where it is written, and we reproduce it in the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+                                | DefaultValueExpr.Identifier name ->
+                                    failwith
+                                        $"Field '%s{fieldName.idText}' has an [<ArgumentDefaultValue>] whose value names something (%s{name}) rather than writing out a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the constant out literally, or use [<ArgumentDefaultFunction>]: that function is evaluated in your own file."
+                                | DefaultValueExpr.Unrecognised ->
+                                    failwith
+                                        $"Field '%s{fieldName.idText}' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, so we accept only a literal written out in full (optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
+                                | DefaultValueExpr.Null -> ArgumentDefaultSpec.NullLiteral
+                                | DefaultValueExpr.Constant c ->
+                                    // Parenthesised, because the expression lands in positions such
+                                    // as `(3).ToString ()` where a bare literal would lex wrongly.
+                                    ArgumentDefaultSpec.Literal (SynExpr.paren (defaultValueExpr c))
+
+                            Some spec
                         | _ -> None
                     )
 
@@ -1215,6 +1336,8 @@ module internal ArgParserGenerator =
                         match (List.last attr.TypeName.LongIdent).idText with
                         | "ArgumentDefaultFunction"
                         | "ArgumentDefaultFunctionAttribute"
+                        | "ArgumentDefaultValue"
+                        | "ArgumentDefaultValueAttribute"
                         | "ArgumentDefaultEnvironmentVariable"
                         | "ArgumentDefaultEnvironmentVariableAttribute" -> true
                         | _ -> false
@@ -1224,11 +1347,11 @@ module internal ArgParserGenerator =
                     match positionalArgAttr, fieldType with
                     | Some _, _ ->
                         failwith
-                            $"Field '%s{ident.idText}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
+                            $"Field '%s{ident.idText}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
                     | None, ChoiceType _ -> ()
                     | None, _ ->
                         failwith
-                            $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+                            $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
 
                 let ambientRecordMatch =
                     match localTypeName fieldType with
@@ -1523,6 +1646,20 @@ module internal ArgParserGenerator =
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
                 )
                 |> SynExpr.paren
+            | Accumulation.Choice (ArgumentDefaultSpec.Literal value) ->
+                // A literal written in the user's own source is not a secret, so unlike the env-var
+                // case we can display it; as for a default function, display the spelling the user
+                // would have to type to supply it.
+                value
+                |> renderLeafValue flagCases arg.EnumCases
+                |> SynExpr.pipeThroughFunction (
+                    SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
+                )
+                |> SynExpr.paren
+            | Accumulation.Choice ArgumentDefaultSpec.NullLiteral ->
+                // There is no spelling of `null` the user could type at the command line, and
+                // `ToString` on it would throw, so name it rather than rendering it.
+                SynExpr.CreateConst " (default value: <null>)"
             | Accumulation.List _ -> SynExpr.CreateConst " (can be repeated)"
             | Accumulation.Map spec ->
                 // The type's name says nothing about how to spell an entry, so the help text
@@ -2373,6 +2510,12 @@ module internal ArgParserGenerator =
                                     storeDefault (SynExpr.callMethod name.idText (SynExpr.createIdent' owner))
                                     SynExpr.createIdent "None"
                                 ]
+                        | ArgumentDefaultSpec.Literal value ->
+                            // The literal already has the field's element type, so unlike the
+                            // env-var case there is nothing to parse and nothing which can fail.
+                            SynExpr.sequential [ storeDefault value ; SynExpr.createIdent "None" ]
+                        | ArgumentDefaultSpec.NullLiteral ->
+                            SynExpr.sequential [ storeDefault (SynExpr.Null range0) ; SynExpr.createIdent "None" ]
                         | ArgumentDefaultSpec.EnvironmentVariable name ->
                             // Environment variables permit the laxer boolean grammar: "1" and "0"
                             // as well as the usual literals.

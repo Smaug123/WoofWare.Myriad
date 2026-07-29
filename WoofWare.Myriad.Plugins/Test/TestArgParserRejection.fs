@@ -29,6 +29,21 @@ module TestArgParserRejection =
 
         exc.Message |> shouldEqual message
 
+    /// The three default-supplying attributes are interchangeable as far as the checks below are
+    /// concerned, so their rejection messages are shared; assert against these rather than
+    /// restating them per attribute.
+    let private defaultAttrOnNonChoice (field : string) : string =
+        $"Field '%s{field}' has a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+
+    let private contextSensitiveDefault (field : string) (constant : string) : string =
+        $"Field '%s{field}' has an [<ArgumentDefaultValue>] whose value uses the context-sensitive constant %s{constant}. Its value depends on where it is written, and we reproduce it in the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source; we also emit it in more than one place, so it need not even be consistent within the generated file. Use [<ArgumentDefaultFunction>] instead: that function is evaluated in your own file."
+
+    let private namedDefault (field : string) (name : string) : string =
+        $"Field '%s{field}' has an [<ArgumentDefaultValue>] whose value names something (%s{name}) rather than writing out a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the constant out literally, or use [<ArgumentDefaultFunction>]: that function is evaluated in your own file."
+
+    let private defaultAttrOnPositional (field : string) : string =
+        $"Field '%s{field}' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
+
     [<Test>]
     let ``Long forms which differ only by case are rejected`` () =
         """namespace TestMe
@@ -1106,8 +1121,7 @@ type BareFlagDefault =
         DryRun : DryRunMode
     }
 """
-        |> shouldRejectWith
-            "Field 'DryRun' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+        |> shouldRejectWith (defaultAttrOnNonChoice "DryRun")
 
     [<Test>]
     let ``ArgumentDefaultEnvironmentVariable on a bare scalar field is rejected`` () =
@@ -1123,8 +1137,7 @@ type BareScalarDefault =
         Count : int
     }
 """
-        |> shouldRejectWith
-            "Field 'Count' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+        |> shouldRejectWith (defaultAttrOnNonChoice "Count")
 
     [<Test>]
     let ``A default attribute on a record-typed field is rejected`` () =
@@ -1146,8 +1159,7 @@ type ParentRecord =
         Child : ChildRecord
     }
 """
-        |> shouldRejectWith
-            "Field 'Child' has a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
+        |> shouldRejectWith (defaultAttrOnNonChoice "Child")
 
     [<Test>]
     let ``A default attribute on a positional field is rejected`` () =
@@ -1163,8 +1175,39 @@ type PositionalDefault =
         Rest : string list
     }
 """
-        |> shouldRejectWith
-            "Field 'Rest' is positional, so it cannot carry a default-value attribute ([<ArgumentDefaultFunction>] or [<ArgumentDefaultEnvironmentVariable>]): positional args are collected, not defaulted."
+        |> shouldRejectWith (defaultAttrOnPositional "Rest")
+
+    [<Test>]
+    let ``ArgumentDefaultValue on a bare scalar field is rejected`` () =
+        // The literal-default attribute inherits the Choice-only requirement of its siblings.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type BareScalarLiteralDefault =
+    {
+        [<ArgumentDefaultValue 3>]
+        Count : int
+    }
+"""
+        |> shouldRejectWith (defaultAttrOnNonChoice "Count")
+
+    [<Test>]
+    let ``ArgumentDefaultValue on a positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type PositionalLiteralDefault =
+    {
+        [<PositionalArgs>]
+        [<ArgumentDefaultValue 3>]
+        Rest : Choice<int, int> list
+    }
+"""
+        |> shouldRejectWith (defaultAttrOnPositional "Rest")
 
     [<Test>]
     let ``A default attribute on a Choice field generates successfully`` () =
@@ -1187,6 +1230,180 @@ type WithDefault =
 
         // One namespace for the embedded runtime module, one for the generated parser module.
         List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``ArgumentDefaultValue on a Choice field generates successfully`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type WithLiteralDefault =
+    {
+        [<ArgumentDefaultValue 4>]
+        Count : Choice<int, int>
+    }
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
+
+    [<Test>]
+    let ``ArgumentDefaultValue null generates successfully`` () =
+        // `null` is a written-out literal like any other -- F# admits it as an object-valued
+        // attribute argument -- so it must not fall through to the "unrecognised" rejection. It is
+        // the one literal whose help text cannot be rendered by calling `ToString` on it.
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type WithNullDefault =
+    {
+        [<ArgumentDefaultValue null>]
+        Missing : Choice<string, string>
+    }
+"""
+
+        // One namespace for the embedded runtime module, one for the generated parser module.
+        List.length modules |> shouldEqual 2
+
+    /// F#'s context-sensitive constants: valid attribute arguments, but their value depends on
+    /// where they are written.
+    let sourceIdentifiers : TestCaseData list =
+        [ "__LINE__" ; "__SOURCE_FILE__" ; "__SOURCE_DIRECTORY__" ]
+        |> List.map TestCaseData
+
+    [<TestCaseSource(nameof sourceIdentifiers)>]
+    let ``ArgumentDefaultValue with a context-sensitive constant is rejected`` (constant : string) =
+        // We splice the attribute's expression into the generated file, so one of these would be
+        // evaluated *there* rather than at the user's own attribute: __SOURCE_FILE__ would name the
+        // generated file. Worse, we emit the default in two places (the help text and the
+        // defaulting step), so __LINE__ would advertise one default and store another.
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type ContextSensitiveDefault =
+    {{
+        [<ArgumentDefaultValue(%s{constant})>]
+        Where : Choice<string, string>
+    }}
+"""
+        |> shouldRejectWith (contextSensitiveDefault "Where" constant)
+
+    [<Test>]
+    let ``ArgumentDefaultValue sees through redundant parentheses`` () =
+        // F#'s attribute syntax already requires one pair of parentheses around a non-literal
+        // argument, and the user may add more; the check must not be fooled by the extra layer.
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type DoublyParenthesisedDefault =
+    {
+        [<ArgumentDefaultValue((__SOURCE_FILE__))>]
+        Where : Choice<string, string>
+    }
+"""
+        |> shouldRejectWith (contextSensitiveDefault "Where" "__SOURCE_FILE__")
+
+    /// The two ways to name a constant rather than write one out.
+    let identifierDefaults : TestCaseData list =
+        [
+            // A [<Literal>] binding, opened into scope.
+            "Sentinel"
+            // A qualified [<Literal>] binding, or an enum case.
+            "Consts.Sentinel"
+        ]
+        |> List.map TestCaseData
+
+    [<TestCaseSource(nameof identifierDefaults)>]
+    let ``ArgumentDefaultValue naming a constant is rejected`` (name : string) =
+        // The generated module hoists every `open` in the file above the parser, so a name resolves
+        // there against a different set of bindings than at the attribute: a later `open` which
+        // shadows an earlier one silently changes which constant the default means, and a file-local
+        // module abbreviation is not in scope at all. We have no type checker, so we cannot tell
+        // which binding was meant; refuse to guess.
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type NamedDefault =
+    {{
+        [<ArgumentDefaultValue(%s{name})>]
+        Which : Choice<string, string>
+    }}
+"""
+        |> shouldRejectWith (namedDefault "Which" name)
+
+    [<Test>]
+    let ``ArgumentDefaultValue with an unrecognised expression is rejected`` () =
+        // We recognise the constant forms rather than hunting for bad ones, so an expression we
+        // have not anticipated is refused instead of being spliced sight-unseen. (F# would reject
+        // this attribute argument too, since it is not a compile-time constant.)
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type ComputedDefault =
+    {
+        [<ArgumentDefaultValue(3 + 4)>]
+        Count : Choice<int, int>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Count' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, so we accept only a literal written out in full (optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
+
+    // Exactly one source may supply a field's default. With two, the generator would have to
+    // invent a precedence order which is invisible at the use site, so it refuses instead.
+
+    /// Every ordered pair drawn from the three default-supplying attributes, including each
+    /// attribute with itself: two spellings of the same source are just as ambiguous as two
+    /// different sources.
+    let conflictingDefaultAttrs : TestCaseData list =
+        let attrs =
+            [
+                "ArgumentDefaultFunction"
+                "ArgumentDefaultValue 3"
+                "ArgumentDefaultEnvironmentVariable \"MY_ENV_VAR\""
+            ]
+
+        attrs
+        |> List.collect (fun a -> attrs |> List.map (fun b -> TestCaseData (a, b)))
+
+    [<TestCaseSource(nameof conflictingDefaultAttrs)>]
+    let ``Two default attributes on one field are rejected`` (first : string, second : string) =
+        let source =
+            [
+                "namespace TestMe"
+                ""
+                "open WoofWare.Myriad.Plugins"
+                ""
+                "[<ArgParser>]"
+                "type TwoDefaults ="
+                "    {"
+                $"        [<%s{first}>]"
+                $"        [<%s{second}>]"
+                "        Count : Choice<int, int>"
+                "    }"
+                ""
+                "    static member DefaultCount () = 4"
+                ""
+            ]
+            |> String.concat "\n"
+
+        source
+        |> shouldRejectWith
+            "Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: Count"
 
     // ------------------------------------------------------------------------------------------
     // Data-free unions are argument *values*, spelled by case name (`--blah=a`), rather than sets

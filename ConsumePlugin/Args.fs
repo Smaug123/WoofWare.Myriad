@@ -196,6 +196,40 @@ type ContainsFlagDefaultValue =
 
     static member DefaultDryRun () = DryRunMode.Wet
 
+/// `[<ArgumentDefaultValue>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function
+/// returns a constant. The value must be written out as a literal: we reproduce it in the generated
+/// file, where a name would not necessarily mean what it means here.
+[<ArgParser true>]
+type ContainsLiteralDefault =
+    {
+        [<ArgumentDefaultValue 3>]
+        IntVar : Choice<int, int>
+        [<ArgumentDefaultValue "hello world">]
+        StringVar : Choice<string, string>
+        [<ArgumentDefaultValue true>]
+        BoolVar : Choice<bool, bool>
+        // Chars are the one literal Fantomas will not round-trip through a spliced node, so we
+        // rebuild the constant rather than passing the user's through.
+        [<ArgumentDefaultValue 'q'>]
+        CharVar : Choice<char, char>
+    }
+
+/// We rebuild the literal in the generated file rather than echoing the user's source text, so
+/// escape-sensitive strings have to survive that round trip: a naively re-emitted `"C:\\temp"`
+/// becomes `"C:\temp"`, whose `\t` is a tab.
+[<ArgParser true>]
+type ContainsAwkwardStringDefaults =
+    {
+        [<ArgumentDefaultValue "C:\\temp">]
+        Backslash : Choice<string, string>
+        [<ArgumentDefaultValue @"say ""hi""">]
+        Quotes : Choice<string, string>
+        [<ArgumentDefaultValue "tab\there\nnewline">]
+        Control : Choice<string, string>
+        [<ArgumentDefaultValue "caf\u00e9 \u2603">]
+        Unicode : Choice<string, string>
+    }
+
 [<ArgParser true>]
 type ManyLongForms =
     {
