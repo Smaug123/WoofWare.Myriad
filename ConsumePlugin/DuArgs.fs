@@ -66,6 +66,16 @@ type DuWithDefaultArgs =
     | Defaulted of DefaultedArgs
     | Plain of PlainArgs
 
+/// A union-typed field's [<ArgumentHelpText>] describes the whole set of alternatives, so it
+/// heads the group which the alternatives are then listed inside.
+[<ArgParser>]
+type WithModeHelpArgs =
+    {
+        Verbose : bool
+        [<ArgumentHelpText "How loud to be">]
+        Mode : Mode
+    }
+
 /// A union beside a positional sink (default, i.e. Reject-mode): named arguments select the
 /// union case, and every bare token is routed to the sink whichever case wins. An unrecognised
 /// `--key`-shaped token remains fatal. The sink converts, so selection must not depend on the

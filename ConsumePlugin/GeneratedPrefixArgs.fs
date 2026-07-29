@@ -1425,8 +1425,9 @@ module PrefixedParentArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : PrefixedParent =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "foo-thing1") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "foo-thing2") "string" "" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "foo-thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "foo-thing2") "string" "" "")
                     (sprintf "%s  %s%s%s" (sprintf "--%s" "and-another") "bool" "" "")
                 ]
                 |> String.concat "\n"
@@ -1618,10 +1619,12 @@ module TransferArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : Transfer =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "src-host") "string" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "src-port") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "dst-host") "string" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "dst-port") "int32" "" "")
+                    (sprintf "%s:" "Source")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "src-host") "string" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "src-port") "int32" "" "")
+                    (sprintf "%s:" "Dest")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "dst-host") "string" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "dst-port") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -1854,8 +1857,10 @@ module PrefixedNestedArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : PrefixedNested =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "outer-inner-leaf") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "outer-sibling") "int32" "" "")
+                    (sprintf "%s:" "Middle")
+                    (sprintf "%s:" "  Grandchild")
+                    (sprintf "    %s  %s%s%s" (sprintf "--%s" "outer-inner-leaf") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "outer-sibling") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -2015,7 +2020,10 @@ module PrefixedFlattenedArgParse =
             : PrefixedFlattened
             =
             let helpText () =
-                [ (sprintf "%s  %s%s%s" (sprintf "--%s" "outer-inner-leaf") "int32" "" "") ]
+                [
+                    (sprintf "%s:" "Grandchild")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "outer-inner-leaf") "int32" "" "")
+                ]
                 |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
@@ -2132,8 +2140,10 @@ module PrefixedThroughUnprefixedArgParse =
             =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "outer-leaf") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "outer-sibling") "int32" "" "")
+                    (sprintf "%s:" "Middle")
+                    (sprintf "%s:" "  Grandchild")
+                    (sprintf "    %s  %s%s%s" (sprintf "--%s" "outer-leaf") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "outer-sibling") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -2294,7 +2304,8 @@ module PrefixedAwkwardSpellingArgParse =
             =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "aw\\newline-back\\tab") "int32" "" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "aw\\newline-back\\tab") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -2412,7 +2423,8 @@ module PrefixedViaLiteralArgParse =
             =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "viaesc\\tab-" + (ViaLiteral)) "int32" "" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "viaesc\\tab-" + (ViaLiteral)) "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -2530,7 +2542,8 @@ module PrefixedLongFormsArgParse =
             =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s / --%s" "pre-renamed" "pre-r") "int32" "" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s / --%s" "pre-renamed" "pre-r") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -2648,8 +2661,9 @@ module PrefixedNegationArgParse =
             =
             let helpText () =
                 [
+                    (sprintf "%s:" "Child")
                     (sprintf
-                        "%s  %s%s%s"
+                        "  %s  %s%s%s"
                         (sprintf "--%s / --no-%s" "flags-enable-feature" "flags-enable-feature")
                         "bool"
                         ""
@@ -2773,8 +2787,14 @@ module PrefixedPositionalsArgParse =
             =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "pos-thing1") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "pos-rest") "string" " (positional args) (can be repeated)" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "pos-thing1") "int32" "" "")
+                    (sprintf
+                        "  %s  %s%s%s"
+                        (sprintf "--%s" "pos-rest")
+                        "string"
+                        " (positional args) (can be repeated)"
+                        "")
                 ]
                 |> String.concat "\n"
 
@@ -2908,8 +2928,9 @@ module PrefixedMapArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : PrefixedMap =
             let helpText () =
                 [
+                    (sprintf "%s:" "Child")
                     (sprintf
-                        "%s  %s%s%s"
+                        "  %s  %s%s%s"
                         (sprintf "--%s" "m-entries")
                         "map<string, string>"
                         " (KEY:VALUE[,KEY:VALUE...]; can be repeated)"
@@ -3056,11 +3077,12 @@ module PrefixedUnionArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : PrefixedUnion =
             let helpText () =
                 [
-                    "exactly one of the following sets of arguments:"
-                    "Auto:"
-                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "mode-quiet") "bool" " (optional)" "")
-                    "Manual:"
-                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "mode-level") "int32" "" "")
+                    (sprintf "%s:" "Mode")
+                    "  exactly one of the following sets of arguments:"
+                    "  Auto:"
+                    (sprintf "    %s  %s%s%s" (sprintf "--%s" "mode-quiet") "bool" " (optional)" "")
+                    "  Manual:"
+                    (sprintf "    %s  %s%s%s" (sprintf "--%s" "mode-level") "int32" "" "")
                 ]
                 |> String.concat "\n"
 

@@ -146,6 +146,18 @@ type ParentRecordSelfPos =
         AndAnother : bool list
     }
 
+/// A structural field's [<ArgumentHelpText>] describes the group of arguments the field
+/// contributes, rather than any single argument: it appears on the header line which introduces
+/// that group in the help text.
+[<ArgParser true>]
+type ParentRecordWithGroupHelp =
+    {
+        [<ArgumentHelpText "Settings for the child thing">]
+        Child : ChildRecord
+        [<ArgumentHelpText "Whether to and-another">]
+        AndAnother : bool
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {

@@ -458,9 +458,28 @@ Required argument '--exact' received no value"""
         exc.Message
         |> shouldEqual
             """Help text requested.
---thing1  int32
---thing2  string
+Child:
+  --thing1  int32
+  --thing2  string
 --and-another  bool (positional args) (can be repeated)"""
+
+    [<Test>]
+    let ``Help text for a nested record is headed by the field's help text`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordWithGroupHelp.parse' getEnvVar [ "--help" ]
+                |> ignore<ParentRecordWithGroupHelp>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+Child: Settings for the child thing
+  --thing1  int32
+  --thing2  string
+--and-another  bool : Whether to and-another"""
 
     [<Test>]
     let ``Positionals are tagged with Choice`` () =

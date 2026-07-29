@@ -216,12 +216,34 @@ type private ChoicePositional =
 type private ParseFunctionPositional = ParseFunction<ChoicePositional>
 type private ParseFunctionNonPositional = ParseFunction<Accumulation<ArgumentDefaultSpec>>
 
+/// How a structural field's arguments are introduced in help text: the header line under which
+/// the whole subtree is listed.
+///
+/// This is presentation only. A nested record's arguments live in the same flat namespace as its
+/// parent's, so the header describes which arguments were declared together rather than any
+/// spelling the user must type -- exactly as a union's case names already do.
+type private GroupHeader =
+    {
+        /// The nesting field's name, exactly as declared. This is a label rather than a spelling
+        /// the user types, so it is not argified: a union's case names already head their groups
+        /// verbatim, and the two kinds of group sit in the same help output.
+        Label : string
+        /// `[<ArgumentHelpText>]` on the nesting field, falling back to the same attribute on the
+        /// nested type's own definition.
+        Help : SynExpr option
+    }
+
 /// The parse tree mirroring the schema's shape: named-argument leaves, positional-stream
 /// leaves, products (records) and exclusive sums (unions of alternative argument sets).
 /// Build Branch nodes only through ParseTree.branch, which enforces the positional-capacity
 /// rule (argv holds a single positional stream, so at most one field chain of a record may
 /// claim positional args) and keeps the positional-claiming field after its siblings, which
 /// is where the positional args have always appeared in help text and in the erased schema.
+///
+/// `header` on a Branch or a Sum is the help-text group this node introduces. It is `Some` exactly
+/// when the node was reached through a field of a parent record, and `None` at the root (whose
+/// arguments are the top level, so there is nothing to introduce) and on a union case's payload
+/// record (whose header is the case name, which the Sum above it already emits).
 [<RequireQualifiedAccess>]
 type private ParseTree =
     | NonPositionalLeaf of ParseFunctionNonPositional
@@ -229,12 +251,19 @@ type private ParseTree =
     /// `assemble` takes the SynExpr's (e.g. each record field contents) corresponding to each
     /// `Ident` in the branch (e.g. each record field name), and composes them into a `SynExpr`
     /// (e.g. the record-typed object).
-    | Branch of fields : (Ident * ParseTree) list * assemble : (Map<string, SynExpr> -> SynExpr)
+    | Branch of
+        header : GroupHeader option *
+        fields : (Ident * ParseTree) list *
+        assemble : (Map<string, SynExpr> -> SynExpr)
     /// A discriminated-union arg: at runtime, exactly one case is selected by the arguments
     /// which were supplied. `sumId` ties this node to the erased schema's Sum node; `assemble`
     /// builds the union value from the selected case's name and its assembled payload.
     /// Positional args are not yet permitted inside union cases.
-    | Sum of sumId : int * cases : (Ident * ParseTree) list * assemble : (Ident -> SynExpr -> SynExpr)
+    | Sum of
+        sumId : int *
+        header : GroupHeader option *
+        cases : (Ident * ParseTree) list *
+        assemble : (Ident -> SynExpr -> SynExpr)
 
 [<RequireQualifiedAccess>]
 module private ParseTree =
@@ -244,18 +273,23 @@ module private ParseTree =
         match tree with
         | ParseTree.NonPositionalLeaf _ -> false
         | ParseTree.PositionalLeaf _ -> true
-        | ParseTree.Branch (fields, _) -> fields |> List.exists (fun (_, child) -> containsPositional child)
-        | ParseTree.Sum (_, cases, _) -> cases |> List.exists (fun (_, case) -> containsPositional case)
+        | ParseTree.Branch (_, fields, _) -> fields |> List.exists (fun (_, child) -> containsPositional child)
+        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, case) -> containsPositional case)
 
     /// The `Ident` here is the field name. Moves the positional-claiming field (at most one
     /// is permitted) after its siblings.
-    let branch (assemble : Map<string, SynExpr> -> SynExpr) (subs : (Ident * ParseTree) list) : ParseTree =
+    let branch
+        (header : GroupHeader option)
+        (assemble : Map<string, SynExpr> -> SynExpr)
+        (subs : (Ident * ParseTree) list)
+        : ParseTree
+        =
         let nonPos, pos =
             subs |> List.partition (fun (_, tree) -> not (containsPositional tree))
 
         match pos with
         | []
-        | [ _ ] -> ParseTree.Branch (nonPos @ pos, assemble)
+        | [ _ ] -> ParseTree.Branch (header, nonPos @ pos, assemble)
         | (first, _) :: (second, _) :: _ ->
             failwith $"Multiple entries tried to claim positional args! %s{first.idText} and %s{second.idText}"
 
@@ -267,13 +301,13 @@ module private ParseTree =
             match tree with
             | ParseTree.NonPositionalLeaf pf -> [ pf ], []
             | ParseTree.PositionalLeaf pf -> [], [ pf ]
-            | ParseTree.Branch (fields, _) ->
+            | ParseTree.Branch (_, fields, _) ->
                 (([], []), fields)
                 ||> List.fold (fun (nonPos, pos) (_, child) ->
                     let childNonPos, childPos = go child
                     nonPos @ childNonPos, pos @ childPos
                 )
-            | ParseTree.Sum (_, cases, _) ->
+            | ParseTree.Sum (_, _, cases, _) ->
                 (([], []), cases)
                 ||> List.fold (fun (nonPos, pos) (_, case) ->
                     let caseNonPos, casePos = go case
@@ -430,7 +464,7 @@ module private ParseTree =
         | ParseTree.NonPositionalLeaf _
         | ParseTree.PositionalLeaf _ -> false
         | ParseTree.Sum _ -> true
-        | ParseTree.Branch (fields, _) -> fields |> List.exists (fun (_, child) -> containsSum child)
+        | ParseTree.Branch (_, fields, _) -> fields |> List.exists (fun (_, child) -> containsSum child)
 
     /// Can this tree be satisfied by supplying no arguments at all? (Defaulted and optional
     /// leaves need nothing, as do positional args; a union needs nothing iff some case needs
@@ -446,8 +480,8 @@ module private ParseTree =
             // An unsupplied map is empty, exactly as an unsupplied list is.
             | Accumulation.Map _ -> true
         | ParseTree.PositionalLeaf _ -> true
-        | ParseTree.Branch (fields, _) -> fields |> List.forall (fun (_, child) -> emptySatisfiable child)
-        | ParseTree.Sum (_, cases, _) -> cases |> List.exists (fun (_, case) -> emptySatisfiable case)
+        | ParseTree.Branch (_, fields, _) -> fields |> List.forall (fun (_, child) -> emptySatisfiable child)
+        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, case) -> emptySatisfiable case)
 
     /// For every union node in the tree, at most one case may be satisfiable with no arguments:
     /// were two cases so satisfiable, an empty command line could not choose between them.
@@ -455,8 +489,8 @@ module private ParseTree =
         match tree with
         | ParseTree.NonPositionalLeaf _
         | ParseTree.PositionalLeaf _ -> ()
-        | ParseTree.Branch (fields, _) -> fields |> List.iter (fun (_, child) -> checkSumAmbiguity child)
-        | ParseTree.Sum (_, cases, _) ->
+        | ParseTree.Branch (_, fields, _) -> fields |> List.iter (fun (_, child) -> checkSumAmbiguity child)
+        | ParseTree.Sum (_, _, cases, _) ->
             cases |> List.iter (fun (_, case) -> checkSumAmbiguity case)
 
             match cases |> List.filter (fun (_, case) -> emptySatisfiable case) with
@@ -496,11 +530,11 @@ module private ParseTree =
             posCounter.Value <- posCounter.Value + 1
 
             SynExpr.applyFunction (rt [ "ErasedTree" ; "PositionalLeaf" ]) (SynExpr.CreateConst index)
-        | ParseTree.Branch (fields, _) ->
+        | ParseTree.Branch (_, fields, _) ->
             fields
             |> List.map (fun (_, child) -> toErasedTreeExpr rt listOf counter posCounter child)
             |> product
-        | ParseTree.Sum (sumId, cases, _) ->
+        | ParseTree.Sum (sumId, _, cases, _) ->
             let caseExprs =
                 cases
                 |> List.map (fun (caseName, payload) ->
@@ -553,7 +587,7 @@ module private ParseTree =
             SynExpr.createIdent' pf.TargetVariable
             |> SynExpr.pipeThroughFunction (SynExpr.createLongIdent [ "Seq" ; "toList" ])
             |> SynExpr.paren
-        | ParseTree.Sum (sumId, cases, assemble) ->
+        | ParseTree.Sum (sumId, _, cases, assemble) ->
             let scrutinee =
                 SynExpr.createLongIdent [ "Map" ; "tryFind" ]
                 |> SynExpr.applyTo (SynExpr.CreateConst sumId)
@@ -576,7 +610,7 @@ module private ParseTree =
                             "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"))
 
             SynExpr.createMatch scrutinee (clauses @ [ fallthrough ])
-        | ParseTree.Branch (fields, assemble) ->
+        | ParseTree.Branch (_, fields, assemble) ->
             fields
             |> List.map (fun (fieldName, contents) ->
                 let instantiated = instantiate contents
@@ -1367,6 +1401,7 @@ module internal ArgParserGenerator =
     /// and is "" at the root.
     let rec private toParseSpec
         (ancestors : string list)
+        (header : GroupHeader option)
         (prefix : string)
         (counter : int)
         (ambient : AmbientTypes)
@@ -1407,7 +1442,10 @@ module internal ArgParserGenerator =
                         | _ -> None
                     )
 
-                let helpText =
+                // Kept separate from the `helpText` below, which folds in the parse format: a
+                // structural field's help introduces a whole group of arguments rather than
+                // describing one, so it must not pick up a leaf's parsing note.
+                let helpTextAttr =
                     attrs
                     |> List.tryPick (fun a ->
                         match (List.last a.TypeName.LongIdent).idText with
@@ -1417,7 +1455,7 @@ module internal ArgParserGenerator =
                     )
 
                 let helpText =
-                    match parseExactModifier, helpText with
+                    match parseExactModifier, helpTextAttr with
                     | None, ht -> ht
                     | Some pe, None ->
                         SynExpr.createIdent "sprintf"
@@ -1504,6 +1542,16 @@ module internal ArgParserGenerator =
                     | Some target -> ambient.StructuralUnions |> List.tryFind (fun u -> u.Name.idText = target)
                     | None -> None
 
+                // A structural field contributes a whole group of arguments rather than one, so its
+                // help text introduces that group rather than describing a single argument. The
+                // group exists whether or not the author wrote any help: the reader must be able to
+                // see which arguments were declared together, exactly as for a union's cases.
+                let groupHeader =
+                    {
+                        GroupHeader.Label = ident.idText
+                        GroupHeader.Help = helpTextAttr
+                    }
+
                 match ambientRecordMatch with
                 | Some childRecord ->
                     // The structural branches are taken before any leaf machinery runs, so they
@@ -1518,7 +1566,8 @@ module internal ArgParserGenerator =
                         | None -> prefix
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
-                    let spec, counter = toParseSpec ancestors childPrefix counter ambient childRecord
+                    let spec, counter =
+                        toParseSpec ancestors (Some groupHeader) childPrefix counter ambient childRecord
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1536,7 +1585,8 @@ module internal ArgParserGenerator =
                         | None -> prefix
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
-                    let spec, counter = unionToParseSpec ancestors childPrefix counter ambient union
+                    let spec, counter =
+                        unionToParseSpec ancestors (Some groupHeader) childPrefix counter ambient union
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1721,12 +1771,14 @@ module internal ArgParserGenerator =
         let tree =
             contents
             |> List.rev
-            |> ParseTree.branch (fun args ->
-                args
-                |> Map.toList
-                |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
-                |> SynExpr.createRecord None
-            )
+            |> ParseTree.branch
+                header
+                (fun args ->
+                    args
+                    |> Map.toList
+                    |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
+                    |> SynExpr.createRecord None
+                )
 
         tree, counter
 
@@ -1736,6 +1788,7 @@ module internal ArgParserGenerator =
     /// arguments must be supplied at runtime.
     and private unionToParseSpec
         (ancestors : string list)
+        (header : GroupHeader option)
         (prefix : string)
         (counter : int)
         (ambient : AmbientTypes)
@@ -1787,8 +1840,10 @@ module internal ArgParserGenerator =
                             $"Case %s{case.Name.idText} of [<ArgParser>] union %s{union.Name.idText} must have exactly one field: a record holding that case's arguments."
 
                 // A case is an alternative, not a nesting level: the prefix in force passes
-                // through unchanged, so every case's arguments are namespaced identically.
-                let spec, counter = toParseSpec ancestors prefix counter ambient payloadRecord
+                // through unchanged, so every case's arguments are namespaced identically. For
+                // the same reason the payload record introduces no help-text group of its own --
+                // `sumHelp` already heads it with the case name.
+                let spec, counter = toParseSpec ancestors None prefix counter ambient payloadRecord
 
                 counter, (case.Name, spec) :: acc
             )
@@ -1798,7 +1853,7 @@ module internal ArgParserGenerator =
         let assemble (caseName : Ident) (payload : SynExpr) : SynExpr =
             SynExpr.applyFunction (SynExpr.createLongIdent' [ union.Name ; caseName ]) payload
 
-        ParseTree.Sum (sumId, cases, assemble), counter
+        ParseTree.Sum (sumId, header, cases, assemble), counter
 
     let private helpText (typeHelp : SynExpr option) (tree : ParseTree) : SynBinding =
         let describeNonPositional (arg : ParseFunctionNonPositional) : SynExpr =
@@ -1897,18 +1952,61 @@ module internal ArgParserGenerator =
             |> SynExpr.applyTo helpText
             |> SynExpr.paren
 
-        // Walk the tree so that a union's alternatives are *grouped* in the help, not flattened
-        // into one undifferentiated list: the user must be able to see which arguments go
-        // together. Non-positional lines appear in declaration order; the positional-args
-        // line, if any, comes last, as it always has (ParseTree.branch keeps the
-        // positional-claiming field after its siblings, and a sink beside a union is shared
-        // by every alternative, so it stays outside the case groups).
+        /// The line introducing a structural field's group of arguments, e.g. `child:` or
+        /// `child: Database settings`. The help text is a SynExpr rather than a literal (it may be
+        /// any expression the author wrote in the attribute), so the description has to be
+        /// assembled by the generated program rather than spliced here.
+        let groupLine (depth : int) (header : GroupHeader) : SynExpr =
+            let indent = String.replicate depth "  "
+
+            // The label is a field name, which may be a backticked identifier and so may contain
+            // anything at all: it needs escaping on the way into the generated file exactly as an
+            // argument's spelling does. (`indent` is whitespace by construction, so it is safe to
+            // splice.)
+            let label =
+                SynExpr.Const (
+                    SynConst.String (
+                        ArgFormEmission.escapeStringConstant (indent + header.Label),
+                        SynStringKind.Regular,
+                        range0
+                    ),
+                    range0
+                )
+
+            match header.Help with
+            | None ->
+                SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst "%s:")
+                |> SynExpr.applyTo label
+                |> SynExpr.paren
+            | Some help ->
+                // As in `toPrintable`: the label is user-derived and `%` is legal in a backticked
+                // identifier, so it is passed as an argument rather than spliced into the format.
+                SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst "%s: %s")
+                |> SynExpr.applyTo label
+                |> SynExpr.applyTo (SynExpr.paren help)
+                |> SynExpr.paren
+
+        // Walk the tree so that a union's alternatives, and a nested record's arguments, are
+        // *grouped* in the help rather than flattened into one undifferentiated list: the user
+        // must be able to see which arguments go together. Non-positional lines appear in
+        // declaration order; the positional-args line, if any, comes last, as it always has
+        // (ParseTree.branch keeps the positional-claiming field after its siblings, and a sink
+        // beside a union is shared by every alternative, so it stays outside the case groups).
         let rec fieldHelp (depth : int) (tree : ParseTree) : SynExpr list =
             match tree with
             | ParseTree.NonPositionalLeaf pf -> [ toPrintable depth describeNonPositional pf ]
             | ParseTree.PositionalLeaf pf -> [ toPrintable depth describePositional pf ]
-            | ParseTree.Branch (fields, _) -> fields |> List.collect (fun (_, child) -> fieldHelp depth child)
-            | ParseTree.Sum (_, cases, _) -> sumHelp depth cases
+            | ParseTree.Branch (header, fields, _) ->
+                let children (depth : int) =
+                    fields |> List.collect (fun (_, child) -> fieldHelp depth child)
+
+                match header with
+                | None -> children depth
+                | Some header -> groupLine depth header :: children (depth + 1)
+            | ParseTree.Sum (_, header, cases, _) ->
+                match header with
+                | None -> sumHelp depth cases
+                | Some header -> groupLine depth header :: sumHelp (depth + 1) cases
 
         and sumHelp (depth : int) (cases : (Ident * ParseTree) list) : SynExpr list =
             let indent = String.replicate depth "  "
@@ -2962,7 +3060,10 @@ module internal ArgParserGenerator =
                                        _) ->
                 let record = RecordType.OfRecord sci smd access fields
 
-                let spec, _ = toParseSpec [] "" 0 ambient record
+                // The root's arguments are the top level of the help text, so there is no enclosing
+                // group for them to be introduced as; its own `[<ArgumentHelpText>]` is the type
+                // help, which `helpText` prints above everything.
+                let spec, _ = toParseSpec [] None "" 0 ambient record
 
                 record.Name, typeHelp attrs, spec
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
@@ -2979,7 +3080,7 @@ module internal ArgParserGenerator =
                     failwith
                         $"No case of [<ArgParser>] union %s{union.Name.idText} has any data, so it is an enumerated value rather than a set of alternative argument sets: an empty command line could not choose between its cases. Use it as the type of a field of an [<ArgParser>] record instead, where it is supplied as `--field-name=a`."
 
-                let spec, _ = unionToParseSpec [] "" 0 ambient union
+                let spec, _ = unionToParseSpec [] None "" 0 ambient union
 
                 union.Name, typeHelp attrs, spec
             | _ ->

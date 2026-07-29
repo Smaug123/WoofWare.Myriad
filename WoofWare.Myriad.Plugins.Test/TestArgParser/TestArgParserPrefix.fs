@@ -274,8 +274,9 @@ module TestArgParserPrefix =
         exc.Message
         |> shouldEqual
             """Help text requested.
---foo-thing1  int32
---foo-thing2  string
+Child:
+  --foo-thing1  int32
+  --foo-thing2  string
 --and-another  bool"""
 
     [<Test>]

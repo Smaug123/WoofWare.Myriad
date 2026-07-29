@@ -1625,11 +1625,12 @@ module WithModeArgs =
         let helpText () =
             [
                 (sprintf "%s  %s%s%s" (sprintf "--%s" "verbose") "bool" "" "")
-                "exactly one of the following sets of arguments:"
-                "Auto:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
-                "Manual:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
+                (sprintf "%s:" "Mode")
+                "  exactly one of the following sets of arguments:"
+                "  Auto:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
+                "  Manual:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
             ]
             |> String.concat "\n"
 
@@ -1997,17 +1998,227 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type WithModeHelpArgs
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module WithModeHelpArgs =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithModeHelpArgs =
+        let helpText () =
+            [
+                (sprintf "%s  %s%s%s" (sprintf "--%s" "verbose") "bool" "" "")
+                (sprintf "%s: %s" "Mode" ("How loud to be"))
+                "  exactly one of the following sets of arguments:"
+                "  Auto:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
+                "  Manual:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
+            ]
+            |> String.concat "\n"
+
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_0 : bool option = None
+        let mutable arg_2 : bool option = None
+        let mutable arg_3 : int option = None
+
+        let parser_schema : ArgParserRuntime_DuArgs.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "verbose" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "quiet" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.BoolLike
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Optional
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 2
+                            Forms = [ "level" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_DuArgs.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_DuArgs.ErasedTree.Leaf 0
+                            ArgParserRuntime_DuArgs.ErasedTree.Sum (
+                                (1,
+                                 [
+                                     ("Auto",
+                                      ArgParserRuntime_DuArgs.ErasedTree.Product (
+                                          [ ArgParserRuntime_DuArgs.ErasedTree.Leaf 1 ]
+                                      ))
+                                     ("Manual",
+                                      ArgParserRuntime_DuArgs.ErasedTree.Product (
+                                          [ ArgParserRuntime_DuArgs.ErasedTree.Leaf 2 ]
+                                      ))
+                                 ])
+                            )
+                        ]
+                    ))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_DuArgs.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_0 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_0 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_0 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | 1 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            let parsedBool = System.Boolean.Parse value
+                            let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                            arg_2 <- Some (parsedBool)
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        arg_2 <- Some ((if occurrence.Negated then false else true))
+                        None
+            | 2 ->
+                match arg_3 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_3 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_0 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_3 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_DuArgs.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_DuArgs.runParse
+                (ArgParserRuntime_DuArgs.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_DuArgs.ParseOutcome.Success parser_selection ->
+            {
+                Mode =
+                    match Map.tryFind 1 parser_selection.Choices with
+                    | Some 0 ->
+                        Mode.Auto (
+                            {
+                                Quiet = arg_2
+                            }
+                        )
+                    | Some 1 ->
+                        Mode.Manual (
+                            {
+                                Level =
+                                    (match arg_3 with
+                                     | Some x -> x
+                                     | None ->
+                                         failwith
+                                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            }
+                        )
+                    | _ ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"
+                Verbose =
+                    (match arg_0 with
+                     | Some x -> x
+                     | None ->
+                         failwith
+                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+            }
+        | ArgParserRuntime_DuArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_DuArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_DuArgs.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : WithModeHelpArgs =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type ModeAndPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ModeAndPositionals =
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : ModeAndPositionals =
         let helpText () =
             [
-                "exactly one of the following sets of arguments:"
-                "Auto:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
-                "Manual:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
+                (sprintf "%s:" "Mode")
+                "  exactly one of the following sets of arguments:"
+                "  Auto:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "quiet") "bool" " (optional)" "")
+                "  Manual:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "level") "int32" "" "")
                 (sprintf "%s  %s%s%s" (sprintf "--%s" "rest") "int32" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"
@@ -2190,12 +2401,13 @@ module CommandAndPositionals =
     let parse' (getEnvironmentVariable : string -> string option) (args : string list) : CommandAndPositionals =
         let helpText () =
             [
-                "exactly one of the following sets of arguments:"
-                "Fetch:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "url") "string" "" "")
-                "Push:"
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "remote") "string" "" "")
-                (sprintf "  %s  %s%s%s" (sprintf "--%s" "force") "bool" "" "")
+                (sprintf "%s:" "Command")
+                "  exactly one of the following sets of arguments:"
+                "  Fetch:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "url") "string" "" "")
+                "  Push:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "remote") "string" "" "")
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "force") "bool" "" "")
                 (sprintf "%s  %s%s%s" (sprintf "--%s" "paths") "string" " (positional args) (can be repeated)" "")
             ]
             |> String.concat "\n"

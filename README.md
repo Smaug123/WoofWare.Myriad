@@ -346,6 +346,31 @@ That question is put to `OrdinalIgnoreCase` itself rather than answered from `To
 If `--help` appears in a position where the parser is expecting a key (e.g. in the first position, or after a `--foo=bar`), the parser fails with help text.
 The parser also makes a limited effort to supply help text when encountering an invalid parse.
 
+A field whose type is another argument record, or a union of alternative argument sets, contributes a whole group of arguments rather than one.
+Those arguments are listed under a header line naming the field, so that you can see which arguments were declared together; `[<ArgumentHelpText>]` on such a field describes the group, and appears on that header line.
+
+```fsharp
+type ChildRecord = { Thing1 : int ; Thing2 : string }
+
+[<ArgParser>]
+type Parent =
+    {
+        [<ArgumentHelpText "Settings for the child thing">]
+        Child : ChildRecord
+        AndAnother : bool
+    }
+```
+
+```
+Child: Settings for the child thing
+  --thing1  int32
+  --thing2  string
+--and-another  bool
+```
+
+The header is presentation only: a nested record's arguments live in the same flat namespace as their parent's, so you still type `--thing1`, not `--child-thing1`.
+Use `[<ArgumentPrefix>]` if you want the nesting reflected in the spellings too.
+
 ### Composition
 
 Records compose: if your record contains other records which are visible to the source generator (that is, they're in the same file as the main args type), the fields of *those* records will also be included in the command line, as if you'd specified them inline in the top-level record.

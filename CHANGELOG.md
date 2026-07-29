@@ -1,5 +1,18 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.7.1
+
+`ArgParserGenerator` help text now groups the arguments contributed by a field whose type is another argument record, or a union of alternative argument sets, under a header line naming that field.
+Previously those arguments were flattened into one undifferentiated list, so nothing indicated which arguments were declared together.
+A union-typed field's alternatives are now listed inside its field's group, rather than at the top level.
+
+An `[<ArgumentHelpText>]` on such a field is now honoured, and appears on that header line: it was previously read and then silently dropped, because the structural branches ran before the machinery which consumes it.
+So `[<ArgumentHelpText "Settings for the child thing">] Child : ChildRecord` gives a header of `Child: Settings for the child thing`.
+
+The grouping is applied whether or not any help text is present, so `--help` output changes for every parser containing a nested record or a union-typed field.
+Argument spellings are unaffected: a nested record's arguments still live in the same flat namespace as their parent's, and the header describes which arguments were declared together rather than anything the user must type.
+(Use `[<ArgumentPrefix>]` if you want the nesting reflected in the spellings too.)
+
 # WoofWare.Myriad.Plugins 10.6.2
 
 `ArgParserGenerator` now correctly escapes strings from `ArgumentLongForm` where necessary.
