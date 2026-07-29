@@ -230,6 +230,21 @@ type ContainsAwkwardStringDefaults =
         Unicode : Choice<string, string>
     }
 
+/// An argument's *spelling* goes through the same round trip as a default value, and needs the same
+/// care: a `SynConst.String` holds decoded text, so re-emitting `"back\\tab"` naively gives
+/// `"back\tab"`, whose `\t` is a tab, and the argument answers to a name other than the one
+/// declared. A verbatim spelling decodes to the same text and must end up spelled the same way.
+[<ArgParser true>]
+type AwkwardLongForms =
+    {
+        [<ArgumentLongForm "back\\tab">]
+        Backslash : int
+        [<ArgumentLongForm @"verbatim\tab">]
+        Verbatim : int
+        [<ArgumentLongForm "café">]
+        Unicode : int
+    }
+
 [<ArgParser true>]
 type ManyLongForms =
     {

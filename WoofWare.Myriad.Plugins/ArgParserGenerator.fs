@@ -91,6 +91,49 @@ type private Accumulation<'choice> =
     /// no arguments (it is then empty), so it is neither optional nor defaultable.
     | Map of MapSpec
 
+/// Turning an argument's spelling into generated source. `ArgForm` holds the semantic spelling,
+/// which is what the generation-time name checks must compare; these ready it for emission.
+[<RequireQualifiedAccess>]
+module private ArgFormEmission =
+
+    /// Rewrite a string so that it can be dropped between the quotes of a generated regular string
+    /// literal and read back as itself.
+    ///
+    /// This is not simply "the F# escaping rules", because Fantomas has its own view: it emits a
+    /// `SynConst.String`'s text between quotes having escaped the quotes and nothing else. Anything
+    /// else which needs escaping is therefore ours to do (otherwise `C:\temp` would be emitted as
+    /// `"C:\temp"`, whose `\t` is a tab), and we escape the quote as `\u0022` rather than `\"` so
+    /// that Fantomas finds no quote to escape and hands our text through unaltered.
+    let escapeStringConstant (s : string) : string =
+        s
+        |> String.collect (fun c ->
+            match c with
+            | '\\' -> @"\\"
+            | '"' -> @"\u0022"
+            // Everything outside printable ASCII goes out as an escape: `\uXXXX` is a UTF-16 code
+            // unit, which is exactly what a char of a .NET string is, so this is faithful even for
+            // an unpaired surrogate, and it keeps the generated file free of any dependence on how
+            // it is encoded.
+            | c when c >= ' ' && c <= '~' -> System.Char.ToString c
+            | c -> sprintf @"\u%04x" (int c)
+        )
+
+    /// Ready an argument's spelling to be written into the generated file.
+    ///
+    /// `ArgForm` holds the *semantic* spelling: a `SynConst.String` carries decoded text, and the
+    /// generation-time name checks must compare what the scanner will compare, not a rendering of it
+    /// (`é` against `É` would miss the collision that `é` and `É` do have). Emission wants
+    /// the opposite, so escape here, at the boundary, and emit a regular string whatever the author
+    /// wrote -- a verbatim or triple-quoted spelling could not express the escapes we need.
+    ///
+    /// A form we cannot read (an [<ArgumentLongForm>] naming a [<Literal>]) is an expression the
+    /// generated program evaluates for itself, and passes through untouched.
+    let emitArgForm (form : SynExpr) : SynExpr =
+        match form with
+        | SynExpr.Const (SynConst.String (s, _, _), _) ->
+            SynExpr.Const (SynConst.String (escapeStringConstant s, SynStringKind.Regular, range0), range0)
+        | form -> form
+
 type private ParseFunction<'acc> =
     {
         FieldName : Ident
@@ -146,7 +189,8 @@ type private ParseFunction<'acc> =
             let combinedFormatString = standardFormatString + " / " + negatedFormatString
 
             // Apply all arg forms twice (once for standard, once for negated)
-            let allArgForms = arg.ArgForm @ arg.ArgForm
+            let allArgForms =
+                (arg.ArgForm @ arg.ArgForm) |> List.map ArgFormEmission.emitArgForm
 
             (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst combinedFormatString),
              allArgForms)
@@ -156,7 +200,8 @@ type private ParseFunction<'acc> =
             // Standard behavior: just --foo / --bar
             let formatString = List.replicate arg.ArgForm.Length "--%s" |> String.concat " / "
 
-            (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString), arg.ArgForm)
+            (SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst formatString),
+             arg.ArgForm |> List.map ArgFormEmission.emitArgForm)
             ||> List.fold SynExpr.applyFunction
             |> SynExpr.paren
 
@@ -831,28 +876,6 @@ module internal ArgParserGenerator =
             ids |> List.map _.idText |> String.concat "." |> Identifier
         | _ -> Unrecognised
 
-    /// Rewrite a string so that it can be dropped between the quotes of a generated regular string
-    /// literal and read back as itself.
-    ///
-    /// This is not simply "the F# escaping rules", because Fantomas has its own view: it emits a
-    /// `SynConst.String`'s text between quotes having escaped the quotes and nothing else. Anything
-    /// else which needs escaping is therefore ours to do (otherwise `C:\temp` would be emitted as
-    /// `"C:\temp"`, whose `\t` is a tab), and we escape the quote as `\u0022` rather than `\"` so
-    /// that Fantomas finds no quote to escape and hands our text through unaltered.
-    let private escapeStringConstant (s : string) : string =
-        s
-        |> String.collect (fun c ->
-            match c with
-            | '\\' -> @"\\"
-            | '"' -> @"\u0022"
-            // Everything outside printable ASCII goes out as an escape: `\uXXXX` is a UTF-16 code
-            // unit, which is exactly what a char of a .NET string is, so this is faithful even for
-            // an unpaired surrogate, and it keeps the generated file free of any dependence on how
-            // it is encoded.
-            | c when c >= ' ' && c <= '~' -> System.Char.ToString c
-            | c -> sprintf @"\u%04x" (int c)
-        )
-
     /// Build the expression for a recognised constant default.
     ///
     /// A `SynConst.Char` needs care: Fantomas renders one without its quotes, so `'a'` reaches the
@@ -869,7 +892,10 @@ module internal ArgParserGenerator =
         match c with
         | SynConst.Char c -> SynExpr.CreateConst c
         | SynConst.String (text = s) ->
-            SynExpr.Const (SynConst.String (escapeStringConstant s, SynStringKind.Regular, range0), range0)
+            SynExpr.Const (
+                SynConst.String (ArgFormEmission.escapeStringConstant s, SynStringKind.Regular, range0),
+                range0
+            )
         | c -> SynExpr.Const (c, range0)
 
     /// Builds a function or lambda of one string argument, which returns a `ty` (as modified by the `Accumulation`;
@@ -2131,7 +2157,7 @@ module internal ArgParserGenerator =
 
                     [
                         field "Id" (SynExpr.CreateConst index)
-                        field "Forms" (listOf pf.ArgForm)
+                        field "Forms" (listOf (pf.ArgForm |> List.map ArgFormEmission.emitArgForm))
                         field "AcceptsNegation" (SynExpr.CreateConst pf.AcceptsNegation)
                         field "Arity" arity
                         field "Repeatable" repeatable
@@ -2171,7 +2197,7 @@ module internal ArgParserGenerator =
 
                     [
                         field "Id" (SynExpr.CreateConst index)
-                        field "Forms" (listOf pf.ArgForm)
+                        field "Forms" (listOf (pf.ArgForm |> List.map ArgFormEmission.emitArgForm))
                         field "FlagLike" flagLike
                         field "TypeDescription" (SynExpr.CreateConst "")
                         field "Help" (SynExpr.createIdent "None")

@@ -1,5 +1,12 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.6.2
+
+Fixes `ArgParserGenerator` emitting an argument's spelling into the generated file without the escaping that spelling needs.
+An `[<ArgumentLongForm "back\\tab">]` was emitted as `"back\tab"`, whose `\t` is a tab, so the argument answered to a name other than the one declared (and a spelling containing e.g. `\q` could stop the generated file compiling at all).
+Verbatim spellings such as `@"back\tab"` were unaffected and remain so.
+This is the same round-trip hazard that `[<ArgumentDefaultValue>]` already guards against; the guard now covers names as well as values.
+
 # WoofWare.Myriad.Plugins 10.6.1, WoofWare.Myriad.Plugins.Attributes 3.11.1
 
 The `ArgParserGenerator` gains `[<ArgumentPrefix "foo">]`, placed on a field whose type is another argument record or a union of alternative argument sets: every argument that field contributes is namespaced, so `--blah` becomes `--foo-blah`.
