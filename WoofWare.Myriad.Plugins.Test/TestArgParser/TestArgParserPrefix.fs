@@ -173,6 +173,35 @@ module TestArgParserPrefix =
 
         exc.Message |> shouldContainText "--flags-no-enable-feature"
 
+    /// Prefixing rebuilds a spelling as a fresh string constant, and a `SynConst.String` holds
+    /// *decoded* text, so the combined name needs the escaping the author's own source supplied.
+    /// Without it the emitted `\n` and `\t` are read back as a newline and a tab, and the argument
+    /// silently answers to a name other than the one declared.
+    [<Test>]
+    let ``A prefixed spelling containing backslashes survives re-emission`` () =
+        PrefixedAwkwardSpelling.parse' noEnvVar [ "--aw\\newline-back\\tab=3" ]
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        Awkward = 3
+                    }
+            }
+
+    /// A long form we cannot read at generation time stays an expression the generated program
+    /// evaluates, so the prefix is concatenated to it at *runtime* -- but the prefix half is still a
+    /// constant we invent, and still needs escaping on the way out.
+    [<Test>]
+    let ``A prefix joined to an unreadable long form is escaped`` () =
+        PrefixedViaLiteral.parse' noEnvVar [ "--viaesc\\tab-via-literal=5" ]
+        |> shouldEqual
+            {
+                Child =
+                    {
+                        X = 5
+                    }
+            }
+
     /// A positional sink inside a prefixed sub-record still collects bare tokens, and its keyed
     /// alias -- the `--form=value` spelling which addresses the sink explicitly -- is prefixed like
     /// any other name.

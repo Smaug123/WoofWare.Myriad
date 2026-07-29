@@ -1033,3 +1033,36 @@ Trailing argument --unknown had no value. Use a double-dash to separate position
         exc.Message |> shouldContainText "--bar  string"
         // Make sure there's no extra blank line at the beginning
         exc.Message.StartsWith '\n' |> shouldEqual false
+
+    /// An argument's spelling survives the generated file's round trip. A `SynConst.String` holds
+    /// *decoded* text, so re-emitting it demands the escaping the author's own source supplied:
+    /// without it `"back\\tab"` is emitted as `"back\tab"`, read back with a tab in it, and the
+    /// argument answers to a name other than the one declared.
+    [<Test>]
+    let ``Long forms needing escaping survive re-emission`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        AwkwardLongForms.parse' getEnvVar [ "--back\\tab=1" ; "--verbatim\\tab=2" ; "--café=3" ; "--paren\\tab=4" ]
+        |> shouldEqual
+            {
+                Backslash = 1
+                Verbatim = 2
+                Unicode = 3
+                Parenthesised = 4
+            }
+
+    /// The help text advertises the same spellings the scanner accepts.
+    [<Test>]
+    let ``Help text for long forms needing escaping`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () -> AwkwardLongForms.parse' getEnvVar [ "--help" ] |> ignore<AwkwardLongForms>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--back\tab  int32
+--verbatim\tab  int32
+--café  int32
+--paren\tab  int32"""

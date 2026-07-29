@@ -1,5 +1,9 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.6.2
+
+`ArgParserGenerator` now correctly escapes strings from `ArgumentLongForm` where necessary.
+
 # WoofWare.Myriad.Plugins 10.6.1, WoofWare.Myriad.Plugins.Attributes 3.11.1
 
 The `ArgParserGenerator` gains `[<ArgumentPrefix "foo">]`, placed on a field whose type is another argument record or a union of alternative argument sets: every argument that field contributes is namespaced, so `--blah` becomes `--foo-blah`.
