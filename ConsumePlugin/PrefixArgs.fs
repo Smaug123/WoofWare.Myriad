@@ -82,6 +82,42 @@ type PrefixedThroughUnprefixed =
         Middle : UnprefixedMiddle
     }
 
+type ChildWithAwkwardSpelling =
+    {
+        [<ArgumentLongForm "back\\tab">]
+        Awkward : int
+    }
+
+/// Prefixing *rebuilds* a spelling, so the combined name is a constant we invent rather than one
+/// the author wrote, and it needs the escaping their source supplied just as much. Without it the
+/// emitted `\n` and `\t` here are read back as a newline and a tab.
+[<ArgParser true>]
+type PrefixedAwkwardSpelling =
+    {
+        [<ArgumentPrefix "aw\\newline">]
+        Child : ChildWithAwkwardSpelling
+    }
+
+[<AutoOpen>]
+module PrefixLongFormLiterals =
+    [<Literal>]
+    let ViaLiteral = "via-literal"
+
+type ChildViaLiteral =
+    {
+        [<ArgumentLongForm(ViaLiteral)>]
+        X : int
+    }
+
+/// A long form we cannot read at generation time becomes a concatenation the generated program
+/// performs, so the prefix half of it is a constant we invent and must escape.
+[<ArgParser true>]
+type PrefixedViaLiteral =
+    {
+        [<ArgumentPrefix "viaesc\\tab">]
+        Child : ChildViaLiteral
+    }
+
 type ChildWithLongForms =
     {
         [<ArgumentLongForm "renamed">]

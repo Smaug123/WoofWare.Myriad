@@ -1336,7 +1336,17 @@ module internal ArgParserGenerator =
 
         match SynExpr.stripOptionalParen form with
         | SynExpr.Const (SynConst.String (s, _, _), _) -> SynExpr.CreateConst (prefix + s)
-        | form -> SynExpr.plus (SynExpr.CreateConst prefix) (SynExpr.paren form)
+        | form ->
+            // A form we cannot read stays an expression the generated program evaluates, so the
+            // prefix is joined to it there. That makes this branch pure emission -- `literalForms`
+            // matches only a bare constant, so nothing here reaches the name checks -- and the
+            // constant we are about to write out needs escaping like any other.
+            SynExpr.plus
+                (SynExpr.Const (
+                    SynConst.String (ArgFormEmission.escapeStringConstant prefix, SynStringKind.Regular, range0),
+                    range0
+                ))
+                (SynExpr.paren form)
 
     /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being

@@ -2281,6 +2281,242 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type PrefixedAwkwardSpelling
+[<AutoOpen>]
+module PrefixedAwkwardSpellingArgParse =
+    /// Extension methods for argument parsing
+    type PrefixedAwkwardSpelling with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : PrefixedAwkwardSpelling
+            =
+            let helpText () =
+                [
+                    (sprintf "%s  %s%s%s" (sprintf "--%s" "aw\\newline-back\\tab") "int32" "" "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+
+            let parser_schema : ArgParserRuntime_PrefixedParent.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "aw\\newline-back\\tab" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_PrefixedParent.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_PrefixedParent.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_PrefixedParent.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_PrefixedParent.ErasedTree.Product (
+                                    [ ArgParserRuntime_PrefixedParent.ErasedTree.Leaf 0 ]
+                                )
+                            ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence (occurrence : ArgParserRuntime_PrefixedParent.ErasedOccurrence) : string option =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_PrefixedParent.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_PrefixedParent.runParse
+                    (ArgParserRuntime_PrefixedParent.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.Success parser_selection ->
+                {
+                    Child =
+                        {
+                            Awkward =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                        }
+                }
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : PrefixedAwkwardSpelling =
+            PrefixedAwkwardSpelling.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type PrefixedViaLiteral
+[<AutoOpen>]
+module PrefixedViaLiteralArgParse =
+    /// Extension methods for argument parsing
+    type PrefixedViaLiteral with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : PrefixedViaLiteral
+            =
+            let helpText () =
+                [
+                    (sprintf "%s  %s%s%s" (sprintf "--%s" "viaesc\\tab-" + (ViaLiteral)) "int32" "" "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+
+            let parser_schema : ArgParserRuntime_PrefixedParent.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "viaesc\\tab-" + (ViaLiteral) ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_PrefixedParent.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_PrefixedParent.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_PrefixedParent.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_PrefixedParent.ErasedTree.Product (
+                                    [ ArgParserRuntime_PrefixedParent.ErasedTree.Leaf 0 ]
+                                )
+                            ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence (occurrence : ArgParserRuntime_PrefixedParent.ErasedOccurrence) : string option =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_PrefixedParent.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_PrefixedParent.runParse
+                    (ArgParserRuntime_PrefixedParent.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.Success parser_selection ->
+                {
+                    Child =
+                        {
+                            X =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                        }
+                }
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_PrefixedParent.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : PrefixedViaLiteral =
+            PrefixedViaLiteral.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type PrefixedLongForms
 [<AutoOpen>]
 module PrefixedLongFormsArgParse =
