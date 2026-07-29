@@ -108,6 +108,10 @@
     <Compile Include="GeneratedMapArgs.fs">
       <MyriadFile>MapArgs.fs</MyriadFile>
     </Compile>
+    <Compile Include="PrefixArgs.fs" />
+    <Compile Include="GeneratedPrefixArgs.fs">
+      <MyriadFile>PrefixArgs.fs</MyriadFile>
+    </Compile>
     <Compile Include="Nested/Args.fs" />
     <Compile Include="Nested/GeneratedArgs.fs">
       <MyriadFile>Nested/Args.fs</MyriadFile>

@@ -1,5 +1,16 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.6.1, WoofWare.Myriad.Plugins.Attributes 3.11.1
+
+The `ArgParserGenerator` gains `[<ArgumentPrefix "foo">]`, placed on a field whose type is another argument record or a union of alternative argument sets: every argument that field contributes is namespaced, so `--blah` becomes `--foo-blah`.
+
+The prefix applies to every argument in the subtree, including ones carrying an explicit `[<ArgumentLongForm>]` and ones nested arbitrarily deep, whether or not the intervening records carry prefixes of their own.
+Prefixes compose from the outside in (`--outer-inner-blah`), and `[<ArgumentNegateWithPrefix>]` negates outside the prefix (`--no-foo-blah`).
+The prefixed names are what appear in help text and what the duplicate-name checks see, so a prefix can both resolve a collision (`{ A : MySubRecord ; B : MySubRecord}`) and create one (`{ FooBar : int ; [<ArgumentPrefix "foo">] Bar : string }`).
+
+The prefix must be a string literal written out in full, must be non-empty, must not contain `=`, and must not start or end with `-` (the separating `-` is inserted for you); it is used exactly as written, and is not case-normalised.
+The generator will fail if you try to use this on a leaf field, on a `[<PositionalArgs>]` field, and on a union case.
+
 # WoofWare.Myriad.Plugins 10.5.2
 
 The `ArgParserGenerator` now rejects an `[<ArgumentLongForm>]` placed on a field whose type is another argument record, or a discriminated union of alternative argument sets.

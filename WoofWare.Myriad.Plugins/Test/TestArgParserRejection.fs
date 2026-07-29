@@ -3,6 +3,8 @@ namespace WoofWare.Myriad.Plugins.Test
 open Fantomas.FCS.Syntax
 open NUnit.Framework
 open FsUnitTyped
+open FsCheck
+open FsCheck.FSharp
 open WoofWare.Whippet.Fantomas
 open WoofWare.Myriad.Plugins
 
@@ -2143,3 +2145,358 @@ type Args =
 """
 
         List.length modules |> shouldEqual 2
+
+    /// [<ArgumentPrefix>] namespaces a whole subtree, so it is meaningful only on a field which
+    /// *has* a subtree. Everywhere else it would be silently dropped, leaving the author with a
+    /// parser whose argument names are not the ones they asked for.
+    let private prefixOnLeaf (field : string) (ty : string) : string =
+        $"[<ArgumentPrefix>] can only be applied to a field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative argument sets, but was applied to field '%s{field}' of type %s{ty}. It renames every argument contributed by that field's subtree by prepending a namespace (e.g. [<ArgumentPrefix \"foo\">] on a field whose type is a record containing `Blah : string` turns --blah into --foo-blah); a leaf field has no subtree to rename. To change this one argument's name, use [<ArgumentLongForm>] instead."
+
+    let private badPrefix (field : string) (prefix : string) : string =
+        $"[<ArgumentPrefix>] on field '%s{field}' must be a non-empty string which does not contain '=' and does not start or end with '-' (the generated parser inserts the separating '-' itself), but got '%s{prefix}'. The prefix is used exactly as written, so spell it as you want it to appear on the command line, without the leading '--'."
+
+    [<Test>]
+    let ``ArgumentPrefix on a leaf field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        A : int
+    }
+"""
+        |> shouldRejectWith (prefixOnLeaf "A" "int32")
+
+    [<Test>]
+    let ``ArgumentPrefix on a Map field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        [<ArgumentKeyValueSeparator ':'>]
+        A : Map<string, string>
+    }
+"""
+        |> shouldRejectWith (prefixOnLeaf "A" "map<string, string>")
+
+    [<Test>]
+    let ``ArgumentPrefix on a positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        [<PositionalArgs>]
+        A : string list
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentPrefix>] was applied to field 'A', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
+
+    /// The structural branches are taken before any leaf machinery runs, so a field which is both
+    /// prefixed and positional must be caught before the dispatch: otherwise the record-typed case
+    /// would prefix the subtree and drop the [<PositionalArgs>] without a word.
+    [<Test>]
+    let ``ArgumentPrefix beside PositionalArgs on a sub-record field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        [<PositionalArgs>]
+        A : Child
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentPrefix>] was applied to field 'A', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
+
+    [<Test>]
+    let ``ArgumentPrefix on a union case is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        Bar : int
+    }
+
+[<ArgParser>]
+type Args =
+    | [<ArgumentPrefix "foo">] FooCase of FooArgs
+    | BarCase of BarArgs
+"""
+        |> shouldRejectWith
+            "[<ArgumentPrefix>] was applied to case 'FooCase' of [<ArgParser>] union 'Args', but it belongs on a field. A union's cases are alternatives, so their argument names must already be distinct from one another, and a prefix here would buy no disambiguation. To namespace every case's arguments at once, put the [<ArgumentPrefix>] on the field whose type is 'Args'."
+
+    [<Test>]
+    let ``A non-literal ArgumentPrefix is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix(SomeConstant)>]
+        A : Child
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentPrefix>] on field 'A' must be a string literal written out in full, but its value names something (SomeConstant) instead. The prefix is combined with every argument name in that field's subtree as the parser is generated, so it has to be known then; the generated file also hoists every `open` in your source above the parser, so a name need not resolve there to what it means here."
+
+    /// The prefix is concatenated into every name in the subtree, so a prefix which no token could
+    /// address makes the entire subtree unaddressable. Reject it at the prefix rather than letting
+    /// the resulting names fail the ordinary name checks, where the reported name would be the
+    /// concatenation and the author would have to work backwards to the cause.
+    [<TestCase "">]
+    [<TestCase "has=equals">]
+    [<TestCase "-leading">]
+    [<TestCase "trailing-">]
+    [<TestCase "-">]
+    let ``Malformed ArgumentPrefix values are rejected`` (prefix : string) =
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {{
+        Blah : int
+    }}
+
+[<ArgParser>]
+type Args =
+    {{
+        [<ArgumentPrefix "%s{prefix}">]
+        A : Child
+    }}
+"""
+        |> shouldRejectWith (badPrefix "A" prefix)
+
+    /// The complement of the case-by-case rejections above: a prefix is accepted exactly when it
+    /// is non-empty, contains no '=', and has no edge dash. Searching the space beats enumerating
+    /// it, because the interesting failures are the ones neither of us thought to write down.
+    [<Test>]
+    let ``A prefix is accepted exactly when it is well-formed`` () =
+        let source (prefix : string) : string =
+            $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {{
+        Blah : int
+    }}
+
+[<ArgParser>]
+type Args =
+    {{
+        [<ArgumentPrefix "%s{prefix}">]
+        A : Child
+    }}
+"""
+
+        // Restricted to characters which survive being written into F# source unescaped: the
+        // property is about the generator's validation, not about F# string literals.
+        let prefixChar =
+            Gen.elements ([ 'a' .. 'e' ] @ [ 'A' ; 'B' ] @ [ '-' ; '=' ; '_' ; '.' ; '0' ])
+
+        let prefixes =
+            Gen.listOf prefixChar
+            |> Gen.map (fun cs -> System.String (Array.ofList cs))
+            |> Arb.fromGen
+
+        Prop.forAll
+            prefixes
+            (fun prefix ->
+                let wellFormed =
+                    prefix <> ""
+                    && not (prefix.Contains "=")
+                    && not (prefix.StartsWith ("-", System.StringComparison.Ordinal))
+                    && not (prefix.EndsWith ("-", System.StringComparison.Ordinal))
+
+                if wellFormed then
+                    generateFromSource (source prefix) |> List.length = 2
+                else
+                    let exc =
+                        Assert.Throws<exn> (fun () ->
+                            generateFromSource (source prefix) |> ignore<SynModuleOrNamespace list>
+                        )
+
+                    exc.Message = badPrefix "A" prefix
+            )
+        |> Check.QuickThrowOnFailure
+
+    /// The point of the feature: two copies of one sub-record, which collide without prefixes, are
+    /// accepted with distinct ones.
+    [<Test>]
+    let ``The same sub-record may be embedded twice under distinct prefixes`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Endpoint =
+    {
+        Host : string
+        Port : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "src">]
+        Source : Endpoint
+        [<ArgumentPrefix "dst">]
+        Dest : Endpoint
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    /// ... and the prefixed names still take part in the ordinary conflict detection rather than
+    /// bypassing it: equal prefixes collide exactly as bare names do.
+    [<Test>]
+    let ``Two copies of a sub-record under the same prefix still conflict`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Endpoint =
+    {
+        Host : string
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "same">]
+        Source : Endpoint
+        [<ArgumentPrefix "same">]
+        Dest : Endpoint
+    }
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--same-host' is claimed by: '--same-host' (field 'Host'); '--same-host' (field 'Host')"
+
+    /// The generation-time name checks compare under the scanner's own case-insensitive equality,
+    /// so a prefixed name must reach them as its semantic spelling and not as a rendering of it:
+    /// `é` and `É` differ exactly where `é` and `É` collide, so a schema which is
+    /// broken at runtime would otherwise sail through generation.
+    [<Test>]
+    let ``A non-ASCII collision between prefixes differing only by case is detected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Endpoint =
+    {
+        Host : string
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "é">]
+        Source : Endpoint
+        [<ArgumentPrefix "É">]
+        Dest : Endpoint
+    }
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--é-host' is claimed by: '--é-host' (field 'Host'); '--É-host' (field 'Host')"
+
+    /// A prefix can manufacture a collision which is present in neither subtree alone.
+    [<Test>]
+    let ``A prefixed name colliding with a sibling's bare name is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Bar : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        A : Child
+        FooBar : int
+    }
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--foo-bar' is claimed by: '--foo-bar' (field 'Bar'); '--foo-bar' (field 'FooBar')"
+
+    /// The reserved-name check sees the prefixed name, not the bare one: `--help` is reserved, but
+    /// `--foo-help` is an ordinary name.
+    [<Test>]
+    let ``A prefix rescues an otherwise-reserved name`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Help : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        A : Child
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    /// Prefixing does not disturb the recursion guard: a self-referential schema still fails as
+    /// such, rather than looping while it concatenates prefixes.
+    [<Test>]
+    let ``A prefixed recursive schema is still rejected as recursive`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        A : Args
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgParser>] schema is recursive: Args -> Args. Argument records and unions may not contain themselves, even indirectly."

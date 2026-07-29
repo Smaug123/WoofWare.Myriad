@@ -247,6 +247,40 @@ You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<Pa
 
 You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
 
+### Namespacing a sub-record's arguments
+
+A field whose type is another argument record contributes that record's arguments directly, so
+embedding the same record twice would make its arguments collide. `[<ArgumentPrefix>]` namespaces a
+field's whole subtree:
+
+```fsharp
+type Endpoint =
+    {
+        Host : string
+        Port : int
+    }
+
+[<ArgParser>]
+type Transfer =
+    {
+        [<ArgumentPrefix "src">]
+        Source : Endpoint
+        [<ArgumentPrefix "dst">]
+        Dest : Endpoint
+    }
+```
+
+```
+./my-app --src-host=a.example.com --src-port=1 --dst-host=b.example.com --dst-port=2
+```
+
+The prefix applies to every argument in the subtree, including ones with an explicit
+`[<ArgumentLongForm>]` and ones nested arbitrarily deep. Prefixes compose from the outside in, so a
+prefixed sub-record within another prefixed sub-record spells its arguments `--outer-inner-...`; a
+field which negates with `[<ArgumentNegateWithPrefix>]` negates outside the prefix, as
+`--no-src-host`. The prefix is used exactly as you write it: omit the leading `--` and the trailing
+`-`, and note that it is not case-normalised.
+
 ### Positional arguments
 
 You can collect leftover args as positional args, with `[<PositionalArgs>]`; this respects a trailing `--` so that you can specify positional args which look like flags.
