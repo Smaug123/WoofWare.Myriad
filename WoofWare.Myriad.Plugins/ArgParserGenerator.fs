@@ -129,7 +129,10 @@ module private ArgFormEmission =
     /// A form we cannot read (an [<ArgumentLongForm>] naming a [<Literal>]) is an expression the
     /// generated program evaluates for itself, and passes through untouched.
     let emitArgForm (form : SynExpr) : SynExpr =
-        match form with
+        // F#'s attribute syntax permits parentheses around the argument, and the generation-time
+        // name checks already see through them (`literalForms`), so emission must agree: otherwise
+        // `[<ArgumentLongForm ("back\\tab")>]` would be checked as one name and emitted as another.
+        match SynExpr.stripOptionalParen form with
         | SynExpr.Const (SynConst.String (s, _, _), _) ->
             SynExpr.Const (SynConst.String (escapeStringConstant s, SynStringKind.Regular, range0), range0)
         | form -> form

@@ -243,6 +243,10 @@ type AwkwardLongForms =
         Verbatim : int
         [<ArgumentLongForm "café">]
         Unicode : int
+        /// F#'s attribute syntax permits parentheses around the argument, and the name checks
+        /// already see through them, so emission must too.
+        [<ArgumentLongForm("paren\\tab")>]
+        Parenthesised : int
     }
 
 [<ArgParser true>]

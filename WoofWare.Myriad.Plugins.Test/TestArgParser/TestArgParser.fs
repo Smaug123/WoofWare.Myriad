@@ -1042,12 +1042,13 @@ Trailing argument --unknown had no value. Use a double-dash to separate position
     let ``Long forms needing escaping survive re-emission`` () =
         let getEnvVar (_ : string) = failwith "should not call"
 
-        AwkwardLongForms.parse' getEnvVar [ "--back\\tab=1" ; "--verbatim\\tab=2" ; "--café=3" ]
+        AwkwardLongForms.parse' getEnvVar [ "--back\\tab=1" ; "--verbatim\\tab=2" ; "--café=3" ; "--paren\\tab=4" ]
         |> shouldEqual
             {
                 Backslash = 1
                 Verbatim = 2
                 Unicode = 3
+                Parenthesised = 4
             }
 
     /// The help text advertises the same spellings the scanner accepts.
@@ -1063,4 +1064,5 @@ Trailing argument --unknown had no value. Use a double-dash to separate position
             """Help text requested.
 --back\tab  int32
 --verbatim\tab  int32
---café  int32"""
+--café  int32
+--paren\tab  int32"""

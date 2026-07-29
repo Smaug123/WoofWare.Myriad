@@ -5328,6 +5328,7 @@ module AwkwardLongFormsArgParse =
                     (sprintf "%s  %s%s%s" (sprintf "--%s" "back\\tab") "int32" "" "")
                     (sprintf "%s  %s%s%s" (sprintf "--%s" "verbatim\\tab") "int32" "" "")
                     (sprintf "%s  %s%s%s" (sprintf "--%s" "caf\u00e9") "int32" "" "")
+                    (sprintf "%s  %s%s%s" (sprintf "--%s" "paren\\tab") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
@@ -5335,6 +5336,7 @@ module AwkwardLongFormsArgParse =
             let mutable arg_0 : int option = None
             let mutable arg_1 : int option = None
             let mutable arg_2 : int option = None
+            let mutable arg_3 : int option = None
 
             let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
@@ -5361,9 +5363,20 @@ module AwkwardLongFormsArgParse =
                                 TypeDescription = ""
                                 Help = None
                             }
+
                             {
                                 Id = 2
                                 Forms = [ "caf\u00e9" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 3
+                                Forms = [ "paren\\tab" ]
                                 AcceptsNegation = false
                                 Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
                                 Repeatable = false
@@ -5378,6 +5391,7 @@ module AwkwardLongFormsArgParse =
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                                 ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
                             ]
                         ))
                     Positionals = List.empty
@@ -5430,6 +5444,20 @@ module AwkwardLongFormsArgParse =
                         | None ->
                             failwith
                                 "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 3 ->
+                    match arg_3 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_3 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
                 | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
             let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
@@ -5447,6 +5475,10 @@ module AwkwardLongFormsArgParse =
                     | None -> "<no value>"
                 | 2 ->
                     match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 3 ->
+                    match arg_3 with
                     | Some x -> x.ToString ()
                     | None -> "<no value>"
                 | _ -> "<no value>"
@@ -5474,6 +5506,12 @@ module AwkwardLongFormsArgParse =
                 {
                     Backslash =
                         (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Parenthesised =
+                        (match arg_3 with
                          | Some x -> x
                          | None ->
                              failwith
