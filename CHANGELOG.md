@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.5.2
+
+The `ArgParserGenerator` now rejects an `[<ArgumentLongForm>]` placed on a field whose type is another argument record, or a discriminated union of alternative argument sets.
+Such a field contributes a whole set of arguments, each named by its own field, so there is no single argument for the attribute to rename; it was previously read and then silently dropped, leaving a parser with names the author did not ask for and no indication why.
+
 # WoofWare.Myriad.Plugins 10.5.1, WoofWare.Myriad.Plugins.Attributes 3.10.1
 
 The `ArgParserGenerator` gains `[<ArgumentDefaultValue foo>]`, which is shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns the constant `foo`.

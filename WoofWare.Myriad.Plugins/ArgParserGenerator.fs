@@ -750,6 +750,27 @@ module internal ArgParserGenerator =
             "ArgumentMapEntrySeparator"
             "It controls how one occurrence of a map is split into several entries."
 
+    /// A field whose type is another argument record, or a union of alternative argument sets,
+    /// contributes that type's whole set of arguments, each named by its own field. There is no
+    /// single argument here for an [<ArgumentLongForm>] to rename, so it can only have been a
+    /// mistake; say so rather than dropping it, which is what the structural branches did when they
+    /// took over before the leaf machinery ran.
+    let private rejectLongFormAttribute (fieldName : Ident) (fieldType : SynType) (attrs : SynAttribute list) : unit =
+        let present =
+            attrs
+            |> List.exists (fun attr ->
+                match (List.last attr.TypeName.LongIdent).idText with
+                | "ArgumentLongForm"
+                | "ArgumentLongFormAttribute" -> true
+                | _ -> false
+            )
+
+        if present then
+            let ty = describeType fieldType
+
+            failwith
+                $"Field '%s{fieldName.idText}' has an [<ArgumentLongForm>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. [<ArgumentLongForm>] renames a single argument, and there is none here to rename: the names come from the fields of %s{ty} itself. Put the attribute on the field you mean to rename."
+
     let private checkSeparatorAttributesPlacement
         (fieldName : Ident)
         (fieldType : SynType)
@@ -1369,6 +1390,7 @@ module internal ArgParserGenerator =
                     // must reject the map-only attributes themselves; otherwise an author who
                     // misplaced one would be told nothing at all.
                     rejectSeparatorAttributes ident fieldType attrs
+                    rejectLongFormAttribute ident fieldType attrs
 
                     // This field has a type we need to obtain from parsing another record.
                     let spec, counter = toParseSpec ancestors counter ambient childRecord
@@ -1379,6 +1401,7 @@ module internal ArgParserGenerator =
                 match ambientUnionMatch with
                 | Some union ->
                     rejectSeparatorAttributes ident fieldType attrs
+                    rejectLongFormAttribute ident fieldType attrs
 
                     // A discriminated union of alternative argument sets: exactly one case's
                     // arguments must be supplied. (Flag-like and data-free unions are argument

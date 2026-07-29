@@ -2039,3 +2039,107 @@ type Args =
 """
 
         List.length modules |> shouldEqual 2
+
+    /// A field whose type is another argument record contributes that record's whole set of
+    /// arguments, each named by its own field. There is no single argument for an
+    /// [<ArgumentLongForm>] to rename, and the attribute was previously computed and then dropped
+    /// on the floor when the structural branch was taken -- leaving an author who reached for it a
+    /// parser with names they did not ask for and no indication why.
+    let private longFormOnStructural (field : string) (ty : string) : string =
+        $"Field '%s{field}' has an [<ArgumentLongForm>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. [<ArgumentLongForm>] renames a single argument, and there is none here to rename: the names come from the fields of %s{ty} itself. Put the attribute on the field you mean to rename."
+
+    [<Test>]
+    let ``ArgumentLongForm on a sub-record field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "renamed">]
+        A : Child
+    }
+"""
+        |> shouldRejectWith (longFormOnStructural "A" "Child")
+
+    [<Test>]
+    let ``ArgumentLongForm on a union-typed field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        Bar : int
+    }
+
+type Mode =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "renamed">]
+        A : Mode
+    }
+"""
+        |> shouldRejectWith (longFormOnStructural "A" "Mode")
+
+    /// Several aliases are no more meaningful than one.
+    [<Test>]
+    let ``Several ArgumentLongForms on a sub-record field are rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "renamed">]
+        [<ArgumentLongForm "r">]
+        A : Child
+    }
+"""
+        |> shouldRejectWith (longFormOnStructural "A" "Child")
+
+    /// The rejection is about the *field's* attribute, not about the child's: a sub-record whose
+    /// own fields carry long forms is entirely ordinary.
+    [<Test>]
+    let ``ArgumentLongForm inside a sub-record is still accepted`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        [<ArgumentLongForm "renamed">]
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        A : Child
+    }
+"""
+
+        List.length modules |> shouldEqual 2
