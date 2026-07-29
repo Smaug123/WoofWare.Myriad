@@ -1247,6 +1247,62 @@ module internal ArgParserGenerator =
             | Some enumDu -> createEnumParser enumDu, Accumulation.Required, ty
             | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
+    /// The `[<ArgumentPrefix>]` this field carries, if any.
+    let private prefixAttribute (attrs : SynAttribute list) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            match (List.last attr.TypeName.LongIdent).idText with
+            | "ArgumentPrefixAttribute"
+            | "ArgumentPrefix" -> Some attr.ArgExpr
+            | _ -> None
+        )
+
+    /// Extend the prefix already in force with the one this field carries. The result carries its
+    /// trailing separator, so applying a prefix is concatenation and the empty prefix is the
+    /// identity; prefixes therefore compose from the outside in as the recursion descends.
+    ///
+    /// A prefix is combined into names as the parser is generated, so unlike an
+    /// [<ArgumentLongForm>] -- which we can leave to be concatenated when the generated program
+    /// runs -- it has to be a literal we can read here.
+    let private extendPrefix (fieldName : Ident) (outer : string) (attrExpr : SynExpr) : string =
+        let prefix =
+            match classifyDefaultValue attrExpr with
+            | Constant (SynConst.String (s, _, _)) -> s
+            | Identifier name ->
+                failwith
+                    $"[<ArgumentPrefix>] on field '%s{fieldName.idText}' must be a string literal written out in full, but its value names something (%s{name}) instead. The prefix is combined with every argument name in that field's subtree as the parser is generated, so it has to be known then; the generated file also hoists every `open` in your source above the parser, so a name need not resolve there to what it means here."
+            | _ ->
+                failwith
+                    $"[<ArgumentPrefix>] on field '%s{fieldName.idText}' must be a string literal written out in full, but we do not recognise its value as one. The prefix is combined with every argument name in that field's subtree as the parser is generated, so it has to be known then."
+
+        // A prefix is concatenated into every name beneath it, so a prefix no token could address
+        // makes the whole subtree unaddressable. Report it here rather than letting the assembled
+        // names fail the ordinary checks, where the name blamed would be the concatenation and the
+        // author would have to work backwards to the cause.
+        if
+            prefix = ""
+            || prefix.Contains "="
+            || prefix.[0] = '-'
+            || prefix.[prefix.Length - 1] = '-'
+        then
+            failwith
+                $"[<ArgumentPrefix>] on field '%s{fieldName.idText}' must be a non-empty string which does not contain '=' and does not start or end with '-' (the generated parser inserts the separating '-' itself), but got '%s{prefix}'. The prefix is used exactly as written, so spell it as you want it to appear on the command line, without the leading '--'."
+
+        outer + prefix + "-"
+
+    /// Namespace an argument's spelling under the prefix in force. A form we can read here becomes
+    /// a constant, so it stays visible to the generation-time name checks; one we cannot (an
+    /// [<ArgumentLongForm>] naming a [<Literal>]) becomes a concatenation the generated program
+    /// performs, which those checks already skip and the runtime schema check already catches.
+    let private applyPrefix (prefix : string) (form : SynExpr) : SynExpr =
+        if prefix = "" then
+            form
+        else
+
+        match SynExpr.stripOptionalParen form with
+        | SynExpr.Const (SynConst.String (s, _, _), _) -> SynExpr.CreateConst (prefix + s)
+        | form -> SynExpr.plus (SynExpr.CreateConst prefix) (SynExpr.paren form)
+
     /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being
     /// lowered, innermost first; re-entry into any of them is a cycle, which we reject rather
@@ -1261,8 +1317,12 @@ module internal ArgParserGenerator =
 
         name.idText :: ancestors
 
+    /// `prefix` is the namespace in force for every argument in this record, accumulated from the
+    /// [<ArgumentPrefix>]es on the fields traversed to reach it. It carries its trailing separator,
+    /// and is "" at the root.
     let rec private toParseSpec
         (ancestors : string list)
+        (prefix : string)
         (counter : int)
         (ambient : AmbientTypes)
         (finalRecord : RecordType)
@@ -1344,6 +1404,10 @@ module internal ArgParserGenerator =
                     |> function
                         | [] -> List.singleton (SynExpr.CreateConst (argify ident))
                         | l -> List.ofSeq l
+                    // Every consumer of an argument's spelling -- help text, the --no- variant, the
+                    // generation-time conflict checks, and the erased schema handed to the runtime
+                    // -- reads it from here, so namespacing it here namespaces it everywhere.
+                    |> List.map (applyPrefix prefix)
 
                 // A default-value attribute is only meaningful on a `Choice<'a, 'a>` field: a
                 // successful parse reports whether the value was user-supplied (Choice1Of2) or
@@ -1374,6 +1438,8 @@ module internal ArgParserGenerator =
                         failwith
                             $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
 
+                let prefixAttr = prefixAttribute attrs
+
                 let ambientRecordMatch =
                     match localTypeName fieldType with
                     | Some target -> ambient.Records |> List.tryFind (fun r -> r.Name.idText = target)
@@ -1393,7 +1459,12 @@ module internal ArgParserGenerator =
                     rejectLongFormAttribute ident fieldType attrs
 
                     // This field has a type we need to obtain from parsing another record.
-                    let spec, counter = toParseSpec ancestors counter ambient childRecord
+                    let childPrefix =
+                        match prefixAttr with
+                        | None -> prefix
+                        | Some attrExpr -> extendPrefix ident prefix attrExpr
+
+                    let spec, counter = toParseSpec ancestors childPrefix counter ambient childRecord
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1406,10 +1477,29 @@ module internal ArgParserGenerator =
                     // A discriminated union of alternative argument sets: exactly one case's
                     // arguments must be supplied. (Flag-like and data-free unions are argument
                     // leaves, not alternatives, and are not in StructuralUnions.)
-                    let spec, counter = unionToParseSpec ancestors counter ambient union
+                    let childPrefix =
+                        match prefixAttr with
+                        | None -> prefix
+                        | Some attrExpr -> extendPrefix ident prefix attrExpr
+
+                    let spec, counter = unionToParseSpec ancestors childPrefix counter ambient union
 
                     counter, (ident, spec) :: acc
                 | None ->
+
+                // The structural branches above have consumed every field which has a subtree, so
+                // anything reaching here is a leaf, where [<ArgumentPrefix>] has nothing to
+                // namespace and would otherwise be silently dropped.
+                match prefixAttr with
+                | Some _ ->
+                    match positionalArgAttr with
+                    | Some _ ->
+                        failwith
+                            $"[<ArgumentPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
+                    | None ->
+                        failwith
+                            $"[<ArgumentPrefix>] can only be applied to a field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative argument sets, but was applied to field '%s{ident.idText}' of type %s{describeType fieldType}. It renames every argument contributed by that field's subtree by prepending a namespace (e.g. [<ArgumentPrefix \"foo\">] on a field whose type is a record containing `Blah : string` turns --blah into --foo-blah); a leaf field has no subtree to rename. To change this one argument's name, use [<ArgumentLongForm>] instead."
+                | None -> ()
 
                 match positionalArgAttr with
                 | Some includeFlagLike ->
@@ -1596,12 +1686,26 @@ module internal ArgParserGenerator =
     /// arguments must be supplied at runtime.
     and private unionToParseSpec
         (ancestors : string list)
+        (prefix : string)
         (counter : int)
         (ambient : AmbientTypes)
         (union : UnionType)
         : ParseTree * int
         =
         let ancestors = pushSchemaType ancestors union.Name
+
+        // The cases are alternatives, so their argument names must already be distinct from one
+        // another (`accumulators` pools every case's named leaves into one conflict check, with no
+        // per-case exemption). A prefix here would therefore disambiguate nothing, and silently
+        // dropping it would leave the author with names they did not ask for.
+        union.Cases
+        |> List.iter (fun case ->
+            match prefixAttribute case.Attributes with
+            | None -> ()
+            | Some _ ->
+                failwith
+                    $"[<ArgumentPrefix>] was applied to case '%s{case.Name.idText}' of [<ArgParser>] union '%s{union.Name.idText}', but it belongs on a field. A union's cases are alternatives, so their argument names must already be distinct from one another, and a prefix here would buy no disambiguation. To namespace every case's arguments at once, put the [<ArgumentPrefix>] on the field whose type is '%s{union.Name.idText}'."
+        )
 
         let sumId = counter
         let counter = counter + 1
@@ -1632,7 +1736,9 @@ module internal ArgParserGenerator =
                         failwith
                             $"Case %s{case.Name.idText} of [<ArgParser>] union %s{union.Name.idText} must have exactly one field: a record holding that case's arguments."
 
-                let spec, counter = toParseSpec ancestors counter ambient payloadRecord
+                // A case is an alternative, not a nesting level: the prefix in force passes
+                // through unchanged, so every case's arguments are namespaced identically.
+                let spec, counter = toParseSpec ancestors prefix counter ambient payloadRecord
 
                 counter, (case.Name, spec) :: acc
             )
@@ -2806,7 +2912,7 @@ module internal ArgParserGenerator =
                                        _) ->
                 let record = RecordType.OfRecord sci smd access fields
 
-                let spec, _ = toParseSpec [] 0 ambient record
+                let spec, _ = toParseSpec [] "" 0 ambient record
 
                 record.Name, typeHelp attrs, spec
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
@@ -2823,7 +2929,7 @@ module internal ArgParserGenerator =
                     failwith
                         $"No case of [<ArgParser>] union %s{union.Name.idText} has any data, so it is an enumerated value rather than a set of alternative argument sets: an empty command line could not choose between its cases. Use it as the type of a field of an [<ArgParser>] record instead, where it is supplied as `--field-name=a`."
 
-                let spec, _ = unionToParseSpec [] 0 ambient union
+                let spec, _ = unionToParseSpec [] "" 0 ambient union
 
                 union.Name, typeHelp attrs, spec
             | _ ->

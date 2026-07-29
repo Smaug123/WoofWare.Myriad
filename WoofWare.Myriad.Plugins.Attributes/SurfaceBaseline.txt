@@ -21,6 +21,8 @@ WoofWare.Myriad.Plugins.ArgumentMapEntrySeparatorAttribute inherit System.Attrib
 WoofWare.Myriad.Plugins.ArgumentMapEntrySeparatorAttribute..ctor [constructor]: char
 WoofWare.Myriad.Plugins.ArgumentNegateWithPrefixAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.ArgumentNegateWithPrefixAttribute..ctor [constructor]: unit
+WoofWare.Myriad.Plugins.ArgumentPrefixAttribute inherit System.Attribute
+WoofWare.Myriad.Plugins.ArgumentPrefixAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute inherit System.Attribute
 WoofWare.Myriad.Plugins.CreateCatamorphismAttribute..ctor [constructor]: string
 WoofWare.Myriad.Plugins.GenerateCapturingMockAttribute inherit System.Attribute

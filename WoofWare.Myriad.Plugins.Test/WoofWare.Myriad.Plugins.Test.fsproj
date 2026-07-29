@@ -50,6 +50,7 @@
     <Compile Include="TestArgParser\TestArgParserDuCasePositional.fs" />
     <Compile Include="TestArgParser\TestArgParserEnum.fs" />
     <Compile Include="TestArgParser\TestArgParserMap.fs" />
+    <Compile Include="TestArgParser\TestArgParserPrefix.fs" />
     <Compile Include="TestArgParser\TestArgParserPositionalReference.fs" />
     <Compile Include="TestArgParser\TestArgParserRuntime.fs" />
     <Compile Include="TestSwagger\TestSwaggerParse.fs" />

@@ -124,6 +124,33 @@ type ArgumentFlagAttribute (flagValue : bool) =
 type ArgumentLongForm (s : string) =
     inherit Attribute ()
 
+/// Attribute placed on a field whose type is another [<ArgParser>]-schema record, or a discriminated
+/// union of alternative argument sets, indicating that every argument contributed by that field's
+/// subtree is namespaced under the given prefix.
+///
+/// For example:
+///     type Sub = { Blah : string ; Quux : int }
+///     type Args = { [<ArgumentPrefix "foo">] Thing : Sub ; Other : string }
+/// gives `--foo-blah=...` and `--foo-quux=...` rather than `--blah=...` and `--quux=...`. This is
+/// what lets you embed the same sub-record twice: without distinct prefixes, the two copies'
+/// arguments would collide and generation would fail.
+///
+/// The prefix applies to every argument in the subtree, including ones which carry an explicit
+/// [<ArgumentLongForm>], and including ones nested arbitrarily deep in further sub-records or
+/// unions. Prefixes compose from the outside in, so a prefixed sub-record inside another prefixed
+/// sub-record spells its arguments `--outer-inner-...`. A field which negates with
+/// [<ArgumentNegateWithPrefix>] negates outside the prefix: `--no-foo-blah`.
+///
+/// Write the prefix exactly as you want it to appear: omit the leading `--`, and omit the trailing
+/// `-` which separates the prefix from the rest of the name, which we insert for you. The prefix is
+/// used verbatim; it is not case-normalised or otherwise rewritten.
+///
+/// This attribute is rejected on a leaf field (there is nothing under a leaf to namespace) and on a
+/// field carrying [<PositionalArgs>].
+[<AttributeUsage(AttributeTargets.Field, AllowMultiple = false)>]
+type ArgumentPrefixAttribute (prefix : string) =
+    inherit Attribute ()
+
 /// Attribute specifying the character which separates a key from its value within one entry of a
 /// `Map`-typed field. This attribute is mandatory on `Map` fields, and is rejected anywhere else:
 /// there is no default, because the right separator depends on what the key and value can spell.
