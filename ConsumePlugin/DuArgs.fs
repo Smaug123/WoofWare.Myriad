@@ -76,6 +76,34 @@ type WithModeHelpArgs =
         Mode : Mode
     }
 
+/// A union of alternative argument sets may describe itself, for the benefit of every field which
+/// embeds it.
+[<ArgumentHelpText "Which transport to use">]
+type Transport =
+    | Tcp of TcpArgs
+    | Unix of UnixArgs
+
+and TcpArgs =
+    {
+        TcpPort : int
+    }
+
+and UnixArgs =
+    {
+        SocketPath : string
+    }
+
+/// `Fallback` takes the union's own description; `Preferred` overrides it from the field.
+[<ArgParser>]
+type WithTransportArgs =
+    {
+        [<ArgumentPrefix "preferred">]
+        [<ArgumentHelpText "Try this one first">]
+        Preferred : Transport
+        [<ArgumentPrefix "fallback">]
+        Fallback : Transport
+    }
+
 /// A union beside a positional sink (default, i.e. Reject-mode): named arguments select the
 /// union case, and every bare token is routed to the sink whichever case wins. An unrecognised
 /// `--key`-shaped token remains fatal. The sink converts, so selection must not depend on the

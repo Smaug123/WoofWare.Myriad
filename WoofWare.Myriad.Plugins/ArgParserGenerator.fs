@@ -1310,6 +1310,17 @@ module internal ArgParserGenerator =
             | Some enumDu -> createEnumParser enumDu, Accumulation.Required, ty
             | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
+    /// The `[<ArgumentHelpText>]` carried here, if any. The same attribute serves a field, a nested
+    /// type, and the tagged root, so they all read it through this.
+    let private helpTextAttribute (attrs : SynAttribute list) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            match (List.last attr.TypeName.LongIdent).idText with
+            | "ArgumentHelpTextAttribute"
+            | "ArgumentHelpText" -> Some attr.ArgExpr
+            | _ -> None
+        )
+
     /// The `[<ArgumentPrefix>]` this field carries, if any.
     let private prefixAttribute (attrs : SynAttribute list) : SynExpr option =
         attrs
@@ -1445,14 +1456,7 @@ module internal ArgParserGenerator =
                 // Kept separate from the `helpText` below, which folds in the parse format: a
                 // structural field's help introduces a whole group of arguments rather than
                 // describing one, so it must not pick up a leaf's parsing note.
-                let helpTextAttr =
-                    attrs
-                    |> List.tryPick (fun a ->
-                        match (List.last a.TypeName.LongIdent).idText with
-                        | "ArgumentHelpTextAttribute"
-                        | "ArgumentHelpText" -> Some a.ArgExpr
-                        | _ -> None
-                    )
+                let helpTextAttr = helpTextAttribute attrs
 
                 let helpText =
                     match parseExactModifier, helpTextAttr with
@@ -1546,10 +1550,14 @@ module internal ArgParserGenerator =
                 // help text introduces that group rather than describing a single argument. The
                 // group exists whether or not the author wrote any help: the reader must be able to
                 // see which arguments were declared together, exactly as for a union's cases.
-                let groupHeader =
+                //
+                // The field's own attribute wins over the nested type's, which is the fallback: one
+                // type may be nested at several sites, and the field is the more specific placement,
+                // so it is the one which can say what this occurrence is for.
+                let groupHeader (typeAttrs : SynAttribute list) : GroupHeader =
                     {
                         GroupHeader.Label = ident.idText
-                        GroupHeader.Help = helpTextAttr
+                        GroupHeader.Help = helpTextAttr |> Option.orElseWith (fun () -> helpTextAttribute typeAttrs)
                     }
 
                 match ambientRecordMatch with
@@ -1567,7 +1575,13 @@ module internal ArgParserGenerator =
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
                     let spec, counter =
-                        toParseSpec ancestors (Some groupHeader) childPrefix counter ambient childRecord
+                        toParseSpec
+                            ancestors
+                            (Some (groupHeader childRecord.Attributes))
+                            childPrefix
+                            counter
+                            ambient
+                            childRecord
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1586,7 +1600,13 @@ module internal ArgParserGenerator =
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
                     let spec, counter =
-                        unionToParseSpec ancestors (Some groupHeader) childPrefix counter ambient union
+                        unionToParseSpec
+                            ancestors
+                            (Some (groupHeader union.Attributes))
+                            childPrefix
+                            counter
+                            ambient
+                            union
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -3042,14 +3062,7 @@ module internal ArgParserGenerator =
 
         let taggedTypeName, typeHelpText, parseSpec =
             let typeHelp (attrs : SynAttributes) =
-                attrs
-                |> SynAttributes.toAttrs
-                |> List.tryPick (fun a ->
-                    match (List.last a.TypeName.LongIdent).idText with
-                    | "ArgumentHelpTextAttribute"
-                    | "ArgumentHelpText" -> Some a.ArgExpr
-                    | _ -> None
-                )
+                attrs |> SynAttributes.toAttrs |> helpTextAttribute
 
             match taggedType with
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,

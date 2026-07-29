@@ -2207,6 +2207,284 @@ namespace ConsumePlugin
 
 open WoofWare.Myriad.Plugins
 
+/// Methods to parse arguments for the type WithTransportArgs
+[<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module WithTransportArgs =
+    let parse' (getEnvironmentVariable : string -> string option) (args : string list) : WithTransportArgs =
+        let helpText () =
+            [
+                (sprintf "%s: %s" "Preferred" ("Try this one first"))
+                "  exactly one of the following sets of arguments:"
+                "  Tcp:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "preferred-tcp-port") "int32" "" "")
+                "  Unix:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "preferred-socket-path") "string" "" "")
+                (sprintf "%s: %s" "Fallback" ("Which transport to use"))
+                "  exactly one of the following sets of arguments:"
+                "  Tcp:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "fallback-tcp-port") "int32" "" "")
+                "  Unix:"
+                (sprintf "    %s  %s%s%s" (sprintf "--%s" "fallback-socket-path") "string" "" "")
+            ]
+            |> String.concat "\n"
+
+        let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+        let mutable arg_1 : int option = None
+        let mutable arg_2 : string option = None
+        let mutable arg_4 : int option = None
+        let mutable arg_5 : string option = None
+
+        let parser_schema : ArgParserRuntime_DuArgs.ErasedSchema =
+            {
+                Leaves =
+                    [
+                        {
+                            Id = 0
+                            Forms = [ "preferred-tcp-port" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 1
+                            Forms = [ "preferred-socket-path" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+
+                        {
+                            Id = 2
+                            Forms = [ "fallback-tcp-port" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                        {
+                            Id = 3
+                            Forms = [ "fallback-socket-path" ]
+                            AcceptsNegation = false
+                            Arity = ArgParserRuntime_DuArgs.ErasedArity.One
+                            Repeatable = false
+                            Requirement = ArgParserRuntime_DuArgs.ErasedRequirement.Required
+                            TypeDescription = ""
+                            Help = None
+                        }
+                    ]
+                Tree =
+                    (ArgParserRuntime_DuArgs.ErasedTree.Product (
+                        [
+                            ArgParserRuntime_DuArgs.ErasedTree.Sum (
+                                (0,
+                                 [
+                                     ("Tcp",
+                                      ArgParserRuntime_DuArgs.ErasedTree.Product (
+                                          [ ArgParserRuntime_DuArgs.ErasedTree.Leaf 0 ]
+                                      ))
+                                     ("Unix",
+                                      ArgParserRuntime_DuArgs.ErasedTree.Product (
+                                          [ ArgParserRuntime_DuArgs.ErasedTree.Leaf 1 ]
+                                      ))
+                                 ])
+                            )
+                            ArgParserRuntime_DuArgs.ErasedTree.Sum (
+                                (3,
+                                 [
+                                     ("Tcp",
+                                      ArgParserRuntime_DuArgs.ErasedTree.Product (
+                                          [ ArgParserRuntime_DuArgs.ErasedTree.Leaf 2 ]
+                                      ))
+                                     ("Unix",
+                                      ArgParserRuntime_DuArgs.ErasedTree.Product (
+                                          [ ArgParserRuntime_DuArgs.ErasedTree.Leaf 3 ]
+                                      ))
+                                 ])
+                            )
+                        ]
+                    ))
+                Positionals = List.empty
+            }
+
+        let parser_storeOccurrence (occurrence : ArgParserRuntime_DuArgs.ErasedOccurrence) : string option =
+            match occurrence.LeafId with
+            | 0 ->
+                match arg_1 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_1 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 1 ->
+                match arg_2 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_2 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 2 ->
+                match arg_4 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_4 <- Some (value |> (fun x -> System.Int32.Parse x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | 3 ->
+                match arg_5 with
+                | Some _ -> None
+                | None ->
+                    match occurrence.Value with
+                    | Some value ->
+                        try
+                            arg_5 <- Some (value |> (fun x -> x))
+                            None
+                        with _ as exc ->
+                            (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                    | None ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+        let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+            failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+        let parser_renderStored (leafId : int) : string =
+            match leafId with
+            | 0 ->
+                match arg_1 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 1 ->
+                match arg_2 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 2 ->
+                match arg_4 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | 3 ->
+                match arg_5 with
+                | Some x -> x.ToString ()
+                | None -> "<no value>"
+            | _ -> "<no value>"
+
+        let parser_applyDefault (leafId : int) : string option =
+            match leafId with
+            | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+        let parser_callbacks : ArgParserRuntime_DuArgs.TypedCallbacks =
+            {
+                StoreOccurrence = parser_storeOccurrence
+                StorePositional = parser_storePositional
+                HelpText = helpText
+                RenderStored = parser_renderStored
+                ApplyDefault = parser_applyDefault
+            }
+
+        match
+            ArgParserRuntime_DuArgs.runParse
+                (ArgParserRuntime_DuArgs.WellFormedSchema.checkOrFail parser_schema)
+                parser_callbacks
+                args
+        with
+        | ArgParserRuntime_DuArgs.ParseOutcome.Success parser_selection ->
+            {
+                Fallback =
+                    match Map.tryFind 3 parser_selection.Choices with
+                    | Some 0 ->
+                        Transport.Tcp (
+                            {
+                                TcpPort =
+                                    (match arg_4 with
+                                     | Some x -> x
+                                     | None ->
+                                         failwith
+                                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            }
+                        )
+                    | Some 1 ->
+                        Transport.Unix (
+                            {
+                                SocketPath =
+                                    (match arg_5 with
+                                     | Some x -> x
+                                     | None ->
+                                         failwith
+                                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            }
+                        )
+                    | _ ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"
+                Preferred =
+                    match Map.tryFind 0 parser_selection.Choices with
+                    | Some 0 ->
+                        Transport.Tcp (
+                            {
+                                TcpPort =
+                                    (match arg_1 with
+                                     | Some x -> x
+                                     | None ->
+                                         failwith
+                                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            }
+                        )
+                    | Some 1 ->
+                        Transport.Unix (
+                            {
+                                SocketPath =
+                                    (match arg_2 with
+                                     | Some x -> x
+                                     | None ->
+                                         failwith
+                                             "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            }
+                        )
+                    | _ ->
+                        failwith
+                            "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"
+            }
+        | ArgParserRuntime_DuArgs.ParseOutcome.HelpRequested -> helpText () |> failwithf "Help text requested.\n%s"
+        | ArgParserRuntime_DuArgs.ParseOutcome.Fatal message -> failwith message
+        | ArgParserRuntime_DuArgs.ParseOutcome.Errors errors ->
+            errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+    let parse (args : string list) : WithTransportArgs =
+        parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open WoofWare.Myriad.Plugins
+
 /// Methods to parse arguments for the type ModeAndPositionals
 [<RequireQualifiedAccess ; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module ModeAndPositionals =

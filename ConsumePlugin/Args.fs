@@ -158,6 +158,26 @@ type ParentRecordWithGroupHelp =
         AndAnother : bool
     }
 
+/// A nested type may describe itself, for the benefit of every site which embeds it.
+[<ArgumentHelpText "How to talk to the database">]
+type DescribedChild =
+    {
+        Host : string
+        Port : int
+    }
+
+/// `Primary` takes the type's own description; `Secondary` overrides it, because the field is the
+/// more specific placement and one type may be embedded for different purposes.
+[<ArgParser true>]
+type ParentRecordWithTypeHelp =
+    {
+        [<ArgumentPrefix "primary">]
+        Primary : DescribedChild
+        [<ArgumentPrefix "secondary">]
+        [<ArgumentHelpText "Where to fail over to">]
+        Secondary : DescribedChild
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {

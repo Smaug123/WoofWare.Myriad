@@ -201,3 +201,26 @@ Mode: How loud to be
     --quiet  bool (optional)
   Manual:
     --level  int32"""
+
+    /// As for a nested record: the union describes itself for every site which embeds it, and a
+    /// field with something more specific to say overrides that.
+    [<Test>]
+    let ``A union's own help text heads the group, and the field's overrides it`` () =
+        let exc =
+            Assert.Throws<exn> (fun () -> WithTransportArgs.parse' noEnv [ "--help" ] |> ignore<WithTransportArgs>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+Preferred: Try this one first
+  exactly one of the following sets of arguments:
+  Tcp:
+    --preferred-tcp-port  int32
+  Unix:
+    --preferred-socket-path  string
+Fallback: Which transport to use
+  exactly one of the following sets of arguments:
+  Tcp:
+    --fallback-tcp-port  int32
+  Unix:
+    --fallback-socket-path  string"""

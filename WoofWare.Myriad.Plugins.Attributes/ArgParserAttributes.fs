@@ -95,6 +95,12 @@ type ArgumentDefaultValueAttribute (defaultValue : obj) =
 /// alternative argument sets, the help text describes the whole group of arguments that field
 /// contributes: it appears on the header line which introduces that group, above the indented list
 /// of the arguments themselves. (That header is written whether or not you supply any help text.)
+///
+/// When applied to a nested argument record or union -- one which is not itself [<ArgParser>]-tagged,
+/// but is reached through a field of one -- the help text describes that type wherever it is
+/// embedded, and so heads the group in each place. If the field which embeds it carries an
+/// [<ArgumentHelpText>] of its own, the field's wins: it is the more specific placement, and one type
+/// may be embedded at several sites for different purposes.
 type ArgumentHelpTextAttribute (helpText : string) =
     inherit Attribute ()
 
