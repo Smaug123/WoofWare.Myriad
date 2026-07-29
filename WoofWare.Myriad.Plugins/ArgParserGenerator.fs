@@ -1294,6 +1294,12 @@ module internal ArgParserGenerator =
     /// a constant, so it stays visible to the generation-time name checks; one we cannot (an
     /// [<ArgumentLongForm>] naming a [<Literal>]) becomes a concatenation the generated program
     /// performs, which those checks already skip and the runtime schema check already catches.
+    ///
+    /// The constant holds the argument's *semantic* spelling, decoded, which is what the
+    /// generation-time name checks must compare: they match names under the scanner's own
+    /// case-insensitive equality, and an escaped rendering would have them comparing source syntax
+    /// instead (`é` against `É`, which differ where `é` and `É` collide). Escaping for
+    /// emission is a separate concern, and applies equally to the spellings we do not rebuild.
     let private applyPrefix (prefix : string) (form : SynExpr) : SynExpr =
         if prefix = "" then
             form
@@ -1440,6 +1446,15 @@ module internal ArgParserGenerator =
 
                 let prefixAttr = prefixAttribute attrs
 
+                // The structural branches below run before any leaf machinery, so this pairing has
+                // to be caught ahead of the dispatch: on a record-typed field it would otherwise
+                // prefix the subtree and drop the [<PositionalArgs>] without a word.
+                match prefixAttr, positionalArgAttr with
+                | Some _, Some _ ->
+                    failwith
+                        $"[<ArgumentPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
+                | _ -> ()
+
                 let ambientRecordMatch =
                     match localTypeName fieldType with
                     | Some target -> ambient.Records |> List.tryFind (fun r -> r.Name.idText = target)
@@ -1489,16 +1504,12 @@ module internal ArgParserGenerator =
 
                 // The structural branches above have consumed every field which has a subtree, so
                 // anything reaching here is a leaf, where [<ArgumentPrefix>] has nothing to
-                // namespace and would otherwise be silently dropped.
+                // namespace and would otherwise be silently dropped. (A prefixed field which is
+                // also positional was rejected before the dispatch.)
                 match prefixAttr with
                 | Some _ ->
-                    match positionalArgAttr with
-                    | Some _ ->
-                        failwith
-                            $"[<ArgumentPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
-                    | None ->
-                        failwith
-                            $"[<ArgumentPrefix>] can only be applied to a field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative argument sets, but was applied to field '%s{ident.idText}' of type %s{describeType fieldType}. It renames every argument contributed by that field's subtree by prepending a namespace (e.g. [<ArgumentPrefix \"foo\">] on a field whose type is a record containing `Blah : string` turns --blah into --foo-blah); a leaf field has no subtree to rename. To change this one argument's name, use [<ArgumentLongForm>] instead."
+                    failwith
+                        $"[<ArgumentPrefix>] can only be applied to a field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative argument sets, but was applied to field '%s{ident.idText}' of type %s{describeType fieldType}. It renames every argument contributed by that field's subtree by prepending a namespace (e.g. [<ArgumentPrefix \"foo\">] on a field whose type is a record containing `Blah : string` turns --blah into --foo-blah); a leaf field has no subtree to rename. To change this one argument's name, use [<ArgumentLongForm>] instead."
                 | None -> ()
 
                 match positionalArgAttr with

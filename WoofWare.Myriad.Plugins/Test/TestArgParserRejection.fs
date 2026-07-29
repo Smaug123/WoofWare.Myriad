@@ -2203,6 +2203,31 @@ type Args =
         |> shouldRejectWith
             "[<ArgumentPrefix>] was applied to field 'A', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
 
+    /// The structural branches are taken before any leaf machinery runs, so a field which is both
+    /// prefixed and positional must be caught before the dispatch: otherwise the record-typed case
+    /// would prefix the subtree and drop the [<PositionalArgs>] without a word.
+    [<Test>]
+    let ``ArgumentPrefix beside PositionalArgs on a sub-record field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "foo">]
+        [<PositionalArgs>]
+        A : Child
+    }
+"""
+        |> shouldRejectWith
+            "[<ArgumentPrefix>] was applied to field 'A', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
+
     [<Test>]
     let ``ArgumentPrefix on a union case is rejected`` () =
         """namespace TestMe
@@ -2382,6 +2407,33 @@ type Args =
 """
         |> shouldRejectWith
             "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--same-host' is claimed by: '--same-host' (field 'Host'); '--same-host' (field 'Host')"
+
+    /// The generation-time name checks compare under the scanner's own case-insensitive equality,
+    /// so a prefixed name must reach them as its semantic spelling and not as a rendering of it:
+    /// `é` and `É` differ exactly where `é` and `É` collide, so a schema which is
+    /// broken at runtime would otherwise sail through generation.
+    [<Test>]
+    let ``A non-ASCII collision between prefixes differing only by case is detected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Endpoint =
+    {
+        Host : string
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentPrefix "é">]
+        Source : Endpoint
+        [<ArgumentPrefix "É">]
+        Dest : Endpoint
+    }
+"""
+        |> shouldRejectWith
+            "Conflicting argument names detected (names are matched case-insensitively):\nThe argument name '--é-host' is claimed by: '--é-host' (field 'Host'); '--É-host' (field 'Host')"
 
     /// A prefix can manufacture a collision which is present in neither subtree alone.
     [<Test>]
