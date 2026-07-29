@@ -69,31 +69,17 @@ type ArgumentDefaultEnvironmentVariableAttribute (envVar : string) =
 /// This attribute can only be placed on fields of type `Choice<_, _>` where both type parameters
 /// are the same.
 /// After a successful parse, the value is Choice1Of2 if the user supplied an input,
-/// or Choice2Of2 if the input was this constant.
+/// or Choice2Of2 if the input was not supplied and defaulted to the constant.
 ///
 /// The value you supply is reproduced in the generated code, so it must have the field's
 /// element type: `[<ArgumentDefaultValue 3>]` on a `Choice<int, int>`, but
 /// `[<ArgumentDefaultValue 3L>]` on a `Choice<int64, int64>`. A mismatch is a compile error in
-/// the generated file rather than at the attribute itself.
+/// the generated file.
 ///
-/// The value must be a literal written out in full. We reproduce it in the generated file rather
-/// than evaluating it at your attribute, so anything whose meaning depends on where it is written
-/// is rejected:
-///
-/// * A name standing for a constant (a `[<Literal>]` binding, an enum case) is rejected. The
-///   generated file hoists every `open` in your source above the parser, so a name need not resolve
-///   to the same binding there as here -- a later `open` which shadows an earlier one would silently
-///   change the default's value.
-/// * F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`) are
-///   rejected: they would be resolved against the generated file instead of yours.
-///
-/// Use `[<ArgumentDefaultFunction>]` for any of those, and for anything which is not a constant at
-/// all (in particular a discriminated union case, such as a flag DU's): that function is evaluated
-/// in your own file, so it means what you wrote.
-///
-/// `null` is a literal like any other here. Note though that F# will only let you write it if your
-/// own project is not checking nullness (an `obj`-typed attribute argument does not admit null when
-/// it is), and that the `FS3559` warning, if you have turned it on, fires on the attribute too.
+/// The value must be a literal written out in full.
+/// The generator rejects names (e.g. a `[<Literal>]` binding or an enum case), because their meanings may change
+/// depending on what `open` statements are present.
+/// You can fall back to using `[<ArgumentDefaultFunction>]` for those.
 type ArgumentDefaultValueAttribute (defaultValue : obj) =
     inherit Attribute ()
 

@@ -243,22 +243,11 @@ and you get back respectively these objects:
 }
 ```
 
-Default arguments are handled as `Choice<'a, 'a>`:
-you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
-
-`[<ArgumentDefaultValue foo>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant.
-`foo` must be a literal written out in full.
-
-The value is reproduced in the generated file rather than evaluated at your attribute, so anything whose meaning depends on where it is written is rejected.
-That includes a name standing for a constant (a `[<Literal>]` binding, an enum case): the generated file hoists every `open` in your source above the parser, so a name need not resolve to the same binding there as here, and a later `open` which shadows an earlier one would silently change the default's value.
-It also includes F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`), which would be resolved against the generated file rather than yours.
-Use `[<ArgumentDefaultFunction>]` for any of those, and for anything which is not a constant at all (such as a flag DU's case): that function is evaluated in your own file.
-
-`null` is a literal like any other here, though F# will only let you write it if your own project is not checking nullness (an `obj`-typed attribute argument does not admit null when it is).
-
 You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
 
 You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
+
+### Positional arguments
 
 You can collect leftover args as positional args, with `[<PositionalArgs>]`; this respects a trailing `--` so that you can specify positional args which look like flags.
 
@@ -266,6 +255,16 @@ Restrictions on the composition of positional args and DUs:
 
 * `[<PositionalArgs true>]` (to collect unrecognised flag-like arguments like `--unrecognised-arg` as positionals) will fail to generate code if present in a parser that also contains DUs, because the failure mode if the user makes a typo in an arg name is very confusing in that case.
 * We only use structural information, and not "we tried and failed to parse positional args as a specified type", when deciding which DU case to select. The parser uses named args to choose where the positional args are going to be collected, and only then tries to parse positional values.
+
+### Default arguments
+
+Default arguments are handled as `Choice<'a, 'a>`:
+you get a `Choice1Of2` if the user provided the input, or a `Choice2Of2` if the parser filled in your specified default value.
+
+`[<ArgumentDefaultValue foo>]` is shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant `foo`.
+`foo` must be a literal written out in full, because the value is reproduced in the generated file rather than evaluated at your attribute, so anything whose meaning depends on where it is written must be rejected for safety.
+That includes a name standing for a constant (a `[<Literal>]` binding, an enum case): the generated file hoists every `open` in your source above the parser, so a name need not resolve to the same binding there as here, and a later `open` which shadows an earlier one would silently change the default's value.
+Use `[<ArgumentDefaultFunction>]` if the generator rejects your `ArgumentDefaultValue`.
 
 ### Map-valued arguments
 

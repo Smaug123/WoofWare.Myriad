@@ -1,5 +1,12 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.5.1, WoofWare.Myriad.Plugins.Attributes 3.10.1
+
+The `ArgParserGenerator` gains `[<ArgumentDefaultValue foo>]`, which is shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns the constant `foo`.
+`foo` must be a literal written out in full: the value is reproduced in the generated file rather than evaluated at your attribute, so anything whose meaning depends on where it is written is rejected.
+That covers names standing for constants (a `[<Literal>]` binding or an enum case), since the generated file hoists every `open` in your source above the parser and so a name need not resolve to the same binding there; and F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`).
+Use `[<ArgumentDefaultFunction>]` for those, and for anything which is not a constant at all.
+
 # WoofWare.Myriad.Plugins 10.4.1, WoofWare.Myriad.Plugins.Attributes 3.9.1
 
 The `ArgParserGenerator` now supports `Map<'k, 'v>` fields, which accumulate key-value entries across occurrences as `list` fields accumulate values.
@@ -12,12 +19,6 @@ Each entry is split at its *first* key-value separator, so a value may contain t
 This means e.g. that some `Map<string, string>` are inexpressible (if the key contains the key-value separator); use `string list` and parse it yourself into a map if you need something smarter.
 Where the spellings are known at generation time we check them: an enumerated key or value with a case that no spelling can express is rejected rather than silently misparsed.
 Help text describes each half of an entry in the syntax that half accepts, so a flag-valued map advertises `map<..., bool>` and an enumerated one lists its case names.
-
-The `ArgParserGenerator` gains `[<ArgumentDefaultValue foo>]`: shorthand for an `[<ArgumentDefaultFunction>]` whose function just returns a constant.
-`foo` must be a literal written out in full: the value is reproduced in the generated file rather than evaluated at your attribute, so anything whose meaning depends on where it is written is rejected.
-That covers names standing for constants (a `[<Literal>]` binding or an enum case), since the generated file hoists every `open` in your source above the parser and so a name need not resolve to the same binding there; and F#'s context-sensitive constants (`__LINE__`, `__SOURCE_FILE__`, `__SOURCE_DIRECTORY__`).
-Use `[<ArgumentDefaultFunction>]` for those, and for anything which is not a constant at all.
-(`null` counts as a literal, so it is accepted, in the projects whose nullness settings let you write it at all.)
 
 # WoofWare.Myriad.Plugins 10.3.1
 
