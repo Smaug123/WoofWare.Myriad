@@ -2929,10 +2929,12 @@ type Args =
     /// `hasNegateAttr` was computed inside the non-positional leaf branch only; the positional
     /// branch never looked at it and hardcoded `AcceptsNegation = false`, so the attribute was
     /// silently ignored. The existing negation rejections all concern leaf fields of the wrong
-    /// scalar shape; none covered a positional field, whose problem is different in kind -- there
-    /// is no argument *name* to attach a --no- spelling to.
+    /// scalar shape; none covered a positional field, whose problem is different in kind. Note that
+    /// a positional sink *is* addressable -- `--rest value` and `--rest=value` route to it, as can
+    /// an explicit [<ArgumentLongForm>] -- so the complaint is not that it has no name, but that a
+    /// value-accumulating sink has no boolean for a `--no-` form to invert.
     let private negateOnPositional (field : string) : string =
-        $"[<ArgumentNegateWithPrefix>] was applied to field '%s{field}', which carries [<PositionalArgs>]. Negation gives a boolean argument a --no- spelling, and a positional field has no spelling to negate: it collects the arguments which carry no name at all. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
+        $"[<ArgumentNegateWithPrefix>] was applied to field '%s{field}', which carries [<PositionalArgs>]. Negation inverts a boolean argument: `--no-foo` means the same as `--foo=false`. A positional field is a sink which accumulates values -- its keyed spellings take a value and add it to the collection, rather than setting anything -- so there is no boolean here for a `--no-` form to invert. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
 
     [<Test>]
     let ``ArgumentNegateWithPrefix on a positional field is rejected`` () =

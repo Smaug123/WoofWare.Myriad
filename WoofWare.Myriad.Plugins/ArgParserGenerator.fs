@@ -1784,13 +1784,15 @@ module internal ArgParserGenerator =
 
                 match positionalArgAttr with
                 | Some includeFlagLike ->
-                    // A positional field is not spelled: it collects whatever carries no name. So
-                    // there is no name here for a --no- variant to be formed from, whatever the
-                    // field's type -- this is not the same complaint as the boolean-shape check on
-                    // the non-positional side below.
+                    // A positional field does have keyed spellings -- `--blah value` and
+                    // `--blah=value` route to the sink, and [<ArgumentLongForm>] can add more --
+                    // but they are value-taking routing keys, not a boolean to invert. So the
+                    // complaint is about what negation *means* here, not about the absence of a
+                    // name, and it holds whatever the field's element type: this is not the same
+                    // check as the boolean-shape one on the non-positional side below.
                     if hasNegateAttr then
                         failwith
-                            $"[<ArgumentNegateWithPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. Negation gives a boolean argument a --no- spelling, and a positional field has no spelling to negate: it collects the arguments which carry no name at all. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
+                            $"[<ArgumentNegateWithPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. Negation inverts a boolean argument: `--no-foo` means the same as `--foo=false`. A positional field is a sink which accumulates values -- its keyed spellings take a value and add it to the collection, rather than setting anything -- so there is no boolean here for a `--no-` form to invert. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
 
                     // Positional fields carrying a default attribute are rejected above, so the
                     // Choice-parsing path only ever reaches this callback with `None`.
