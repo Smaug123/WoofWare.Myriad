@@ -1,11 +1,5 @@
 Notable changes are recorded here.
 
-# WoofWare.Myriad.Plugins 10.7.3
-
-`ArgParserGenerator` now reads `[<ArgumentHelpText>]` from a discriminated union's case, and from that case's payload record, and heads the case's group in help text with it.
-Previously a case's payload record's own `[<ArgumentHelpText>]` was silently dropped: only the case name appeared, with no way to describe the case itself (a case is not reached through a field, so the field-level mechanism which reads a nested record's own help text does not apply to it).
-An `[<ArgumentHelpText>]` on the case itself overrides the one on its payload record, for the same reason a field's overrides a nested record's: the case is the more specific placement.
-
 # WoofWare.Myriad.Plugins 10.7.2
 
 `ArgParserGenerator` now reads `[<ArgumentHelpText>]` from a nested argument record or union of alternative argument sets, and not only from the `[<ArgParser>]`-tagged root.
