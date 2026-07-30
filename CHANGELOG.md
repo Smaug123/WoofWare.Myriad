@@ -1,18 +1,13 @@
 Notable changes are recorded here.
 
-# WoofWare.Myriad.Plugins 11.0
+# WoofWare.Myriad.Plugins 11.0.1
 
-**Breaking.** `ArgParserGenerator` now rejects, at generation time, several attribute placements which it previously accepted and then silently ignored.
-Each was read by nothing at the placement in question, so a schema which used one got a parser that did not do what its author asked, with no indication why; in the `[<ParseExact>]` case the generated help text went further and advertised a format the parser did not apply.
-Sources which relied on any of these placements will now fail to build.
-Where the attribute has a placement which would read it, the rejection message names it; where it does not (a parse format on a type whose parser has no notion of one), the fix is to remove the attribute, or to change the field to a type which does read it.
+Breaking change: `ArgParserGenerator` now rejects, at generation time, several attribute placements which it previously accepted and then silently ignored.
 
-* `[<ArgumentFlag>]` on a record field. It belongs on the two cases of a flag discriminated union, where it says which case means `true` and which means `false`; a field is not where that question can be answered. (The attribute's own documentation invited the mistake by describing it as going on "a field"; that wording is fixed.)
+* `[<ArgumentFlag>]` on a record field. It belongs on the two cases of a flag discriminated union, where it says which case means `true` and which means `false`; a field is not where that question can be answered.
 * `[<PositionalArgs>]`, `[<ParseExact>]`, `[<InvariantCulture>]` or `[<ArgumentNegateWithPrefix>]` on a field whose type is another argument record, or a union of alternative argument sets. Such a field contributes a whole set of arguments rather than one, so there is no single argument for these to collect into, spell or negate. `[<ArgumentHelpText>]` is deliberately still accepted there: it heads the group of arguments the field contributes.
 * `[<ArgumentNegateWithPrefix>]` on a `[<PositionalArgs>]` field. A positional field is a sink which accumulates values; its keyed spellings take a value rather than setting anything, so there is no boolean there for a `--no-` form to invert.
-* `[<ParseExact>]` or `[<InvariantCulture>]` on anything but a `System.TimeSpan`. These are read only by the `TimeSpan` parser. They continue to reach through the shapes which wrap a value — `TimeSpan option`, `TimeSpan list`, `Choice<TimeSpan, TimeSpan>`, and a `Map` either of whose halves is a `TimeSpan` — and are rejected only where no `TimeSpan` is reached at all.
-
-Also in this release, not breaking: a record field whose name requires backticks (````` ``my field`` `````) is now backticked in the expression which constructs the parsed record, so such a schema generates a file which compiles.
+* `[<ParseExact>]` or `[<InvariantCulture>]` on anything but a `System.TimeSpan`. These are read only by the `TimeSpan` parser. They continue to reach through the shapes which wrap a value — `TimeSpan option`, `TimeSpan list`, `Choice<TimeSpan, TimeSpan>`, and a `Map` either of whose halves is a `TimeSpan` — and are rejected only where no `TimeSpan` is reached at all. Future work may expand the range of types these attributes affect.
 
 # WoofWare.Myriad.Plugins 10.7.2
 
