@@ -1770,8 +1770,28 @@ module internal ArgParserGenerator =
                         $"[<ArgumentPrefix>] can only be applied to a field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative argument sets, but was applied to field '%s{ident.idText}' of type %s{describeType fieldType}. It renames every argument contributed by that field's subtree by prepending a namespace (e.g. [<ArgumentPrefix \"foo\">] on a field whose type is a record containing `Blah : string` turns --blah into --foo-blah); a leaf field has no subtree to rename. To change this one argument's name, use [<ArgumentLongForm>] instead."
                 | None -> ()
 
+                // Read before the positional split, because both sides have something to say about
+                // it: the positional branch cannot honour it at all, and previously did not even
+                // look, hardcoding `AcceptsNegation = false` and dropping the attribute in silence.
+                let hasNegateAttr =
+                    attrs
+                    |> List.exists (fun attr ->
+                        match (List.last attr.TypeName.LongIdent).idText with
+                        | "ArgumentNegateWithPrefixAttribute"
+                        | "ArgumentNegateWithPrefix" -> true
+                        | _ -> false
+                    )
+
                 match positionalArgAttr with
                 | Some includeFlagLike ->
+                    // A positional field is not spelled: it collects whatever carries no name. So
+                    // there is no name here for a --no- variant to be formed from, whatever the
+                    // field's type -- this is not the same complaint as the boolean-shape check on
+                    // the non-positional side below.
+                    if hasNegateAttr then
+                        failwith
+                            $"[<ArgumentNegateWithPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. Negation gives a boolean argument a --no- spelling, and a positional field has no spelling to negate: it collects the arguments which carry no name at all. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
+
                     // Positional fields carrying a default attribute are rejected above, so the
                     // Choice-parsing path only ever reaches this callback with `None`.
                     let getChoice (_ : ArgumentDefaultSpec option) : unit = ()
@@ -1898,17 +1918,6 @@ module internal ArgParserGenerator =
                         | Accumulation.Optional
                         | Accumulation.Choice _
                         | Accumulation.List _ -> None
-
-                    let hasNegateAttr =
-                        attrs
-                        |> List.exists (fun attr ->
-                            match attr.TypeName with
-                            | SynLongIdent.SynLongIdent (ident, _, _) ->
-                                match (List.last ident).idText with
-                                | "ArgumentNegateWithPrefixAttribute"
-                                | "ArgumentNegateWithPrefix" -> true
-                                | _ -> false
-                        )
 
                     let acceptsNegation =
                         if hasNegateAttr then

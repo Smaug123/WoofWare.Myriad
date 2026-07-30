@@ -2926,6 +2926,86 @@ type Args =
 
         List.length modules |> shouldEqual 2
 
+    /// `hasNegateAttr` was computed inside the non-positional leaf branch only; the positional
+    /// branch never looked at it and hardcoded `AcceptsNegation = false`, so the attribute was
+    /// silently ignored. The existing negation rejections all concern leaf fields of the wrong
+    /// scalar shape; none covered a positional field, whose problem is different in kind -- there
+    /// is no argument *name* to attach a --no- spelling to.
+    let private negateOnPositional (field : string) : string =
+        $"[<ArgumentNegateWithPrefix>] was applied to field '%s{field}', which carries [<PositionalArgs>]. Negation gives a boolean argument a --no- spelling, and a positional field has no spelling to negate: it collects the arguments which carry no name at all. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
+
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        [<ArgumentNegateWithPrefix>]
+        Blah : string list
+    }
+"""
+        |> shouldRejectWith (negateOnPositional "Blah")
+
+    /// The shape which most invites the mistake: the field really is boolean-like, so every other
+    /// negation check passes it, and only its being positional makes negation meaningless.
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a boolean positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        [<ArgumentNegateWithPrefix>]
+        Blah : bool list
+    }
+"""
+        |> shouldRejectWith (negateOnPositional "Blah")
+
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a positional field is rejected under its long spelling`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs true>]
+        [<ArgumentNegateWithPrefixAttribute>]
+        Blah : string list
+    }
+"""
+        |> shouldRejectWith (negateOnPositional "Blah")
+
+    /// Neither attribute is at fault on its own: it is only their combination which cannot mean
+    /// anything.
+    [<Test>]
+    let ``A positional field and a negated boolean field coexist`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        Rest : string list
+        [<ArgumentNegateWithPrefix>]
+        Verbose : bool
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
     /// [<ArgumentHelpText>] is deliberately NOT in the list: on a structural field it introduces
     /// the group of arguments the field contributes, which is a real and documented use.
     [<Test>]
