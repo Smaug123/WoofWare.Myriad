@@ -1314,15 +1314,36 @@ module internal ArgParserGenerator =
             | Some enumDu -> createEnumParser enumDu, Accumulation.Required, ty
             | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
-    /// The `[<ArgumentHelpText>]` carried here, if any. The same attribute serves a field, a nested
-    /// type, and the tagged root, so they all read it through this.
-    let private helpTextAttribute (attrs : SynAttribute list) : SynExpr option =
+    /// The `[<ArgumentHelpText>]` carried here, if any, ready to be reproduced in the generated
+    /// file. The same attribute serves a field, a nested type, and the tagged root, so they all
+    /// read it through this; `context` names the placement, for the sake of any error message.
+    ///
+    /// As for `[<ArgumentDefaultValue>]` above, only a literal is safe to carry into the generated
+    /// file: a bare name might resolve to a different binding there, since that file hoists every
+    /// `open` in the source above the parser, and a decoded string constant needs its escapes
+    /// rebuilt or Fantomas will emit them wrong (a `\t` would come out of the quotes as a literal
+    /// tab).
+    let private helpTextAttribute (context : string) (attrs : SynAttribute list) : SynExpr option =
         attrs
         |> List.tryPick (fun attr ->
             match (List.last attr.TypeName.LongIdent).idText with
             | "ArgumentHelpTextAttribute"
             | "ArgumentHelpText" -> Some attr.ArgExpr
             | _ -> None
+        )
+        |> Option.map (fun expr ->
+            match classifyDefaultValue expr with
+            | DefaultValueExpr.Constant c -> defaultValueExpr c
+            | DefaultValueExpr.Null -> SynExpr.Null range0
+            | DefaultValueExpr.ContextSensitive name ->
+                failwith
+                    $"The [<ArgumentHelpText>] on %s{context} uses the context-sensitive constant %s{name}. Its value depends on where it is written, and we reproduce it in the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source. Write the help text out as a literal string."
+            | DefaultValueExpr.Identifier name ->
+                failwith
+                    $"The [<ArgumentHelpText>] on %s{context} names something (%s{name}) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+            | DefaultValueExpr.Unrecognised ->
+                failwith
+                    $"The [<ArgumentHelpText>] on %s{context} was not recognised as a literal. We reproduce the value in the generated file rather than evaluating it at your attribute, so we accept only a string literal written out in full (optionally parenthesised)."
         )
 
     /// The `[<ArgumentPrefix>]` this field carries, if any.
@@ -1457,10 +1478,15 @@ module internal ArgParserGenerator =
                         | _ -> None
                     )
 
+                let ident =
+                    match identOption with
+                    | None -> failwith "expected args field to have a name, but it did not"
+                    | Some i -> i
+
                 // Kept separate from the `helpText` below, which folds in the parse format: a
                 // structural field's help introduces a whole group of arguments rather than
                 // describing one, so it must not pick up a leaf's parsing note.
-                let helpTextAttr = helpTextAttribute attrs
+                let helpTextAttr = helpTextAttribute $"field '%s{ident.idText}'" attrs
 
                 let helpText =
                     match parseExactModifier, helpTextAttr with
@@ -1476,11 +1502,6 @@ module internal ArgParserGenerator =
                         |> SynExpr.applyTo ht
                         |> SynExpr.applyTo pe
                         |> Some
-
-                let ident =
-                    match identOption with
-                    | None -> failwith "expected args field to have a name, but it did not"
-                    | Some i -> i
 
                 let longForms =
                     attrs
@@ -1558,10 +1579,12 @@ module internal ArgParserGenerator =
                 // The field's own attribute wins over the nested type's, which is the fallback: one
                 // type may be nested at several sites, and the field is the more specific placement,
                 // so it is the one which can say what this occurrence is for.
-                let groupHeader (typeAttrs : SynAttribute list) : GroupHeader =
+                let groupHeader (typeName : string) (typeAttrs : SynAttribute list) : GroupHeader =
                     {
                         GroupHeader.Label = ident.idText
-                        GroupHeader.Help = helpTextAttr |> Option.orElseWith (fun () -> helpTextAttribute typeAttrs)
+                        GroupHeader.Help =
+                            helpTextAttr
+                            |> Option.orElseWith (fun () -> helpTextAttribute $"type %s{typeName}" typeAttrs)
                     }
 
                 match ambientRecordMatch with
@@ -1581,7 +1604,7 @@ module internal ArgParserGenerator =
                     let spec, counter =
                         toParseSpec
                             ancestors
-                            (Some (groupHeader childRecord.Attributes))
+                            (Some (groupHeader childRecord.Name.idText childRecord.Attributes))
                             childPrefix
                             counter
                             ambient
@@ -1606,7 +1629,7 @@ module internal ArgParserGenerator =
                     let spec, counter =
                         unionToParseSpec
                             ancestors
-                            (Some (groupHeader union.Attributes))
+                            (Some (groupHeader union.Name.idText union.Attributes))
                             childPrefix
                             counter
                             ambient
@@ -1873,8 +1896,10 @@ module internal ArgParserGenerator =
                 // overrides the more general one (the payload record's own definition), since one
                 // payload record type could in principle be reused by several cases or sites.
                 let caseHelp =
-                    helpTextAttribute case.Attributes
-                    |> Option.orElseWith (fun () -> helpTextAttribute payloadRecord.Attributes)
+                    helpTextAttribute $"case %s{case.Name.idText}" case.Attributes
+                    |> Option.orElseWith (fun () ->
+                        helpTextAttribute $"type %s{payloadRecord.Name.idText}" payloadRecord.Attributes
+                    )
 
                 counter, (case.Name, caseHelp, spec) :: acc
             )
@@ -3077,9 +3102,6 @@ module internal ArgParserGenerator =
             }
 
         let taggedTypeName, typeHelpText, parseSpec =
-            let typeHelp (attrs : SynAttributes) =
-                attrs |> SynAttributes.toAttrs |> helpTextAttribute
-
             match taggedType with
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
                                        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _),
@@ -3094,7 +3116,12 @@ module internal ArgParserGenerator =
                 // help, which `helpText` prints above everything.
                 let spec, _ = toParseSpec [] None "" 0 ambient record
 
-                record.Name, typeHelp attrs, spec
+                let typeHelp =
+                    attrs
+                    |> SynAttributes.toAttrs
+                    |> helpTextAttribute $"type %s{record.Name.idText}"
+
+                record.Name, typeHelp, spec
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
                                        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _),
                                        smd,
@@ -3111,7 +3138,12 @@ module internal ArgParserGenerator =
 
                 let spec, _ = unionToParseSpec [] None "" 0 ambient union
 
-                union.Name, typeHelp attrs, spec
+                let typeHelp =
+                    attrs
+                    |> SynAttributes.toAttrs
+                    |> helpTextAttribute $"type %s{union.Name.idText}"
+
+                union.Name, typeHelp, spec
             | _ ->
                 failwith
                     "[<ArgParser>] may only be placed on a record, or on a discriminated union whose cases each hold one record."

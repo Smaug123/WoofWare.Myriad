@@ -178,6 +178,16 @@ type ParentRecordWithTypeHelp =
         Secondary : DescribedChild
     }
 
+/// Help text may contain characters which need escaping to survive being reproduced in the
+/// generated file: FCS decodes the literal before Myriad ever sees it, so a backslash, a quote,
+/// and a control character must all be re-escaped rather than passed through as the decoded text.
+[<ArgParser true>]
+type ParentRecordWithEscapedHelp =
+    {
+        [<ArgumentHelpText "Path is C:\\temp, quote is \" and tab is \t.">]
+        Child : ChildRecord
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {
