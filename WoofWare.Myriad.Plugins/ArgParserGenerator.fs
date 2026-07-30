@@ -1542,8 +1542,19 @@ module internal ArgParserGenerator =
                 "virtual"
             ]
 
-    /// Whether `ident` is safe to splice in bare, as a record-construction label. F#'s lexer treats
-    /// a number of shapes as meaningful bare tokens in *other* grammar positions but not this one.
+    /// Whether `ident` is safe to splice in bare wherever the generated file wants a single
+    /// identifier. F#'s lexer treats a number of shapes as meaningful bare tokens in *other* grammar
+    /// positions but not as a plain identifier.
+    ///
+    /// The probe deliberately uses the record-label position for every caller, including the ones
+    /// which emit a member name rather than a label. That position is the tightest available: it
+    /// admits exactly one identifier and nothing else, so the parser accepts the probe only if
+    /// `ident` really is one token. A probe in the position a caller actually emits into can be far
+    /// weaker -- `Owner.%s{ident} ()` would happily parse `Owner.Defaultspace name ()` as an
+    /// application of `Owner.Defaultspace` to `name`, and report success for a name which is
+    /// nothing of the sort. Being tighter than a caller needs only means backticking something
+    /// which did not require it, and backticks are a legal alternative spelling of any identifier,
+    /// so that is always safe.
     ///
     /// This is still not exhaustive: a name built to smuggle extra syntax into the probe (e.g. one
     /// containing a block comment, `A (*x*)`) can make the probe parse successfully as a *different*,
@@ -1551,7 +1562,7 @@ module internal ArgParserGenerator =
     /// wrong. Deliberately left unfixed: such a name is not a real record field name anyone would
     /// write, and the failure mode if it ever occurred is the same one already being fixed here --
     /// generated code that doesn't compile -- not silent corruption.
-    let private isValidBareRecordLabel (ident : string) : bool =
+    let private isValidBareIdent (ident : string) : bool =
         if reservedForFutureUse.Contains ident then
             false
         else
@@ -1564,12 +1575,12 @@ module internal ArgParserGenerator =
         with _ ->
             false
 
-    /// Re-backtick a field name, if it needs backticks to be usable as a bare record-construction
-    /// label -- exactly as its declaration needed them, if it had any (backticking is always a
+    /// Re-backtick an identifier we are about to emit, if it needs backticks to be read back as
+    /// itself -- exactly as its declaration needed them, if it had any (backticking is always a
     /// legal alternative spelling of any identifier, so this is safe to apply unconditionally to
-    /// whatever `isValidBareRecordLabel` rejects).
-    let private backtickRecordLabel (ident : string) : string =
-        if isValidBareRecordLabel ident then
+    /// whatever `isValidBareIdent` rejects).
+    let private backtickIdent (ident : string) : string =
+        if isValidBareIdent ident then
             ident
         else
             "``" + ident + "``"
@@ -2019,7 +2030,7 @@ module internal ArgParserGenerator =
                         // (a space, a keyword, ...) must be re-backticked before it is safe to place
                         // in this record-construction expression, exactly as the record's own
                         // declaration required it to be written.
-                        SynLongIdent.create [ Ident.create (backtickRecordLabel ident) ], expr
+                        SynLongIdent.create [ Ident.create (backtickIdent ident) ], expr
                     )
                     |> SynExpr.createRecord None
                 )
@@ -2127,7 +2138,7 @@ module internal ArgParserGenerator =
                 |> SynExpr.paren
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
                 // Display the spelling the user would have to type to supply this value.
-                SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                SynExpr.callMethod (backtickIdent var.idText) (SynExpr.createIdent' owner)
                 |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
@@ -3042,7 +3053,9 @@ module internal ArgParserGenerator =
                         | ArgumentDefaultSpec.FunctionCall (owner, name) ->
                             SynExpr.sequential
                                 [
-                                    storeDefault (SynExpr.callMethod name.idText (SynExpr.createIdent' owner))
+                                    storeDefault (
+                                        SynExpr.callMethod (backtickIdent name.idText) (SynExpr.createIdent' owner)
+                                    )
                                     SynExpr.createIdent "None"
                                 ]
                         | ArgumentDefaultSpec.Literal value ->
