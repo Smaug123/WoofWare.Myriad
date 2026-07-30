@@ -911,6 +911,60 @@ module internal ArgParserGenerator =
         | Accumulation.Choice _
         | Accumulation.List _ -> rejectSeparatorAttributes fieldName fieldType attrs
 
+    /// [<ParseExact>] and [<InvariantCulture>] are read in exactly one place: the TimeSpan arm of
+    /// `createParseFunction`. On any other type they are dropped -- and for [<ParseExact>] that is
+    /// worse than silence, because `helpText` advertises the format unconditionally, so the
+    /// generated --help promises a format the generated parser does not honour.
+    ///
+    /// Checked after the parse function has been built, against the type actually handed to the
+    /// parser rather than the declared field type -- exactly as `checkSeparatorAttributesPlacement`
+    /// is, and for the same reason: `TimeSpan option` and `TimeSpan list` reach the TimeSpan arm
+    /// through the recursion, so their element type is what the attribute really describes.
+    ///
+    /// A map is the one shape where that type is not the whole story: it hands the field's
+    /// attributes to its key parser as well as its value parser, so the attribute is genuinely
+    /// consumed if *either* component is a TimeSpan, while `parseTy` is only the value's.
+    let private checkCultureAttributesPlacement
+        (fieldName : Ident)
+        (fieldType : SynType)
+        (attrs : SynAttribute list)
+        (accumulation : Accumulation<'choice>)
+        (parseTy : SynType)
+        : unit
+        =
+        let isTimeSpan (ty : SynType) : bool =
+            match ty with
+            | TimeSpan -> true
+            | _ -> false
+
+        let consumed =
+            match accumulation with
+            | Accumulation.Map spec -> isTimeSpan spec.KeyType || isTimeSpan parseTy
+            | Accumulation.Required
+            | Accumulation.Optional
+            | Accumulation.Choice _
+            | Accumulation.List _ -> isTimeSpan parseTy
+
+        if not consumed then
+            let reject (names : string list) (display : string) (consequence : string) : unit =
+                let present =
+                    attrs
+                    |> List.exists (fun attr -> names |> List.contains (List.last attr.TypeName.LongIdent).idText)
+
+                if present then
+                    failwith
+                        $"[<%s{display}>] is only honoured on System.TimeSpan fields, but was applied to field '%s{fieldName.idText}' of type %s{describeType fieldType}. %s{consequence} Remove it, or use a System.TimeSpan: the attribute reaches through option, list and map, so `System.TimeSpan option` and `Map<string, System.TimeSpan>` are honoured too."
+
+            reject
+                [ "ParseExact" ; "ParseExactAttribute" ]
+                "ParseExact"
+                "Nothing reads it there, so the value is parsed in the default way -- while the generated help text still advertises the format, promising something the parser does not do."
+
+            reject
+                [ "InvariantCulture" ; "InvariantCultureAttribute" ]
+                "InvariantCulture"
+                "Nothing reads it there, so the value is parsed in whatever culture the default parse uses."
+
     /// What we found in the argument of an `[<ArgumentDefaultValue>]`.
     type private DefaultValueExpr =
         /// A constant written out in full. It denotes the same value wherever it appears, so we can
@@ -1802,6 +1856,7 @@ module internal ArgParserGenerator =
                         createParseFunction<unit> getChoice ambient finalRecord.Name ident attrs fieldType
 
                     checkSeparatorAttributesPlacement ident fieldType attrs accumulation
+                    checkCultureAttributesPlacement ident fieldType attrs accumulation parseTy
 
                     let isBoolLike =
                         match parseTy with
@@ -1866,6 +1921,7 @@ module internal ArgParserGenerator =
                         createParseFunction getChoice ambient finalRecord.Name ident attrs fieldType
 
                     checkSeparatorAttributesPlacement ident fieldType attrs accumulation
+                    checkCultureAttributesPlacement ident fieldType attrs accumulation parseTy
 
                     // A map's `parseTy` describes its *values*, not the field, so the boolean and
                     // enumerated metadata derived from it would misdescribe the argument. In
