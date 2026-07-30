@@ -1469,7 +1469,7 @@ module internal ArgParserGenerator =
         else
 
         try
-            Ast.parse $"module M\ntype T = {{ {ident} : int }}\nlet _ = {{ {ident} = 1 }}"
+            Ast.parse $"module M\ntype T = {{ %s{ident} : int }}\nlet _ = {{ %s{ident} = 1 }}"
             |> ignore<ParsedInput>
 
             true
