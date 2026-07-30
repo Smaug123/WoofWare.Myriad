@@ -101,6 +101,12 @@ type ArgumentDefaultValueAttribute (defaultValue : obj) =
 /// embedded, and so heads the group in each place. If the field which embeds it carries an
 /// [<ArgumentHelpText>] of its own, the field's wins: it is the more specific placement, and one type
 /// may be embedded at several sites for different purposes.
+///
+/// When applied to a case of a discriminated union of alternative argument sets, the help text
+/// describes that case's set of arguments, and appears on the header line naming the case. A case
+/// is not reached through a field, so its payload record's own [<ArgumentHelpText>] (if the payload
+/// is used in only that one case) is the fallback instead; the case, being the more specific
+/// placement, overrides it.
 type ArgumentHelpTextAttribute (helpText : string) =
     inherit Attribute ()
 

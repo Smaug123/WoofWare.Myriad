@@ -2054,9 +2054,9 @@ module MapInUnion =
         let helpText () =
             [
                 "exactly one of the following sets of arguments:"
-                "Deploy:"
+                (sprintf "%s:" "Deploy")
                 (sprintf "  %s  %s%s%s" (sprintf "--%s" "tags") "map<string, string>" " (KEY:VALUE; can be repeated)" "")
-                "Rollback:"
+                (sprintf "%s:" "Rollback")
                 (sprintf "  %s  %s%s%s" (sprintf "--%s" "to") "string" "" "")
             ]
             |> String.concat "\n"
