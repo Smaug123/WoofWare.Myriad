@@ -1418,6 +1418,36 @@ module internal ArgParserGenerator =
                 ))
                 (SynExpr.paren form)
 
+    /// F#'s lexer accepts each of these bare in a record-construction label -- so `Ast.parse` below
+    /// would say they're fine -- but the real compiler reserves them "for future use" and emits
+    /// FS0046, a warning by default but an error under `--warnaserror` (which this repo enables).
+    /// Fantomas's own parser doesn't model this distinction, so it can't be asked; this list was
+    /// instead obtained by compiling each candidate word from the F# keyword reference
+    /// (https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/keyword-reference) bare
+    /// in this exact position with the actual compiler (`dotnet fsi`) and keeping the ones that
+    /// warned. That reference is not itself definitive -- three of its listed words (`const`,
+    /// `event`, `external`) no longer trigger the warning at all -- which is exactly why this was
+    /// verified against the compiler rather than transcribed from the page.
+    let private reservedForFutureUse =
+        set
+            [
+                "break"
+                "checked"
+                "component"
+                "constraint"
+                "continue"
+                "include"
+                "mixin"
+                "parallel"
+                "process"
+                "protected"
+                "pure"
+                "sealed"
+                "tailcall"
+                "trait"
+                "virtual"
+            ]
+
     /// Whether `ident` is safe to splice in bare, as a record-construction label. F#'s lexer treats
     /// a number of shapes as meaningful bare tokens in *other* grammar positions but not this one --
     /// the wildcard pattern `_`, an active-pattern name (`|A|_|`), the word-form operator keywords
@@ -1426,7 +1456,18 @@ module internal ArgParserGenerator =
     /// ask the actual parser this codebase already depends on elsewhere, with `ident` spliced bare
     /// into both a field declaration and a record-construction label, which is exactly the two
     /// positions the real generated file will put it in.
+    ///
+    /// This is still not exhaustive: a name built to smuggle extra syntax into the probe (e.g. one
+    /// containing a block comment, `A (*x*)`) can make the probe parse successfully as a *different*,
+    /// shorter label than `ident`, without the parser or `reservedForFutureUse` ever seeing anything
+    /// wrong. Deliberately left unfixed: such a name is not a real record field name anyone would
+    /// write, and the failure mode if it ever occurred is the same one already being fixed here --
+    /// generated code that doesn't compile -- not silent corruption.
     let private isValidBareRecordLabel (ident : string) : bool =
+        if reservedForFutureUse.Contains ident then
+            false
+        else
+
         try
             Ast.parse $"module M\ntype T = {{ {ident} : int }}\nlet _ = {{ {ident} = 1 }}"
             |> ignore<ParsedInput>

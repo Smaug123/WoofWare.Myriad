@@ -529,8 +529,9 @@ Secondary: Where to fail over to
     ///
     /// The remaining fields each exercise a shape F#'s lexer treats as a meaningful bare token in
     /// some *other* grammar position -- the wildcard pattern, an active-pattern name, a word-form
-    /// operator keyword, and a context-sensitive constant -- none of which is a valid bare record
-    /// label, so a naive "does this need backticks" check keeps being wrong about them.
+    /// operator keyword, a context-sensitive constant, and a word reserved "for future use" that
+    /// parses bare but only with a warning -- none of which is a valid bare record label, so a
+    /// naive "does this need backticks" check keeps being wrong about them.
     [<Test>]
     let ``A field name needing backticks survives re-emission in the constructed record`` () =
         let getEnvVar (_ : string) = failwith "should not call"
@@ -544,6 +545,7 @@ Secondary: Where to fail over to
                 "--|-a|_|=4"
                 "--mod=5"
                 "--__-l-i-n-e__=6"
+                "--break=7"
             ]
         |> shouldEqual
             {
@@ -556,6 +558,7 @@ Secondary: Where to fail over to
                 AwkwardFieldName.``|A|_|`` = 4
                 AwkwardFieldName.``mod`` = 5
                 AwkwardFieldName.``__LINE__`` = 6
+                AwkwardFieldName.``break`` = 7
             }
 
     [<Test>]

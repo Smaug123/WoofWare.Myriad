@@ -399,8 +399,10 @@ type NonPositionalBoolList =
 /// Every field beyond `` ``back\tab`` `` here is a shape F#'s lexer treats as a meaningful bare
 /// token in some *other* grammar position, so a naive "does this need backticks" check keeps being
 /// wrong about it: `` ``_`` `` is the wildcard pattern, `` ``|A|_|`` `` is an active-pattern name,
-/// `` ``mod`` `` is a word-form operator keyword, and `` ``__LINE__`` `` is a context-sensitive
-/// constant. None of them is a valid bare record label.
+/// `` ``mod`` `` is a word-form operator keyword, `` ``__LINE__`` `` is a context-sensitive
+/// constant, and `` ``break`` `` is a word reserved "for future use" that parses bare but warns
+/// (FS0046) -- an error under `--warnaserror`, which this repo enables. None of them is a valid
+/// bare record label.
 [<ArgParser true>]
 type AwkwardFieldName =
     {
@@ -409,4 +411,5 @@ type AwkwardFieldName =
         ``|A|_|`` : int
         ``mod`` : int
         ``__LINE__`` : int
+        ``break`` : int
     }
