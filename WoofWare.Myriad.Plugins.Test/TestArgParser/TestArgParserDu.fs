@@ -179,8 +179,25 @@ BarCase:
         |> shouldEqual
             """Help text requested.
 --verbose  bool
-exactly one of the following sets of arguments:
-Auto:
-  --quiet  bool (optional)
-Manual:
-  --level  int32"""
+Mode:
+  exactly one of the following sets of arguments:
+  Auto:
+    --quiet  bool (optional)
+  Manual:
+    --level  int32"""
+
+    [<Test>]
+    let ``Help text for a union-typed field is headed by the field's help text`` () =
+        let exc =
+            Assert.Throws<exn> (fun () -> WithModeHelpArgs.parse' noEnv [ "--help" ] |> ignore<WithModeHelpArgs>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+--verbose  bool
+Mode: How loud to be
+  exactly one of the following sets of arguments:
+  Auto:
+    --quiet  bool (optional)
+  Manual:
+    --level  int32"""

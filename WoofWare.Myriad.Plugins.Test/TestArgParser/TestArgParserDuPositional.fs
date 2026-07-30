@@ -129,11 +129,12 @@ No arguments were supplied to select one of: Fetch, Push"""
         exc.Message
         |> shouldEqual
             """Help text requested.
-exactly one of the following sets of arguments:
-Auto:
-  --quiet  bool (optional)
-Manual:
-  --level  int32
+Mode:
+  exactly one of the following sets of arguments:
+  Auto:
+    --quiet  bool (optional)
+  Manual:
+    --level  int32
 --rest  int32 (positional args) (can be repeated)"""
 
     [<Test>]

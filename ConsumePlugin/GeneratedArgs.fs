@@ -3296,8 +3296,9 @@ module ParentRecordArgParse =
         static member parse' (getEnvironmentVariable : string -> string option) (args : string list) : ParentRecord =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "thing2") "string" "" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing2") "string" "" "")
                     (sprintf "%s  %s%s%s" (sprintf "--%s" "and-another") "bool" "" "")
                 ]
                 |> String.concat "\n"
@@ -3498,8 +3499,10 @@ module ParentRecordChildDefaultArgParse =
             =
             let helpText () =
                 [
+                    (sprintf "%s:" "Child")
+
                     (sprintf
-                        "%s  %s%s%s"
+                        "  %s  %s%s%s"
                         (sprintf "--%s" "from-function")
                         "int32"
                         (ChildRecordWithDefault.DefaultFromFunction().ToString ()
@@ -3671,8 +3674,9 @@ module ParentRecordChildPosArgParse =
             let helpText () =
                 [
                     (sprintf "%s  %s%s%s" (sprintf "--%s" "and-another") "bool" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "thing2") "URI" " (positional args) (can be repeated)" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing2") "URI" " (positional args) (can be repeated)" "")
                 ]
                 |> String.concat "\n"
 
@@ -3853,8 +3857,9 @@ module ParentRecordSelfPosArgParse =
             =
             let helpText () =
                 [
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
-                    (sprintf "%s  %s%s%s" (sprintf "--%s" "thing2") "string" "" "")
+                    (sprintf "%s:" "Child")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing2") "string" "" "")
                     (sprintf
                         "%s  %s%s%s"
                         (sprintf "--%s" "and-another")
@@ -4020,6 +4025,214 @@ module ParentRecordSelfPosArgParse =
 
         static member parse (args : string list) : ParentRecordSelfPos =
             ParentRecordSelfPos.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type ParentRecordWithGroupHelp
+[<AutoOpen>]
+module ParentRecordWithGroupHelpArgParse =
+    /// Extension methods for argument parsing
+    type ParentRecordWithGroupHelp with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : ParentRecordWithGroupHelp
+            =
+            let helpText () =
+                [
+                    (sprintf "%s: %s" "Child" ("Settings for the child thing"))
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing2") "string" "" "")
+                    (sprintf
+                        "%s  %s%s%s"
+                        (sprintf "--%s" "and-another")
+                        "bool"
+                        ""
+                        (sprintf " : %s" ("Whether to and-another")))
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : int option = None
+            let mutable arg_1 : string option = None
+            let mutable arg_2 : bool option = None
+
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "thing1" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 1
+                                Forms = [ "thing2" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 2
+                                Forms = [ "and-another" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.BoolLike
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                    [
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+                                        ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                    ]
+                                )
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                            ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_1 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_1 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 2 ->
+                    match arg_2 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                let parsedBool = System.Boolean.Parse value
+                                let parsedBool = if occurrence.Negated then not parsedBool else parsedBool
+                                arg_2 <- Some (parsedBool)
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            arg_2 <- Some ((if occurrence.Negated then false else true))
+                            None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 2 ->
+                    match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    AndAnother =
+                        (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                    Child =
+                        {
+                            Thing1 =
+                                (match arg_0 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                            Thing2 =
+                                (match arg_1 with
+                                 | Some x -> x
+                                 | None ->
+                                     failwith
+                                         "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                        }
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : ParentRecordWithGroupHelp =
+            ParentRecordWithGroupHelp.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
 namespace ConsumePlugin
 
 open System

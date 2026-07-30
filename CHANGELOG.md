@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.7.1
+
+`ArgParserGenerator` help text now groups the arguments contributed by a field whose type is another argument record, or a union of alternative argument sets, under a header line naming that field.
+(Previously those arguments were flattened into one undifferentiated list, so nothing indicated which arguments were declared together.)
+
 # WoofWare.Myriad.Plugins 10.6.2
 
 `ArgParserGenerator` now correctly escapes strings from `ArgumentLongForm` where necessary.

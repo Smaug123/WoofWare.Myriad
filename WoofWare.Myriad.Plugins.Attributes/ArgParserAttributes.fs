@@ -85,8 +85,16 @@ type ArgumentDefaultValueAttribute (defaultValue : obj) =
 
 /// Attribute indicating that this field or type shall have the given help text, when `--help` is invoked
 /// or when a parse error causes us to print help text.
-/// When applied to a record type, the help text appears at the top of the help output, before the field descriptions.
-/// When applied to a field, the help text appears next to that field's description.
+///
+/// When applied to the [<ArgParser>]-tagged type, the help text appears at the top of the help output,
+/// before the field descriptions.
+///
+/// When applied to a leaf field, the help text appears next to that field's description.
+///
+/// When applied to a field whose type is another argument record, or a discriminated union of
+/// alternative argument sets, the help text describes the whole group of arguments that field
+/// contributes: it appears on the header line which introduces that group, above the indented list
+/// of the arguments themselves. (That header is written whether or not you supply any help text.)
 type ArgumentHelpTextAttribute (helpText : string) =
     inherit Attribute ()
 
