@@ -1449,13 +1449,7 @@ module internal ArgParserGenerator =
             ]
 
     /// Whether `ident` is safe to splice in bare, as a record-construction label. F#'s lexer treats
-    /// a number of shapes as meaningful bare tokens in *other* grammar positions but not this one --
-    /// the wildcard pattern `_`, an active-pattern name (`|A|_|`), the word-form operator keywords
-    /// (`mod`, `land`, ...), the dunder constants (`__LINE__`, ...) -- and hand-enumerating them is a
-    /// losing game: two rounds of review each found a shape the previous fix missed. So don't guess;
-    /// ask the actual parser this codebase already depends on elsewhere, with `ident` spliced bare
-    /// into both a field declaration and a record-construction label, which is exactly the two
-    /// positions the real generated file will put it in.
+    /// a number of shapes as meaningful bare tokens in *other* grammar positions but not this one.
     ///
     /// This is still not exhaustive: a name built to smuggle extra syntax into the probe (e.g. one
     /// containing a block comment, `A (*x*)`) can make the probe parse successfully as a *different*,
