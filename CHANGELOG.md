@@ -1,5 +1,12 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 11.0.3
+
+`RemoveOptionsGenerator` now backticks the `Default`-prefixed member name it emits to supply an optional field's default, so a record with a field whose name needs backticks no longer generates a file which fails to compile.
+This is the same bug as the one fixed in `ArgParserGenerator` in 11.0.2, in a different generator; the shared logic now lives in one place.
+
+Only that one name was affected. The field declaration, the accessor and the record label all reuse the `Ident` from your own source, which carries a range Fantomas can slice the original text from, so those were already spelled correctly; the `Default`-prefixed name is synthesized and so has no such text behind it.
+
 # WoofWare.Myriad.Plugins 11.0.2
 
 `ArgParserGenerator` now backticks the `Default`-prefixed member name it emits for an `[<ArgumentDefaultFunction>]` field, so a field whose name needs backticks no longer generates a file which fails to parse.

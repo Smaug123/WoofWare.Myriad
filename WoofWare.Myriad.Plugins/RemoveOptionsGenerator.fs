@@ -88,9 +88,20 @@ module internal RemoveOptionsGenerator =
                         |> SynExpr.pipeThroughFunction (
                             SynExpr.applyFunction
                                 (SynExpr.createLongIdent [ "Option" ; "defaultWith" ])
+                                // This name is synthesized rather than taken from the user's source,
+                                // so it has no text behind it for Fantomas to slice: a field whose
+                                // name needed backticks would emit `Type.Defaultmy field`, which
+                                // does not parse. The user's own member has to be declared with the
+                                // backticks, so we have to reproduce them. (The accessor and the
+                                // record label below reuse the original `Ident`, which does have a
+                                // range, so those are already spelled correctly.)
                                 (SynExpr.createLongIdent' (
                                     [ withoutOptionsType ]
-                                    @ [ Ident.create (sprintf "Default%s" fieldData.Ident.idText) ]
+                                    @ [
+                                        Ident.create (
+                                            BacktickIdent.escape (sprintf "Default%s" fieldData.Ident.idText)
+                                        )
+                                    ]
                                 ))
                         )
                     | _ -> accessor

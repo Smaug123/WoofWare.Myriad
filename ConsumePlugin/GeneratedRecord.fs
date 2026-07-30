@@ -17,6 +17,12 @@ module RecordType =
             B : string
             /// Yet another thing!
             C : float list
+            /// A field whose name needs backticks, and which is optional, so the generator has to
+            /// reconstruct the `Default`-prefixed member name to supply its default.
+            ``d thing`` : int
+            /// A field whose name needs backticks but which is not optional, so it exercises the
+            /// declaration and accessor sites rather than the default-member one.
+            ``e thing`` : string
         }
 
     /// Remove the optional members of the input.
@@ -25,4 +31,6 @@ module RecordType =
             A = input.A |> Option.defaultWith RecordType.DefaultA
             B = input.B
             C = input.C
+            ``d thing`` = input.``d thing`` |> Option.defaultWith RecordType.``Defaultd thing``
+            ``e thing`` = input.``e thing``
         }
