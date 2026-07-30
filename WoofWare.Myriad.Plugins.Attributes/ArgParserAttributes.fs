@@ -31,6 +31,18 @@ type ArgParserAttribute (isExtensionMethod : bool) =
 /// tell you whether each arg came before or after a standalone `--` separator.
 /// For example, `MyApp foo bar -- baz` with PositionalArgs of `Choice<string, string>`
 /// would yield `Choice1Of2 foo, Choice1Of2 bar, Choice2Of2 baz`.
+///
+/// This attribute applies to an argument *leaf*. It is rejected on a field whose type is another
+/// [<ArgParser>]-schema record or a discriminated union of alternative argument sets: such a field
+/// contributes a whole set of arguments rather than being a place values can be collected into, so
+/// put the attribute on the leaf field inside that type which should do the collecting.
+///
+/// A positional field is a sink which accumulates values. It is addressable: `--foo value` and
+/// `--foo=value` route to it, as does any explicit [<ArgumentLongForm>]. But those keyed forms
+/// take a value rather than setting anything, so the field is rejected in combination with
+/// [<ArgumentNegateWithPrefix>] (there is no boolean for a `--no-` form to invert) and with
+/// [<ArgumentPrefix>] (there is no subtree to namespace), and it may not carry a default
+/// (positional args are collected, not defaulted).
 type PositionalArgsAttribute (includeFlagLike : bool) =
     inherit Attribute ()
 
@@ -102,25 +114,42 @@ type ArgumentDefaultValueAttribute (defaultValue : obj) =
 type ArgumentHelpTextAttribute (helpText : string) =
     inherit Attribute ()
 
-/// Attribute indicating that this field should be parsed with a ParseExact method on its type.
-/// For example, on a TimeSpan field, with [<ArgumentParseExact @"hh\:mm\:ss">], we will call
-/// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.CurrentCulture).
+/// Attribute giving the format in which this field's value is written.
+/// For example, on a TimeSpan field, with [<ParseExact @"hh\:mm\:ss">], we will call
+/// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.CurrentCulture)`.
+///
+/// This attribute is honoured on `System.TimeSpan` only, and is rejected anywhere else: no other
+/// type's parser reads it, so it would otherwise be dropped in silence while the generated help
+/// text went on advertising a format the parser did not apply.
+///
+/// It reaches through the shapes which wrap a value, since those parse their components with it:
+/// `TimeSpan option`, `TimeSpan list` and `Choice<TimeSpan, TimeSpan>` are all honoured, as is a
+/// `Map` either of whose halves is a `TimeSpan` (in which case the format describes each `TimeSpan`
+/// half; a map with no `TimeSpan` at all is rejected).
 type ParseExactAttribute (format : string) =
     inherit Attribute ()
 
 /// Attribute indicating that this field should be parsed in the invariant culture, rather than the
 /// default current culture.
-/// For example, on a TimeSpan field, with [<InvariantCulture>] and [<ArgumentParseExact @"hh\:mm\:ss">], we will call
-/// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.InvariantCulture).
+/// For example, on a TimeSpan field, with [<InvariantCulture>] and [<ParseExact @"hh\:mm\:ss">], we will call
+/// `TimeSpan.ParseExact (s, @"hh\:mm\:ss", CultureInfo.InvariantCulture)`.
+///
+/// As with [<ParseExact>], this is honoured on `System.TimeSpan` only -- reaching through option,
+/// list, choice and map in the same way -- and is rejected anywhere else, where nothing would read
+/// it.
 type InvariantCultureAttribute () =
     inherit Attribute ()
 
-/// Attribute placed on a field of a two-case no-data discriminated union, indicating that this is "basically a bool".
+/// Attribute placed on each case of a two-case no-data discriminated union, indicating that the
+/// union is "basically a bool".
 /// For example: `type DryRun = | [<ArgumentFlag true>] Dry | [<ArgumentFlag false>] Wet`
 /// A record with `{ DryRun : DryRun }` will then be parsed like `{ DryRun : bool }` (so the user supplies `--dry-run`),
 /// but that you get this strongly-typed value directly in the code (so you `match args.DryRun with | DryRun.Dry ...`).
 ///
 /// You must put this attribute on both cases of the discriminated union, with opposite values in each case.
+///
+/// It belongs on the union's *cases*, and is rejected on a record field: a field is not where the
+/// question "which case means true?" can be answered, and nothing read the attribute there.
 type ArgumentFlagAttribute (flagValue : bool) =
     inherit Attribute ()
 
@@ -132,6 +161,12 @@ type ArgumentFlagAttribute (flagValue : bool) =
 /// You can place this argument multiple times.
 ///
 /// Omit the initial `--` that you expect the user to type.
+///
+/// This attribute applies to an argument *leaf*. It is rejected on a field whose type is another
+/// [<ArgParser>]-schema record or a discriminated union of alternative argument sets: such a field
+/// contributes a whole set of arguments, each named by its own field, so there is no single
+/// argument here to rename. Put the attribute on the field you mean to rename, or use
+/// [<ArgumentPrefix>] to rename the whole subtree at once.
 [<AttributeUsage(AttributeTargets.Field, AllowMultiple = true)>]
 type ArgumentLongForm (s : string) =
     inherit Attribute ()
@@ -215,6 +250,12 @@ type ArgumentMapEntrySeparatorAttribute (separator : char) =
 ///   --no-field-name=false sets to the [<ArgumentFlag true>] case
 ///
 /// This attribute can only be applied to bool fields or flag DU fields (two-case DUs with [<ArgumentFlag>]).
+///
+/// It applies to an argument *leaf*, and to a leaf which has a name. So it is also rejected on a
+/// field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative
+/// argument sets (which contributes a whole set of arguments, none of them singled out for
+/// negation), and on a [<PositionalArgs>] field (which accumulates values, so although it is
+/// addressable, there is no boolean there for a `--no-` form to invert).
 [<AttributeUsage(AttributeTargets.Field, AllowMultiple = false)>]
 type ArgumentNegateWithPrefixAttribute () =
     inherit Attribute ()
