@@ -259,10 +259,14 @@ type private ParseTree =
     /// which were supplied. `sumId` ties this node to the erased schema's Sum node; `assemble`
     /// builds the union value from the selected case's name and its assembled payload.
     /// Positional args are not yet permitted inside union cases.
+    ///
+    /// Each case carries its own optional help text -- `[<ArgumentHelpText>]` on the case itself,
+    /// falling back to the same attribute on its payload record's definition -- since a case's
+    /// payload record introduces no `Branch` header of its own for it to live on (see above).
     | Sum of
         sumId : int *
         header : GroupHeader option *
-        cases : (Ident * ParseTree) list *
+        cases : (Ident * SynExpr option * ParseTree) list *
         assemble : (Ident -> SynExpr -> SynExpr)
 
 [<RequireQualifiedAccess>]
@@ -274,7 +278,7 @@ module private ParseTree =
         | ParseTree.NonPositionalLeaf _ -> false
         | ParseTree.PositionalLeaf _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.exists (fun (_, child) -> containsPositional child)
-        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, case) -> containsPositional case)
+        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, _, case) -> containsPositional case)
 
     /// The `Ident` here is the field name. Moves the positional-claiming field (at most one
     /// is permitted) after its siblings.
@@ -309,7 +313,7 @@ module private ParseTree =
                 )
             | ParseTree.Sum (_, _, cases, _) ->
                 (([], []), cases)
-                ||> List.fold (fun (nonPos, pos) (_, case) ->
+                ||> List.fold (fun (nonPos, pos) (_, _, case) ->
                     let caseNonPos, casePos = go case
                     nonPos @ caseNonPos, pos @ casePos
                 )
@@ -481,7 +485,7 @@ module private ParseTree =
             | Accumulation.Map _ -> true
         | ParseTree.PositionalLeaf _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.forall (fun (_, child) -> emptySatisfiable child)
-        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, case) -> emptySatisfiable case)
+        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, _, case) -> emptySatisfiable case)
 
     /// For every union node in the tree, at most one case may be satisfiable with no arguments:
     /// were two cases so satisfiable, an empty command line could not choose between them.
@@ -491,14 +495,14 @@ module private ParseTree =
         | ParseTree.PositionalLeaf _ -> ()
         | ParseTree.Branch (_, fields, _) -> fields |> List.iter (fun (_, child) -> checkSumAmbiguity child)
         | ParseTree.Sum (_, _, cases, _) ->
-            cases |> List.iter (fun (_, case) -> checkSumAmbiguity case)
+            cases |> List.iter (fun (_, _, case) -> checkSumAmbiguity case)
 
-            match cases |> List.filter (fun (_, case) -> emptySatisfiable case) with
+            match cases |> List.filter (fun (_, _, case) -> emptySatisfiable case) with
             | []
             | [ _ ] -> ()
             | ambiguous ->
                 let names =
-                    ambiguous |> List.map (fun (name, _) -> name.idText) |> String.concat ", "
+                    ambiguous |> List.map (fun (name, _, _) -> name.idText) |> String.concat ", "
 
                 failwith
                     $"Cases %s{names} can all be satisfied without supplying any arguments, so an empty command line cannot choose between them. Make an argument in all but one of them mandatory."
@@ -537,7 +541,7 @@ module private ParseTree =
         | ParseTree.Sum (sumId, _, cases, _) ->
             let caseExprs =
                 cases
-                |> List.map (fun (caseName, payload) ->
+                |> List.map (fun (caseName, _, payload) ->
                     let payloadExpr = toErasedTreeExpr rt listOf counter posCounter payload
 
                     SynExpr.tuple [ SynExpr.CreateConst caseName.idText ; payloadExpr ]
@@ -595,7 +599,7 @@ module private ParseTree =
 
             let clauses =
                 cases
-                |> List.mapi (fun index (caseName, payload) ->
+                |> List.mapi (fun index (caseName, _, payload) ->
                     SynMatchClause.create
                         (SynPat.nameWithArgs "Some" [ SynPat.createConst (SynConst.Int32 index) ])
                         (assemble caseName (SynExpr.paren (instantiate payload)))
@@ -1865,7 +1869,14 @@ module internal ArgParserGenerator =
                 // `sumHelp` already heads it with the case name.
                 let spec, counter = toParseSpec ancestors None prefix counter ambient payloadRecord
 
-                counter, (case.Name, spec) :: acc
+                // As for a nested record's field: the more specific placement (the case itself)
+                // overrides the more general one (the payload record's own definition), since one
+                // payload record type could in principle be reused by several cases or sites.
+                let caseHelp =
+                    helpTextAttribute case.Attributes
+                    |> Option.orElseWith (fun () -> helpTextAttribute payloadRecord.Attributes)
+
+                counter, (case.Name, caseHelp, spec) :: acc
             )
 
         let cases = List.rev cases
@@ -2028,13 +2039,18 @@ module internal ArgParserGenerator =
                 | None -> sumHelp depth cases
                 | Some header -> groupLine depth header :: sumHelp (depth + 1) cases
 
-        and sumHelp (depth : int) (cases : (Ident * ParseTree) list) : SynExpr list =
+        and sumHelp (depth : int) (cases : (Ident * SynExpr option * ParseTree) list) : SynExpr list =
             let indent = String.replicate depth "  "
 
             SynExpr.CreateConst (indent + "exactly one of the following sets of arguments:")
             :: (cases
-                |> List.collect (fun (caseName, case) ->
-                    SynExpr.CreateConst (indent + caseName.idText + ":")
+                |> List.collect (fun (caseName, help, case) ->
+                    groupLine
+                        depth
+                        {
+                            GroupHeader.Label = caseName.idText
+                            GroupHeader.Help = help
+                        }
                     :: fieldHelp (depth + 1) case
                 ))
 

@@ -104,6 +104,27 @@ type WithTransportArgs =
         Fallback : Transport
     }
 
+[<ArgumentHelpText "Fetch a URL">]
+type FetchWithHelpArgs =
+    {
+        Url : string
+    }
+
+[<ArgumentHelpText "Push args, not that you'd know it from the case header">]
+type PushWithHelpArgs =
+    {
+        Remote : string
+    }
+
+/// A case's payload record may describe itself, for the benefit of that case; a case is not
+/// reached through a field, so there is no field-level attribute to check first, but the case
+/// itself is a more specific placement than its payload record and so overrides it, exactly as
+/// a field overrides a nested record's own description.
+[<ArgParser>]
+type CommandWithHelp =
+    | FetchCase of FetchWithHelpArgs
+    | [<ArgumentHelpText "Push to a remote">] PushCase of PushWithHelpArgs
+
 /// A union beside a positional sink (default, i.e. Reject-mode): named arguments select the
 /// union case, and every bare token is routed to the sink whichever case wins. An unrecognised
 /// `--key`-shaped token remains fatal. The sink converts, so selection must not depend on the
