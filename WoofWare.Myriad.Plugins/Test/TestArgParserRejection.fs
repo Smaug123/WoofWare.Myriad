@@ -2926,6 +2926,217 @@ type Args =
 
         List.length modules |> shouldEqual 2
 
+    /// `hasNegateAttr` was computed inside the non-positional leaf branch only; the positional
+    /// branch never looked at it and hardcoded `AcceptsNegation = false`, so the attribute was
+    /// silently ignored. The existing negation rejections all concern leaf fields of the wrong
+    /// scalar shape; none covered a positional field, whose problem is different in kind. Note that
+    /// a positional sink *is* addressable -- `--rest value` and `--rest=value` route to it, as can
+    /// an explicit [<ArgumentLongForm>] -- so the complaint is not that it has no name, but that a
+    /// value-accumulating sink has no boolean for a `--no-` form to invert.
+    let private negateOnPositional (field : string) : string =
+        $"[<ArgumentNegateWithPrefix>] was applied to field '%s{field}', which carries [<PositionalArgs>]. Negation inverts a boolean argument: `--no-foo` means the same as `--foo=false`. A positional field is a sink which accumulates values -- its keyed spellings take a value and add it to the collection, rather than setting anything -- so there is no boolean here for a `--no-` form to invert. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
+
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        [<ArgumentNegateWithPrefix>]
+        Blah : string list
+    }
+"""
+        |> shouldRejectWith (negateOnPositional "Blah")
+
+    /// The shape which most invites the mistake: the field really is boolean-like, so every other
+    /// negation check passes it, and only its being positional makes negation meaningless.
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a boolean positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        [<ArgumentNegateWithPrefix>]
+        Blah : bool list
+    }
+"""
+        |> shouldRejectWith (negateOnPositional "Blah")
+
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a positional field is rejected under its long spelling`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs true>]
+        [<ArgumentNegateWithPrefixAttribute>]
+        Blah : string list
+    }
+"""
+        |> shouldRejectWith (negateOnPositional "Blah")
+
+    /// Neither attribute is at fault on its own: it is only their combination which cannot mean
+    /// anything.
+    [<Test>]
+    let ``A positional field and a negated boolean field coexist`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        Rest : string list
+        [<ArgumentNegateWithPrefix>]
+        Verbose : bool
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    /// [<ParseExact>] and [<InvariantCulture>] are read in exactly one place: the TimeSpan arm of
+    /// `createParseFunction`. On any other type nothing reads them, and for [<ParseExact>] that is
+    /// worse than silence -- the help text advertises the format unconditionally, so the generated
+    /// --help promises a format the generated parser does not honour.
+    let private parseExactOnNonTimeSpan (field : string) (ty : string) : string =
+        $"[<ParseExact>] is only honoured on System.TimeSpan fields, but was applied to field '%s{field}' of type %s{ty}. Nothing reads it there, so the value is parsed in the default way -- while the generated help text still advertises the format, promising something the parser does not do. Remove it, or use a System.TimeSpan: the attribute reaches through option, list and map, so `System.TimeSpan option` and `Map<string, System.TimeSpan>` are honoured too."
+
+    let private invariantCultureOnNonTimeSpan (field : string) (ty : string) : string =
+        $"[<InvariantCulture>] is only honoured on System.TimeSpan fields, but was applied to field '%s{field}' of type %s{ty}. Nothing reads it there, so the value is parsed in whatever culture the default parse uses. Remove it, or use a System.TimeSpan: the attribute reaches through option, list and map, so `System.TimeSpan option` and `Map<string, System.TimeSpan>` are honoured too."
+
+    let private leafSource (attr : string) (ty : string) : string =
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {{
+        [<%s{attr}>]
+        Blah : %s{ty}
+    }}
+"""
+
+    /// The motivating case: `string` has no notion of a parse format, so the format is dropped --
+    /// but the help text still shows it, and the author is told nothing.
+    ///
+    /// Note that `System.DateTime`, the type an author most likely reaches for a format with, is
+    /// not supported by the generator at all and fails earlier with its own message; there is
+    /// therefore no lying help to fix there, only here.
+    [<TestCase("string", "string")>]
+    [<TestCase("int", "int32")>]
+    [<TestCase("bool", "bool")>]
+    let ``ParseExact on a non-TimeSpan field is rejected`` (ty : string, described : string) =
+        leafSource "ParseExact \"hh\\:mm\"" ty
+        |> shouldRejectWith (parseExactOnNonTimeSpan "Blah" described)
+
+    [<TestCase("string", "string")>]
+    [<TestCase("int", "int32")>]
+    [<TestCase("bool", "bool")>]
+    let ``InvariantCulture on a non-TimeSpan field is rejected`` (ty : string, described : string) =
+        leafSource "InvariantCulture" ty
+        |> shouldRejectWith (invariantCultureOnNonTimeSpan "Blah" described)
+
+    /// The check runs against the type actually handed to the parser, so a list or option of the
+    /// wrong element type is reported rather than being waved through.
+    [<TestCase("int list", "int32 list")>]
+    [<TestCase("int option", "int32 option")>]
+    let ``ParseExact on a collection of a non-TimeSpan is rejected`` (ty : string, described : string) =
+        leafSource "ParseExact \"hh\\:mm\"" ty
+        |> shouldRejectWith (parseExactOnNonTimeSpan "Blah" described)
+
+    [<Test>]
+    let ``ParseExact on a positional field of the wrong element type is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        [<ParseExact "hh\:mm">]
+        Blah : int list
+    }
+"""
+        |> shouldRejectWith (parseExactOnNonTimeSpan "Blah" "int32 list")
+
+    /// A map whose key and value are both innocent of TimeSpan consumes neither attribute.
+    [<Test>]
+    let ``ParseExact on a map of no TimeSpans is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentKeyValueSeparator '='>]
+        [<ParseExact "hh\:mm">]
+        Blah : Map<string, string>
+    }
+"""
+        |> shouldRejectWith (parseExactOnNonTimeSpan "Blah" "map<string, string>")
+
+    [<Test>]
+    let ``ParseExact and InvariantCulture are rejected under their long spellings`` () =
+        leafSource "ParseExactAttribute \"hh\\:mm\"" "int"
+        |> shouldRejectWith (parseExactOnNonTimeSpan "Blah" "int32")
+
+        leafSource "InvariantCultureAttribute" "int"
+        |> shouldRejectWith (invariantCultureOnNonTimeSpan "Blah" "int32")
+
+    /// The placements where the attributes *are* read must keep working: the parse function
+    /// recurses through option, list and choice, so each of those reaches the TimeSpan arm.
+    [<TestCase("System.TimeSpan")>]
+    [<TestCase("System.TimeSpan option")>]
+    [<TestCase("System.TimeSpan list")>]
+    let ``ParseExact and InvariantCulture on TimeSpan-shaped fields are accepted`` (ty : string) =
+        generateFromSource (leafSource "ParseExact \"hh\\:mm\"" ty)
+        |> List.length
+        |> shouldEqual 2
+
+        generateFromSource (leafSource "InvariantCulture" ty)
+        |> List.length
+        |> shouldEqual 2
+
+    /// A map hands the field's attributes to *both* its key parser and its value parser, so the
+    /// attribute is genuinely consumed whenever either component is a TimeSpan. Rejecting maps
+    /// wholesale would have broken working schemas.
+    [<TestCase("Map<string, System.TimeSpan>")>]
+    [<TestCase("Map<System.TimeSpan, string>")>]
+    [<TestCase("Map<System.TimeSpan, System.TimeSpan>")>]
+    let ``ParseExact on a map containing a TimeSpan is accepted`` (ty : string) =
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {{
+        [<ArgumentKeyValueSeparator '='>]
+        [<ParseExact "hh\:mm">]
+        Blah : %s{ty}
+    }}
+"""
+        |> generateFromSource
+        |> List.length
+        |> shouldEqual 2
+
     /// [<ArgumentHelpText>] is deliberately NOT in the list: on a structural field it introduces
     /// the group of arguments the field contributes, which is a real and documented use.
     [<Test>]
