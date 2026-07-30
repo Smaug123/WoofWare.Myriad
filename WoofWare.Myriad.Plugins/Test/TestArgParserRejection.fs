@@ -2754,3 +2754,199 @@ type Args =
 """
 
         List.length modules |> shouldEqual 2
+
+    /// The structural branches are taken before any leaf machinery runs, so each of the
+    /// leaf-oriented attributes below was computed and then dropped on the floor: the author got a
+    /// parser which did not do what they asked, and no indication why. The two structural shapes --
+    /// a nested argument record, and a union of alternative argument sets -- share one message,
+    /// exactly as the [<ArgumentLongForm>] rejection above does, because the reason is the same for
+    /// both: the field contributes a whole set of arguments rather than one.
+    let private leafOnlyOnStructural (attr : string) (purpose : string) (field : string) (ty : string) : string =
+        $"Field '%s{field}' has a [<%s{attr}>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. %s{purpose}"
+
+    let private positionalOnStructural =
+        leafOnlyOnStructural
+            "PositionalArgs"
+            "[<PositionalArgs>] makes one field collect the arguments which carry no name, and a set of arguments cannot collect them. Put it on the leaf field which should do the collecting."
+
+    let private parseExactOnStructural =
+        leafOnlyOnStructural
+            "ParseExact"
+            "[<ParseExact>] gives the format in which one argument's value is written, and a set of arguments has no single value. Put it on the leaf field whose value is written that way."
+
+    let private invariantCultureOnStructural =
+        leafOnlyOnStructural
+            "InvariantCulture"
+            "[<InvariantCulture>] chooses the culture in which one argument's value is read, and a set of arguments has no single value. Put it on the leaf field whose value should be read that way."
+
+    let private negateOnStructural =
+        leafOnlyOnStructural
+            "ArgumentNegateWithPrefix"
+            "[<ArgumentNegateWithPrefix>] gives one boolean argument a --no- spelling, and there is no single argument here to negate. Put it on the leaf field you mean to negate."
+
+    /// Source for the two structural shapes, so each attribute is exercised against both without
+    /// restating the schema four times over.
+    let private structuralRecordSource (attr : string) : string =
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {{
+        Blah : int
+    }}
+
+[<ArgParser>]
+type Args =
+    {{
+        [<%s{attr}>]
+        A : Child
+    }}
+"""
+
+    let private structuralUnionSource (attr : string) : string =
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {{
+        Foo : int
+    }}
+
+type BarArgs =
+    {{
+        Bar : int
+    }}
+
+type Mode =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+
+[<ArgParser>]
+type Args =
+    {{
+        [<%s{attr}>]
+        A : Mode
+    }}
+"""
+
+    [<Test>]
+    let ``PositionalArgs on a sub-record field is rejected`` () =
+        structuralRecordSource "PositionalArgs"
+        |> shouldRejectWith (positionalOnStructural "A" "Child")
+
+    [<Test>]
+    let ``PositionalArgs on a union-typed field is rejected`` () =
+        structuralUnionSource "PositionalArgs"
+        |> shouldRejectWith (positionalOnStructural "A" "Mode")
+
+    /// The attribute takes an optional argument, and the rejection must not depend on which
+    /// constructor was used to write it.
+    [<Test>]
+    let ``PositionalArgs with an explicit argument on a sub-record field is rejected`` () =
+        structuralRecordSource "PositionalArgs true"
+        |> shouldRejectWith (positionalOnStructural "A" "Child")
+
+    [<Test>]
+    let ``ParseExact on a sub-record field is rejected`` () =
+        structuralRecordSource "ParseExact \"hh\\:mm\""
+        |> shouldRejectWith (parseExactOnStructural "A" "Child")
+
+    [<Test>]
+    let ``ParseExact on a union-typed field is rejected`` () =
+        structuralUnionSource "ParseExact \"hh\\:mm\""
+        |> shouldRejectWith (parseExactOnStructural "A" "Mode")
+
+    [<Test>]
+    let ``InvariantCulture on a sub-record field is rejected`` () =
+        structuralRecordSource "InvariantCulture"
+        |> shouldRejectWith (invariantCultureOnStructural "A" "Child")
+
+    [<Test>]
+    let ``InvariantCulture on a union-typed field is rejected`` () =
+        structuralUnionSource "InvariantCulture"
+        |> shouldRejectWith (invariantCultureOnStructural "A" "Mode")
+
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a sub-record field is rejected`` () =
+        structuralRecordSource "ArgumentNegateWithPrefix"
+        |> shouldRejectWith (negateOnStructural "A" "Child")
+
+    [<Test>]
+    let ``ArgumentNegateWithPrefix on a union-typed field is rejected`` () =
+        structuralUnionSource "ArgumentNegateWithPrefix"
+        |> shouldRejectWith (negateOnStructural "A" "Mode")
+
+    /// Each attribute is rejected under its long spelling too: F# admits both, and the leaf
+    /// machinery has always accepted both, so a check which saw only the short one would let the
+    /// longer spelling through to the silent-no-op behaviour this replaces.
+    [<Test>]
+    let ``Leaf-only attributes on a structural field are rejected under their long spellings`` () =
+        structuralRecordSource "PositionalArgsAttribute"
+        |> shouldRejectWith (positionalOnStructural "A" "Child")
+
+        structuralRecordSource "ParseExactAttribute \"hh\\:mm\""
+        |> shouldRejectWith (parseExactOnStructural "A" "Child")
+
+        structuralRecordSource "InvariantCultureAttribute"
+        |> shouldRejectWith (invariantCultureOnStructural "A" "Child")
+
+        structuralRecordSource "ArgumentNegateWithPrefixAttribute"
+        |> shouldRejectWith (negateOnStructural "A" "Child")
+
+    /// The rejection is about the *field's* attribute, not about the child's: each of these on the
+    /// leaf field it actually describes is entirely ordinary, which is precisely the placement the
+    /// messages point at.
+    [<Test>]
+    let ``Leaf-only attributes inside a sub-record are still accepted`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        [<PositionalArgs>]
+        Rest : string list
+        [<ParseExact "hh\:mm">]
+        [<InvariantCulture>]
+        Duration : System.TimeSpan
+        [<ArgumentNegateWithPrefix>]
+        Verbose : bool
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        A : Child
+    }
+"""
+
+        List.length modules |> shouldEqual 2
+
+    /// [<ArgumentHelpText>] is deliberately NOT in the list: on a structural field it introduces
+    /// the group of arguments the field contributes, which is a real and documented use.
+    [<Test>]
+    let ``ArgumentHelpText on a structural field is still accepted`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentHelpText "Database settings">]
+        A : Child
+    }
+"""
+
+        List.length modules |> shouldEqual 2

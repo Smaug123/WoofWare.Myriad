@@ -857,6 +857,46 @@ module internal ArgParserGenerator =
             failwith
                 $"Field '%s{fieldName.idText}' has an [<ArgumentLongForm>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. [<ArgumentLongForm>] renames a single argument, and there is none here to rename: the names come from the fields of %s{ty} itself. Put the attribute on the field you mean to rename."
 
+    /// The same argument as `rejectLongFormAttribute`, for the attributes which describe how a
+    /// single argument is collected, spelled or read: a structural field contributes a whole set of
+    /// arguments, so there is no one argument for any of these to act on. The structural branches
+    /// take over before the leaf machinery which reads them ever runs, so without this each was
+    /// computed and then dropped on the floor.
+    ///
+    /// [<ArgumentHelpText>] is deliberately absent: on a structural field it introduces the group
+    /// of arguments the field contributes, which is a real use rather than a misplacement.
+    let private rejectLeafOnlyAttributes (fieldName : Ident) (fieldType : SynType) (attrs : SynAttribute list) : unit =
+        let reject (names : string list) (display : string) (purpose : string) : unit =
+            let present =
+                attrs
+                |> List.exists (fun attr -> names |> List.contains (List.last attr.TypeName.LongIdent).idText)
+
+            if present then
+                let ty = describeType fieldType
+
+                failwith
+                    $"Field '%s{fieldName.idText}' has a [<%s{display}>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. %s{purpose}"
+
+        reject
+            [ "PositionalArgs" ; "PositionalArgsAttribute" ]
+            "PositionalArgs"
+            "[<PositionalArgs>] makes one field collect the arguments which carry no name, and a set of arguments cannot collect them. Put it on the leaf field which should do the collecting."
+
+        reject
+            [ "ParseExact" ; "ParseExactAttribute" ]
+            "ParseExact"
+            "[<ParseExact>] gives the format in which one argument's value is written, and a set of arguments has no single value. Put it on the leaf field whose value is written that way."
+
+        reject
+            [ "InvariantCulture" ; "InvariantCultureAttribute" ]
+            "InvariantCulture"
+            "[<InvariantCulture>] chooses the culture in which one argument's value is read, and a set of arguments has no single value. Put it on the leaf field whose value should be read that way."
+
+        reject
+            [ "ArgumentNegateWithPrefix" ; "ArgumentNegateWithPrefixAttribute" ]
+            "ArgumentNegateWithPrefix"
+            "[<ArgumentNegateWithPrefix>] gives one boolean argument a --no- spelling, and there is no single argument here to negate. Put it on the leaf field you mean to negate."
+
     let private checkSeparatorAttributesPlacement
         (fieldName : Ident)
         (fieldType : SynType)
@@ -1674,6 +1714,7 @@ module internal ArgParserGenerator =
                     // misplaced one would be told nothing at all.
                     rejectSeparatorAttributes ident fieldType attrs
                     rejectLongFormAttribute ident fieldType attrs
+                    rejectLeafOnlyAttributes ident fieldType attrs
 
                     // This field has a type we need to obtain from parsing another record.
                     let childPrefix =
@@ -1697,6 +1738,7 @@ module internal ArgParserGenerator =
                 | Some union ->
                     rejectSeparatorAttributes ident fieldType attrs
                     rejectLongFormAttribute ident fieldType attrs
+                    rejectLeafOnlyAttributes ident fieldType attrs
 
                     // A discriminated union of alternative argument sets: exactly one case's
                     // arguments must be supplied. (Flag-like and data-free unions are argument
