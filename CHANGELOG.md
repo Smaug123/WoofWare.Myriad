@@ -3,12 +3,10 @@ Notable changes are recorded here.
 # WoofWare.Myriad.Plugins 10.7.2
 
 `ArgParserGenerator` now reads `[<ArgumentHelpText>]` from a nested argument record or union of alternative argument sets, and not only from the `[<ArgParser>]`-tagged root, and from a discriminated union's case (and that case's payload record).
-The nested type's help heads the group of arguments that type contributes, wherever it is embedded, and a case's help heads its group the same way; previously both were silently ignored, despite the attribute documenting itself as applying to a record type generally, and despite a case having no field of its own for the group-header mechanism to attach to.
+The nested type's help heads the group of arguments that type contributes, wherever it is embedded, and a case's help heads its group the same way.
 
 An `[<ArgumentHelpText>]` on the more specific placement overrides the more general one: a field's overrides its nested type's, and a case's overrides its payload record's.
 One type, or one payload record, may be embedded or reused at several sites for different purposes, so the more specific placement is the one which can say what a particular occurrence is for.
-
-The value must be a literal string written out in full (optionally parenthesised): it is reproduced in the generated file rather than evaluated at your attribute, so a name naming a `[<Literal>]` constant is rejected (that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here), and a decoded string constant is re-escaped so that characters such as `\t` or `"` round-trip rather than being reinterpreted.
 
 # WoofWare.Myriad.Plugins 10.7.1
 
