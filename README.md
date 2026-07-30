@@ -243,7 +243,8 @@ and you get back respectively these objects:
 }
 ```
 
-You can control `TimeSpan` and friends with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
+You can control how a `System.TimeSpan` is read with the `[<InvariantCulture>]` and `[<ParseExact @"hh\:mm\:ss">]` attributes.
+These are honoured on `TimeSpan` only — reaching through the shapes which wrap it, so `TimeSpan option`, `TimeSpan list` and a `Map` with a `TimeSpan` half are all covered — and are rejected on any other type, where nothing would read them.
 
 You can generate extension methods for the type, instead of a module with the type's name, using `[<ArgParser (* isExtensionMethod = *) true>]`.
 
@@ -378,6 +379,19 @@ Records compose: if your record contains other records which are visible to the 
 Discriminated unions compose with each other and with records, hopefully as you would expect: the fields specified by the record contained within the exactly-one field of each DU case must all be mutually satisified, or the parse will fail to select that DU field.
 We will fail at build time to generate a parser if you have several DU cases which contain fields of the same name, though, because in general resolving the parse in that case is NP-hard.
 (An upcoming piece of work will hopefully relax this restriction.)
+
+#### Attribute placement at a structural boundary
+
+A field whose type is another argument record, or a union of alternative argument sets, is *structural*: it contributes that type's whole set of arguments rather than being one argument itself.
+The attributes which describe how a single argument is named, collected, spelled or read therefore have nothing to act on there, and are rejected at build time rather than silently dropped: `[<ArgumentLongForm>]`, `[<PositionalArgs>]`, `[<ParseExact>]`, `[<InvariantCulture>]`, `[<ArgumentNegateWithPrefix>]`, `[<ArgumentKeyValueSeparator>]` and `[<ArgumentMapEntrySeparator>]`.
+Put each on the leaf field it actually describes.
+
+Two attributes are the exceptions, because they are *about* the group:
+
+* `[<ArgumentHelpText>]` describes the whole group of arguments the field contributes, and appears on the header line introducing it.
+* `[<ArgumentPrefix>]` namespaces every argument in the subtree; conversely, *it* is rejected on a leaf, which has no subtree.
+
+`[<ArgumentFlag>]` is not a field attribute at all: it goes on the two cases of a flag discriminated union, and is rejected on a record field.
 
 ### What's the point?
 
