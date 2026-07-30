@@ -1,5 +1,10 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.7.3
+
+`ArgParserGenerator` now correctly backticks a record field name, if it needs backticks, when reproducing it in the expression which constructs that record at runtime.
+Previously the name was reproduced as a plain identifier regardless, so a field such as `` ``back tab`` `` (declared with backticks because its name is not a plain identifier) reached the generated file unbackticked, and the generated file did not compile.
+
 # WoofWare.Myriad.Plugins 10.7.2
 
 `ArgParserGenerator` now reads `[<ArgumentHelpText>]` from a nested argument record or union of alternative argument sets, and not only from the `[<ArgParser>]`-tagged root, and from a discriminated union's case (and that case's payload record).

@@ -390,3 +390,13 @@ type NonPositionalBoolList =
     {
         Flags : bool list
     }
+
+/// A record field's name must be a plain identifier at its declaration, or carry backticks; the
+/// generator reconstructs the same name as an `Ident` when it builds the expression that
+/// constructs this type at runtime, and that reconstruction needs the backticks re-added for
+/// exactly the same reason the declaration did, or the generated file does not parse.
+[<ArgParser true>]
+type AwkwardFieldName =
+    {
+        ``back\tab`` : ChildRecord
+    }

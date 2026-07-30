@@ -521,6 +521,25 @@ Secondary: Where to fail over to
         |> shouldEqual
             "Help text requested.\nChild: Path is C:\\temp, quote is \" and tab is \t.\n  --thing1  int32\n  --thing2  string"
 
+    /// A record field's name is reconstructed as a plain `Ident` when the generator builds the
+    /// expression which constructs this type at runtime; a name which is not a plain identifier
+    /// needs its backticks re-added there, exactly as its declaration needed them, or the
+    /// generated file does not compile at all (so this test's mere presence in a green build
+    /// partly stands for the property; the parse asserts the field is actually populated).
+    [<Test>]
+    let ``A field name needing backticks survives re-emission in the constructed record`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        AwkwardFieldName.parse' getEnvVar [ "--thing1=1" ; "--thing2=two" ]
+        |> shouldEqual
+            {
+                AwkwardFieldName.``back\tab`` =
+                    {
+                        Thing1 = 1
+                        Thing2 = "two"
+                    }
+            }
+
     [<Test>]
     let ``Positionals are tagged with Choice`` () =
         let getEnvVar (_ : string) = failwith "should not call"

@@ -1823,7 +1823,15 @@ module internal ArgParserGenerator =
                 (fun args ->
                     args
                     |> Map.toList
-                    |> List.map (fun (ident, expr) -> SynLongIdent.create [ Ident.create ident ], expr)
+                    |> List.map (fun (ident, expr) ->
+                        // `ident` is a field name's decoded `idText` (backticks already stripped, if
+                        // it had any): Fantomas prints an `Ident` exactly as its `idText` reads, with
+                        // no backticking of its own, so a field name which is not a plain identifier
+                        // (a space, a keyword, ...) must be re-backticked before it is safe to place
+                        // in this record-construction expression, exactly as the record's own
+                        // declaration required it to be written.
+                        SynLongIdent.create [ Ident.create (PrettyNaming.NormalizeIdentifierBackticks ident) ], expr
+                    )
                     |> SynExpr.createRecord None
                 )
 
