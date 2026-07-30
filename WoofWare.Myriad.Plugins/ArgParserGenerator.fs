@@ -1612,6 +1612,24 @@ module internal ArgParserGenerator =
                         failwith
                             $"Field '%s{ident.idText}' has a default-value attribute ([<ArgumentDefaultFunction>], [<ArgumentDefaultValue>], or [<ArgumentDefaultEnvironmentVariable>]), but its type is not Choice<'a, 'a>. Defaults are surfaced through Choice<'a, 'a> so a successful parse can report whether a value was user-supplied (Choice1Of2) or defaulted (Choice2Of2); a bare field cannot express this. Change the field's type to Choice<'a, 'a>, or remove the attribute."
 
+                // [<ArgumentFlag>] is read only from a union's cases, where it says which case
+                // means 'true' and which means 'false'. On a record field nothing reads it at all,
+                // so it was silently doing nothing -- and the attribute's own documentation invited
+                // the mistake by describing it as going on "a field". Checked here, above the
+                // leaf/structural dispatch, so it fires wherever the field would have been handled.
+                let hasFlagAttr =
+                    attrs
+                    |> List.exists (fun attr ->
+                        match (List.last attr.TypeName.LongIdent).idText with
+                        | "ArgumentFlag"
+                        | "ArgumentFlagAttribute" -> true
+                        | _ -> false
+                    )
+
+                if hasFlagAttr then
+                    failwith
+                        $"[<ArgumentFlag>] was applied to field '%s{ident.idText}', but it belongs on the cases of a discriminated union, not on a record field: it says which of a two-case union's cases means 'true' and which means 'false'. Nothing reads it from a field, so it would have had no effect. Remove it, or declare a two-case union whose cases carry [<ArgumentFlag true>] and [<ArgumentFlag false>], and give this field that type."
+
                 let prefixAttr = prefixAttribute attrs
 
                 // The structural branches below run before any leaf machinery, so this pairing has

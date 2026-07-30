@@ -2603,3 +2603,154 @@ type Args =
 """
         |> shouldRejectWith
             "The [<ArgParser>] schema is recursive: Args -> Args. Argument records and unions may not contain themselves, even indirectly."
+
+    /// [<ArgumentFlag>] is read only from a union's *cases*, so on a record field it did nothing
+    /// whatsoever -- and the attribute's own documentation invited exactly that mistake by
+    /// describing it as going on "a field". The check is hoisted above the leaf/structural
+    /// dispatch, so the message is the same wherever the field would otherwise have been handled.
+    let private flagOnField (field : string) : string =
+        $"[<ArgumentFlag>] was applied to field '%s{field}', but it belongs on the cases of a discriminated union, not on a record field: it says which of a two-case union's cases means 'true' and which means 'false'. Nothing reads it from a field, so it would have had no effect. Remove it, or declare a two-case union whose cases carry [<ArgumentFlag true>] and [<ArgumentFlag false>], and give this field that type."
+
+    [<Test>]
+    let ``ArgumentFlag on a bool field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentFlag true>]
+        Blah : bool
+    }
+"""
+        |> shouldRejectWith (flagOnField "Blah")
+
+    /// The likeliest way to write it wrong: the union is a perfectly good flag union, and its
+    /// cases are correctly marked, but the attribute has been repeated on the field which uses it.
+    [<Test>]
+    let ``ArgumentFlag on a flag-union field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type DryRun =
+    | [<ArgumentFlag true>] Dry
+    | [<ArgumentFlag false>] Wet
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentFlag true>]
+        Blah : DryRun
+    }
+"""
+        |> shouldRejectWith (flagOnField "Blah")
+
+    /// The check runs before the structural dispatch, which would otherwise take over and drop the
+    /// attribute without a word.
+    [<Test>]
+    let ``ArgumentFlag on a sub-record field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Blah : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentFlag true>]
+        A : Child
+    }
+"""
+        |> shouldRejectWith (flagOnField "A")
+
+    [<Test>]
+    let ``ArgumentFlag on a union-typed field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type FooArgs =
+    {
+        Foo : int
+    }
+
+type BarArgs =
+    {
+        Bar : int
+    }
+
+type Mode =
+    | FooCase of FooArgs
+    | BarCase of BarArgs
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentFlag false>]
+        A : Mode
+    }
+"""
+        |> shouldRejectWith (flagOnField "A")
+
+    [<Test>]
+    let ``ArgumentFlag on a positional field is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentFlag true>]
+        [<PositionalArgs>]
+        Blah : string list
+    }
+"""
+        |> shouldRejectWith (flagOnField "Blah")
+
+    /// F# lets an attribute be named with or without its `Attribute` suffix, and the union-case
+    /// reader has always accepted both; the rejection has to see both too, or the longer spelling
+    /// slips through to the silent-no-op behaviour this replaces.
+    [<Test>]
+    let ``ArgumentFlagAttribute on a field is rejected under its long spelling`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentFlagAttribute true>]
+        Blah : bool
+    }
+"""
+        |> shouldRejectWith (flagOnField "Blah")
+
+    /// The rejection is about the *field's* attribute: the placement it points at is still
+    /// entirely ordinary.
+    [<Test>]
+    let ``ArgumentFlag on a union's cases is still accepted`` () =
+        let modules =
+            generateFromSource
+                """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type DryRun =
+    | [<ArgumentFlag true>] Dry
+    | [<ArgumentFlag false>] Wet
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : DryRun
+    }
+"""
+
+        List.length modules |> shouldEqual 2
