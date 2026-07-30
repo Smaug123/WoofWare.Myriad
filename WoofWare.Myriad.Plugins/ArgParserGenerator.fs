@@ -1418,6 +1418,24 @@ module internal ArgParserGenerator =
                 ))
                 (SynExpr.paren form)
 
+    /// Re-backtick a field name, if it needs backticks to be usable as a bare record-construction
+    /// label. `PrettyNaming.NormalizeIdentifierBackticks` answers the more general question of
+    /// whether text needs backticks to be a valid identifier *at all*, so it deliberately leaves a
+    /// couple of shapes alone: `_` (the wildcard pattern) and an active-pattern name (`|A|_|`,
+    /// `|A|B|`, ...) are both meaningful as bare tokens in other grammar positions, so it treats
+    /// them as already fine. Neither is valid as a bare record label, though (confirmed empirically:
+    /// `type Foo = { _ : int }` and a record label spelled `|A|_|` both fail to parse), so those two
+    /// shapes must be forced into backticks here rather than trusted to the general-purpose check.
+    let private backtickRecordLabel (ident : string) : string =
+        let normalized = PrettyNaming.NormalizeIdentifierBackticks ident
+
+        if normalized <> ident then
+            normalized
+        elif ident = "_" || (ident.StartsWith '|' && ident.EndsWith '|') then
+            "``" + ident + "``"
+        else
+            normalized
+
     /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being
     /// lowered, innermost first; re-entry into any of them is a cycle, which we reject rather
@@ -1830,7 +1848,7 @@ module internal ArgParserGenerator =
                         // (a space, a keyword, ...) must be re-backticked before it is safe to place
                         // in this record-construction expression, exactly as the record's own
                         // declaration required it to be written.
-                        SynLongIdent.create [ Ident.create (PrettyNaming.NormalizeIdentifierBackticks ident) ], expr
+                        SynLongIdent.create [ Ident.create (backtickRecordLabel ident) ], expr
                     )
                     |> SynExpr.createRecord None
                 )

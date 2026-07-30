@@ -7703,12 +7703,16 @@ module AwkwardFieldNameArgParse =
                     (sprintf "%s:" "back\\tab")
                     (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing1") "int32" "" "")
                     (sprintf "  %s  %s%s%s" (sprintf "--%s" "thing2") "string" "" "")
+                    (sprintf "%s  %s%s%s" (sprintf "--%s" "_") "int32" "" "")
+                    (sprintf "%s  %s%s%s" (sprintf "--%s" "|-a|_|") "int32" "" "")
                 ]
                 |> String.concat "\n"
 
             let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
             let mutable arg_0 : int option = None
             let mutable arg_1 : string option = None
+            let mutable arg_2 : int option = None
+            let mutable arg_3 : int option = None
 
             let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
                 {
@@ -7724,9 +7728,31 @@ module AwkwardFieldNameArgParse =
                                 TypeDescription = ""
                                 Help = None
                             }
+
                             {
                                 Id = 1
                                 Forms = [ "thing2" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 2
+                                Forms = [ "_" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 3
+                                Forms = [ "|-a|_|" ]
                                 AcceptsNegation = false
                                 Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
                                 Repeatable = false
@@ -7744,6 +7770,9 @@ module AwkwardFieldNameArgParse =
                                         ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
                                     ]
                                 )
+
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
                             ]
                         ))
                     Positionals = List.empty
@@ -7782,6 +7811,34 @@ module AwkwardFieldNameArgParse =
                         | None ->
                             failwith
                                 "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 2 ->
+                    match arg_2 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_2 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 3 ->
+                    match arg_3 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_3 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
                 | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
 
             let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
@@ -7795,6 +7852,14 @@ module AwkwardFieldNameArgParse =
                     | None -> "<no value>"
                 | 1 ->
                     match arg_1 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 2 ->
+                    match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 3 ->
+                    match arg_3 with
                     | Some x -> x.ToString ()
                     | None -> "<no value>"
                 | _ -> "<no value>"
@@ -7820,6 +7885,12 @@ module AwkwardFieldNameArgParse =
             with
             | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
                 {
+                    ``_`` =
+                        (match arg_2 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                     ``back\tab`` =
                         {
                             Thing1 =
@@ -7835,6 +7906,12 @@ module AwkwardFieldNameArgParse =
                                      failwith
                                          "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                         }
+                    ``|A|_|`` =
+                        (match arg_3 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
                 }
             | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
                 helpText () |> failwithf "Help text requested.\n%s"

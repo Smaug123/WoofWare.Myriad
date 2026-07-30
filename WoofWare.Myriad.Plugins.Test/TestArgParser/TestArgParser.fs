@@ -525,12 +525,17 @@ Secondary: Where to fail over to
     /// expression which constructs this type at runtime; a name which is not a plain identifier
     /// needs its backticks re-added there, exactly as its declaration needed them, or the
     /// generated file does not compile at all (so this test's mere presence in a green build
-    /// partly stands for the property; the parse asserts the field is actually populated).
+    /// partly stands for the property; the parse asserts the fields are actually populated).
+    ///
+    /// `` ``_`` `` and `` ``|A|_|`` `` specifically exercise the two shapes a general-purpose
+    /// backtick-normaliser treats as already fine (the wildcard pattern and an active-pattern name
+    /// are both meaningful bare tokens elsewhere in F#'s grammar), but which are not valid bare
+    /// record labels.
     [<Test>]
     let ``A field name needing backticks survives re-emission in the constructed record`` () =
         let getEnvVar (_ : string) = failwith "should not call"
 
-        AwkwardFieldName.parse' getEnvVar [ "--thing1=1" ; "--thing2=two" ]
+        AwkwardFieldName.parse' getEnvVar [ "--thing1=1" ; "--thing2=two" ; "--_=3" ; "--|-a|_|=4" ]
         |> shouldEqual
             {
                 AwkwardFieldName.``back\tab`` =
@@ -538,6 +543,8 @@ Secondary: Where to fail over to
                         Thing1 = 1
                         Thing2 = "two"
                     }
+                AwkwardFieldName.``_`` = 3
+                AwkwardFieldName.``|A|_|`` = 4
             }
 
     [<Test>]

@@ -395,8 +395,16 @@ type NonPositionalBoolList =
 /// generator reconstructs the same name as an `Ident` when it builds the expression that
 /// constructs this type at runtime, and that reconstruction needs the backticks re-added for
 /// exactly the same reason the declaration did, or the generated file does not parse.
+///
+/// `` ``_`` `` and `` ``|A|_|`` `` are here because the general-purpose backtick-normaliser the
+/// generator uses treats a bare `_` and a bare active-pattern-shaped name as already fine (they are
+/// meaningful bare tokens elsewhere in F#'s grammar -- the wildcard pattern and an active-pattern
+/// reference), but neither is a valid bare record label, so both need forcing into backticks by a
+/// narrower, record-label-specific check.
 [<ArgParser true>]
 type AwkwardFieldName =
     {
         ``back\tab`` : ChildRecord
+        ``_`` : int
+        ``|A|_|`` : int
     }
