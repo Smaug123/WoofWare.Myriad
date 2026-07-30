@@ -481,6 +481,46 @@ Child: Settings for the child thing
   --thing2  string
 --and-another  bool : Whether to and-another"""
 
+    /// A nested type describes itself for every site which embeds it; a field which has something
+    /// more specific to say overrides that, because one type may be embedded for several purposes.
+    [<Test>]
+    let ``A nested record's own help text heads the group, and the field's overrides it`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordWithTypeHelp.parse' getEnvVar [ "--help" ]
+                |> ignore<ParentRecordWithTypeHelp>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+Primary: How to talk to the database
+  --primary-host  string
+  --primary-port  int32
+Secondary: Where to fail over to
+  --secondary-host  string
+  --secondary-port  int32"""
+
+    /// FCS hands the generator the *decoded* string, so a help text containing a backslash, a
+    /// quote, or a control character must be re-escaped before it is reproduced in the generated
+    /// file, or Fantomas (which escapes only quotes) would emit it wrong: `\t` would come out of
+    /// the quotes as a literal tab, silently changing what the help text displays.
+    [<Test>]
+    let ``Help text needing escaping round-trips through the generated file`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordWithEscapedHelp.parse' getEnvVar [ "--help" ]
+                |> ignore<ParentRecordWithEscapedHelp>
+            )
+
+        exc.Message
+        |> shouldEqual
+            "Help text requested.\nChild: Path is C:\\temp, quote is \" and tab is \t.\n  --thing1  int32\n  --thing2  string"
+
     [<Test>]
     let ``Positionals are tagged with Choice`` () =
         let getEnvVar (_ : string) = failwith "should not call"

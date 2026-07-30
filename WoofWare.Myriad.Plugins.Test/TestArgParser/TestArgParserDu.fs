@@ -201,3 +201,42 @@ Mode: How loud to be
     --quiet  bool (optional)
   Manual:
     --level  int32"""
+
+    /// A case's payload record has no field of its own to be embedded through, so it can only
+    /// describe itself and be overridden by the case: there is no third, more specific layer.
+    [<Test>]
+    let ``A case's payload record describes itself, and the case's own help text overrides it`` () =
+        let exc =
+            Assert.Throws<exn> (fun () -> CommandWithHelp.parse' noEnv [ "--help" ] |> ignore<CommandWithHelp>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+exactly one of the following sets of arguments:
+FetchCase: Fetch a URL
+  --url  string
+PushCase: Push to a remote
+  --remote  string"""
+
+    /// As for a nested record: the union describes itself for every site which embeds it, and a
+    /// field with something more specific to say overrides that.
+    [<Test>]
+    let ``A union's own help text heads the group, and the field's overrides it`` () =
+        let exc =
+            Assert.Throws<exn> (fun () -> WithTransportArgs.parse' noEnv [ "--help" ] |> ignore<WithTransportArgs>)
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+Preferred: Try this one first
+  exactly one of the following sets of arguments:
+  Tcp:
+    --preferred-tcp-port  int32
+  Unix:
+    --preferred-socket-path  string
+Fallback: Which transport to use
+  exactly one of the following sets of arguments:
+  Tcp:
+    --fallback-tcp-port  int32
+  Unix:
+    --fallback-socket-path  string"""

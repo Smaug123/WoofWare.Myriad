@@ -3079,9 +3079,9 @@ module PrefixedUnionArgParse =
                 [
                     (sprintf "%s:" "Mode")
                     "  exactly one of the following sets of arguments:"
-                    "  Auto:"
+                    (sprintf "%s:" "  Auto")
                     (sprintf "    %s  %s%s%s" (sprintf "--%s" "mode-quiet") "bool" " (optional)" "")
-                    "  Manual:"
+                    (sprintf "%s:" "  Manual")
                     (sprintf "    %s  %s%s%s" (sprintf "--%s" "mode-level") "int32" "" "")
                 ]
                 |> String.concat "\n"

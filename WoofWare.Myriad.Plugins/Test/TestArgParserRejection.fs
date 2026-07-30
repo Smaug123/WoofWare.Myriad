@@ -1365,6 +1365,109 @@ type ComputedDefault =
         |> shouldRejectWith
             "Field 'Count' has an [<ArgumentDefaultValue>] whose value we do not recognise as a constant. We reproduce the value in the generated file rather than evaluating it at your attribute, so we accept only a literal written out in full (optionally parenthesised). Use [<ArgumentDefaultFunction>] for anything else: that function is evaluated in your own file."
 
+    /// `[<ArgumentHelpText>]` is reproduced in the generated file exactly as `[<ArgumentDefaultValue>]`
+    /// is, and for the same reason: the generated file hoists every `open` in the source above the
+    /// parser, so a bare name need not resolve to the same binding there as here. This checks every
+    /// placement the attribute can now reach: a leaf field, the field which names a nested record or
+    /// union, the nested type's own definition, and a union case.
+    [<Test>]
+    let ``ArgumentHelpText naming a constant is rejected on a leaf field`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentHelpText(Sentinel)>]
+        Count : int
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgumentHelpText>] on field 'Count' names something (Sentinel) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+
+    [<Test>]
+    let ``ArgumentHelpText naming a constant is rejected on a nested-record field`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentHelpText(Sentinel)>]
+        Child : Child
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgumentHelpText>] on field 'Child' names something (Sentinel) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+
+    [<Test>]
+    let ``ArgumentHelpText naming a constant is rejected on a nested type's own definition`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgumentHelpText(Sentinel)>]
+type Child =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        Child : Child
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgumentHelpText>] on type Child names something (Sentinel) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+
+    [<Test>]
+    let ``ArgumentHelpText naming a constant is rejected on a union case`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type TcpArgs =
+    {
+        Port : int
+    }
+
+[<ArgParser>]
+type Transport =
+    | [<ArgumentHelpText(Sentinel)>] Tcp of TcpArgs
+
+[<ArgParser>]
+type Args =
+    {
+        Transport : Transport
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgumentHelpText>] on case Tcp names something (Sentinel) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+
+    [<Test>]
+    let ``ArgumentHelpText naming a constant is rejected on the tagged root type`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+[<ArgumentHelpText(Sentinel)>]
+type Args =
+    {
+        Count : int
+    }
+"""
+        |> shouldRejectWith
+            "The [<ArgumentHelpText>] on type Args names something (Sentinel) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+
     // Exactly one source may supply a field's default. With two, the generator would have to
     // invent a precedence order which is invisible at the use site, so it refuses instead.
 

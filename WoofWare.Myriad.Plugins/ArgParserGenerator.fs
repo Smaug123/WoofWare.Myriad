@@ -259,10 +259,14 @@ type private ParseTree =
     /// which were supplied. `sumId` ties this node to the erased schema's Sum node; `assemble`
     /// builds the union value from the selected case's name and its assembled payload.
     /// Positional args are not yet permitted inside union cases.
+    ///
+    /// Each case carries its own optional help text -- `[<ArgumentHelpText>]` on the case itself,
+    /// falling back to the same attribute on its payload record's definition -- since a case's
+    /// payload record introduces no `Branch` header of its own for it to live on (see above).
     | Sum of
         sumId : int *
         header : GroupHeader option *
-        cases : (Ident * ParseTree) list *
+        cases : (Ident * SynExpr option * ParseTree) list *
         assemble : (Ident -> SynExpr -> SynExpr)
 
 [<RequireQualifiedAccess>]
@@ -274,7 +278,7 @@ module private ParseTree =
         | ParseTree.NonPositionalLeaf _ -> false
         | ParseTree.PositionalLeaf _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.exists (fun (_, child) -> containsPositional child)
-        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, case) -> containsPositional case)
+        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, _, case) -> containsPositional case)
 
     /// The `Ident` here is the field name. Moves the positional-claiming field (at most one
     /// is permitted) after its siblings.
@@ -309,7 +313,7 @@ module private ParseTree =
                 )
             | ParseTree.Sum (_, _, cases, _) ->
                 (([], []), cases)
-                ||> List.fold (fun (nonPos, pos) (_, case) ->
+                ||> List.fold (fun (nonPos, pos) (_, _, case) ->
                     let caseNonPos, casePos = go case
                     nonPos @ caseNonPos, pos @ casePos
                 )
@@ -481,7 +485,7 @@ module private ParseTree =
             | Accumulation.Map _ -> true
         | ParseTree.PositionalLeaf _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.forall (fun (_, child) -> emptySatisfiable child)
-        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, case) -> emptySatisfiable case)
+        | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, _, case) -> emptySatisfiable case)
 
     /// For every union node in the tree, at most one case may be satisfiable with no arguments:
     /// were two cases so satisfiable, an empty command line could not choose between them.
@@ -491,14 +495,14 @@ module private ParseTree =
         | ParseTree.PositionalLeaf _ -> ()
         | ParseTree.Branch (_, fields, _) -> fields |> List.iter (fun (_, child) -> checkSumAmbiguity child)
         | ParseTree.Sum (_, _, cases, _) ->
-            cases |> List.iter (fun (_, case) -> checkSumAmbiguity case)
+            cases |> List.iter (fun (_, _, case) -> checkSumAmbiguity case)
 
-            match cases |> List.filter (fun (_, case) -> emptySatisfiable case) with
+            match cases |> List.filter (fun (_, _, case) -> emptySatisfiable case) with
             | []
             | [ _ ] -> ()
             | ambiguous ->
                 let names =
-                    ambiguous |> List.map (fun (name, _) -> name.idText) |> String.concat ", "
+                    ambiguous |> List.map (fun (name, _, _) -> name.idText) |> String.concat ", "
 
                 failwith
                     $"Cases %s{names} can all be satisfied without supplying any arguments, so an empty command line cannot choose between them. Make an argument in all but one of them mandatory."
@@ -537,7 +541,7 @@ module private ParseTree =
         | ParseTree.Sum (sumId, _, cases, _) ->
             let caseExprs =
                 cases
-                |> List.map (fun (caseName, payload) ->
+                |> List.map (fun (caseName, _, payload) ->
                     let payloadExpr = toErasedTreeExpr rt listOf counter posCounter payload
 
                     SynExpr.tuple [ SynExpr.CreateConst caseName.idText ; payloadExpr ]
@@ -595,7 +599,7 @@ module private ParseTree =
 
             let clauses =
                 cases
-                |> List.mapi (fun index (caseName, payload) ->
+                |> List.mapi (fun index (caseName, _, payload) ->
                     SynMatchClause.create
                         (SynPat.nameWithArgs "Some" [ SynPat.createConst (SynConst.Int32 index) ])
                         (assemble caseName (SynExpr.paren (instantiate payload)))
@@ -1310,6 +1314,38 @@ module internal ArgParserGenerator =
             | Some enumDu -> createEnumParser enumDu, Accumulation.Required, ty
             | None -> failwith $"Could not decide how to parse arguments for field %s{fieldName.idText} of type %O{ty}"
 
+    /// The `[<ArgumentHelpText>]` carried here, if any, ready to be reproduced in the generated
+    /// file. The same attribute serves a field, a nested type, and the tagged root, so they all
+    /// read it through this; `context` names the placement, for the sake of any error message.
+    ///
+    /// As for `[<ArgumentDefaultValue>]` above, only a literal is safe to carry into the generated
+    /// file: a bare name might resolve to a different binding there, since that file hoists every
+    /// `open` in the source above the parser, and a decoded string constant needs its escapes
+    /// rebuilt or Fantomas will emit them wrong (a `\t` would come out of the quotes as a literal
+    /// tab).
+    let private helpTextAttribute (context : string) (attrs : SynAttribute list) : SynExpr option =
+        attrs
+        |> List.tryPick (fun attr ->
+            match (List.last attr.TypeName.LongIdent).idText with
+            | "ArgumentHelpTextAttribute"
+            | "ArgumentHelpText" -> Some attr.ArgExpr
+            | _ -> None
+        )
+        |> Option.map (fun expr ->
+            match classifyDefaultValue expr with
+            | DefaultValueExpr.Constant c -> defaultValueExpr c
+            | DefaultValueExpr.Null -> SynExpr.Null range0
+            | DefaultValueExpr.ContextSensitive name ->
+                failwith
+                    $"The [<ArgumentHelpText>] on %s{context} uses the context-sensitive constant %s{name}. Its value depends on where it is written, and we reproduce it in the generated file rather than evaluating it at your attribute, so it would not mean there what it means in your source. Write the help text out as a literal string."
+            | DefaultValueExpr.Identifier name ->
+                failwith
+                    $"The [<ArgumentHelpText>] on %s{context} names something (%s{name}) rather than writing out a literal string. We reproduce the value in the generated file rather than evaluating it at your attribute, and that file hoists every `open` in your source above the parser, so the name need not resolve to the same binding there as here. Write the help text out as a literal string."
+            | DefaultValueExpr.Unrecognised ->
+                failwith
+                    $"The [<ArgumentHelpText>] on %s{context} was not recognised as a literal. We reproduce the value in the generated file rather than evaluating it at your attribute, so we accept only a string literal written out in full (optionally parenthesised)."
+        )
+
     /// The `[<ArgumentPrefix>]` this field carries, if any.
     let private prefixAttribute (attrs : SynAttribute list) : SynExpr option =
         attrs
@@ -1442,17 +1478,15 @@ module internal ArgParserGenerator =
                         | _ -> None
                     )
 
+                let ident =
+                    match identOption with
+                    | None -> failwith "expected args field to have a name, but it did not"
+                    | Some i -> i
+
                 // Kept separate from the `helpText` below, which folds in the parse format: a
                 // structural field's help introduces a whole group of arguments rather than
                 // describing one, so it must not pick up a leaf's parsing note.
-                let helpTextAttr =
-                    attrs
-                    |> List.tryPick (fun a ->
-                        match (List.last a.TypeName.LongIdent).idText with
-                        | "ArgumentHelpTextAttribute"
-                        | "ArgumentHelpText" -> Some a.ArgExpr
-                        | _ -> None
-                    )
+                let helpTextAttr = helpTextAttribute $"field '%s{ident.idText}'" attrs
 
                 let helpText =
                     match parseExactModifier, helpTextAttr with
@@ -1468,11 +1502,6 @@ module internal ArgParserGenerator =
                         |> SynExpr.applyTo ht
                         |> SynExpr.applyTo pe
                         |> Some
-
-                let ident =
-                    match identOption with
-                    | None -> failwith "expected args field to have a name, but it did not"
-                    | Some i -> i
 
                 let longForms =
                     attrs
@@ -1546,10 +1575,16 @@ module internal ArgParserGenerator =
                 // help text introduces that group rather than describing a single argument. The
                 // group exists whether or not the author wrote any help: the reader must be able to
                 // see which arguments were declared together, exactly as for a union's cases.
-                let groupHeader =
+                //
+                // The field's own attribute wins over the nested type's, which is the fallback: one
+                // type may be nested at several sites, and the field is the more specific placement,
+                // so it is the one which can say what this occurrence is for.
+                let groupHeader (typeName : string) (typeAttrs : SynAttribute list) : GroupHeader =
                     {
                         GroupHeader.Label = ident.idText
-                        GroupHeader.Help = helpTextAttr
+                        GroupHeader.Help =
+                            helpTextAttr
+                            |> Option.orElseWith (fun () -> helpTextAttribute $"type %s{typeName}" typeAttrs)
                     }
 
                 match ambientRecordMatch with
@@ -1567,7 +1602,13 @@ module internal ArgParserGenerator =
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
                     let spec, counter =
-                        toParseSpec ancestors (Some groupHeader) childPrefix counter ambient childRecord
+                        toParseSpec
+                            ancestors
+                            (Some (groupHeader childRecord.Name.idText childRecord.Attributes))
+                            childPrefix
+                            counter
+                            ambient
+                            childRecord
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1586,7 +1627,13 @@ module internal ArgParserGenerator =
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
                     let spec, counter =
-                        unionToParseSpec ancestors (Some groupHeader) childPrefix counter ambient union
+                        unionToParseSpec
+                            ancestors
+                            (Some (groupHeader union.Name.idText union.Attributes))
+                            childPrefix
+                            counter
+                            ambient
+                            union
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1845,7 +1892,16 @@ module internal ArgParserGenerator =
                 // `sumHelp` already heads it with the case name.
                 let spec, counter = toParseSpec ancestors None prefix counter ambient payloadRecord
 
-                counter, (case.Name, spec) :: acc
+                // As for a nested record's field: the more specific placement (the case itself)
+                // overrides the more general one (the payload record's own definition), since one
+                // payload record type could in principle be reused by several cases or sites.
+                let caseHelp =
+                    helpTextAttribute $"case %s{case.Name.idText}" case.Attributes
+                    |> Option.orElseWith (fun () ->
+                        helpTextAttribute $"type %s{payloadRecord.Name.idText}" payloadRecord.Attributes
+                    )
+
+                counter, (case.Name, caseHelp, spec) :: acc
             )
 
         let cases = List.rev cases
@@ -2008,13 +2064,18 @@ module internal ArgParserGenerator =
                 | None -> sumHelp depth cases
                 | Some header -> groupLine depth header :: sumHelp (depth + 1) cases
 
-        and sumHelp (depth : int) (cases : (Ident * ParseTree) list) : SynExpr list =
+        and sumHelp (depth : int) (cases : (Ident * SynExpr option * ParseTree) list) : SynExpr list =
             let indent = String.replicate depth "  "
 
             SynExpr.CreateConst (indent + "exactly one of the following sets of arguments:")
             :: (cases
-                |> List.collect (fun (caseName, case) ->
-                    SynExpr.CreateConst (indent + caseName.idText + ":")
+                |> List.collect (fun (caseName, help, case) ->
+                    groupLine
+                        depth
+                        {
+                            GroupHeader.Label = caseName.idText
+                            GroupHeader.Help = help
+                        }
                     :: fieldHelp (depth + 1) case
                 ))
 
@@ -3041,16 +3102,6 @@ module internal ArgParserGenerator =
             }
 
         let taggedTypeName, typeHelpText, parseSpec =
-            let typeHelp (attrs : SynAttributes) =
-                attrs
-                |> SynAttributes.toAttrs
-                |> List.tryPick (fun a ->
-                    match (List.last a.TypeName.LongIdent).idText with
-                    | "ArgumentHelpTextAttribute"
-                    | "ArgumentHelpText" -> Some a.ArgExpr
-                    | _ -> None
-                )
-
             match taggedType with
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
                                        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Record (access, fields, _), _),
@@ -3065,7 +3116,12 @@ module internal ArgParserGenerator =
                 // help, which `helpText` prints above everything.
                 let spec, _ = toParseSpec [] None "" 0 ambient record
 
-                record.Name, typeHelp attrs, spec
+                let typeHelp =
+                    attrs
+                    |> SynAttributes.toAttrs
+                    |> helpTextAttribute $"type %s{record.Name.idText}"
+
+                record.Name, typeHelp, spec
             | SynTypeDefn.SynTypeDefn (SynComponentInfo.SynComponentInfo (attributes = attrs) as sci,
                                        SynTypeDefnRepr.Simple (SynTypeDefnSimpleRepr.Union (access, cases, _), _),
                                        smd,
@@ -3082,7 +3138,12 @@ module internal ArgParserGenerator =
 
                 let spec, _ = unionToParseSpec [] None "" 0 ambient union
 
-                union.Name, typeHelp attrs, spec
+                let typeHelp =
+                    attrs
+                    |> SynAttributes.toAttrs
+                    |> helpTextAttribute $"type %s{union.Name.idText}"
+
+                union.Name, typeHelp, spec
             | _ ->
                 failwith
                     "[<ArgParser>] may only be placed on a record, or on a discriminated union whose cases each hold one record."

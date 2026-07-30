@@ -1,5 +1,13 @@
 Notable changes are recorded here.
 
+# WoofWare.Myriad.Plugins 10.7.2
+
+`ArgParserGenerator` now reads `[<ArgumentHelpText>]` from a nested argument record or union of alternative argument sets, and not only from the `[<ArgParser>]`-tagged root, and from a discriminated union's case (and that case's payload record).
+The nested type's help heads the group of arguments that type contributes, wherever it is embedded, and a case's help heads its group the same way.
+
+An `[<ArgumentHelpText>]` on the more specific placement overrides the more general one: a field's overrides its nested type's, and a case's overrides its payload record's.
+One type, or one payload record, may be embedded or reused at several sites for different purposes, so the more specific placement is the one which can say what a particular occurrence is for.
+
 # WoofWare.Myriad.Plugins 10.7.1
 
 `ArgParserGenerator` help text now groups the arguments contributed by a field whose type is another argument record, or a union of alternative argument sets, under a header line naming that field.

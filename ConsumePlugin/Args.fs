@@ -158,6 +158,36 @@ type ParentRecordWithGroupHelp =
         AndAnother : bool
     }
 
+/// A nested type may describe itself, for the benefit of every site which embeds it.
+[<ArgumentHelpText "How to talk to the database">]
+type DescribedChild =
+    {
+        Host : string
+        Port : int
+    }
+
+/// `Primary` takes the type's own description; `Secondary` overrides it, because the field is the
+/// more specific placement and one type may be embedded for different purposes.
+[<ArgParser true>]
+type ParentRecordWithTypeHelp =
+    {
+        [<ArgumentPrefix "primary">]
+        Primary : DescribedChild
+        [<ArgumentPrefix "secondary">]
+        [<ArgumentHelpText "Where to fail over to">]
+        Secondary : DescribedChild
+    }
+
+/// Help text may contain characters which need escaping to survive being reproduced in the
+/// generated file: FCS decodes the literal before Myriad ever sees it, so a backslash, a quote,
+/// and a control character must all be re-escaped rather than passed through as the decoded text.
+[<ArgParser true>]
+type ParentRecordWithEscapedHelp =
+    {
+        [<ArgumentHelpText "Path is C:\\temp, quote is \" and tab is \t.">]
+        Child : ChildRecord
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {
