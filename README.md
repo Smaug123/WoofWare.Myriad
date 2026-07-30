@@ -383,13 +383,12 @@ We will fail at build time to generate a parser if you have several DU cases whi
 #### Attribute placement at a structural boundary
 
 A field whose type is another argument record, or a union of alternative argument sets, is *structural*: it contributes that type's whole set of arguments rather than being one argument itself.
-The attributes which describe how a single argument is named, collected, spelled or read therefore have nothing to act on there, and are rejected at build time rather than silently dropped: `[<ArgumentLongForm>]`, `[<PositionalArgs>]`, `[<ParseExact>]`, `[<InvariantCulture>]`, `[<ArgumentNegateWithPrefix>]`, `[<ArgumentKeyValueSeparator>]` and `[<ArgumentMapEntrySeparator>]`.
-Put each on the leaf field it actually describes.
+Most attributes describe single arguments, so are rejected at build time when applied to a structural field.
 
-Two attributes are the exceptions, because they are *about* the group:
+Two attributes do apply to structural fields, because they are specifically about the group:
 
 * `[<ArgumentHelpText>]` describes the whole group of arguments the field contributes, and appears on the header line introducing it.
-* `[<ArgumentPrefix>]` namespaces every argument in the subtree; conversely, *it* is rejected on a leaf, which has no subtree.
+* `[<ArgumentPrefix>]` namespaces every argument in the subtree; conversely, it is rejected on a leaf, which has no subtree.
 
 `[<ArgumentFlag>]` is not a field attribute at all: it goes on the two cases of a flag discriminated union, and is rejected on a record field.
 
