@@ -857,6 +857,46 @@ module internal ArgParserGenerator =
             failwith
                 $"Field '%s{fieldName.idText}' has an [<ArgumentLongForm>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. [<ArgumentLongForm>] renames a single argument, and there is none here to rename: the names come from the fields of %s{ty} itself. Put the attribute on the field you mean to rename."
 
+    /// The same argument as `rejectLongFormAttribute`, for the attributes which describe how a
+    /// single argument is collected, spelled or read: a structural field contributes a whole set of
+    /// arguments, so there is no one argument for any of these to act on. The structural branches
+    /// take over before the leaf machinery which reads them ever runs, so without this each was
+    /// computed and then dropped on the floor.
+    ///
+    /// [<ArgumentHelpText>] is deliberately absent: on a structural field it introduces the group
+    /// of arguments the field contributes, which is a real use rather than a misplacement.
+    let private rejectLeafOnlyAttributes (fieldName : Ident) (fieldType : SynType) (attrs : SynAttribute list) : unit =
+        let reject (names : string list) (display : string) (purpose : string) : unit =
+            let present =
+                attrs
+                |> List.exists (fun attr -> names |> List.contains (List.last attr.TypeName.LongIdent).idText)
+
+            if present then
+                let ty = describeType fieldType
+
+                failwith
+                    $"Field '%s{fieldName.idText}' has a [<%s{display}>], but its type %s{ty} is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. %s{purpose}"
+
+        reject
+            [ "PositionalArgs" ; "PositionalArgsAttribute" ]
+            "PositionalArgs"
+            "[<PositionalArgs>] makes one field collect the arguments which carry no name, and a set of arguments cannot collect them. Put it on the leaf field which should do the collecting."
+
+        reject
+            [ "ParseExact" ; "ParseExactAttribute" ]
+            "ParseExact"
+            "[<ParseExact>] gives the format in which one argument's value is written, and a set of arguments has no single value. Put it on the leaf field whose value is written that way."
+
+        reject
+            [ "InvariantCulture" ; "InvariantCultureAttribute" ]
+            "InvariantCulture"
+            "[<InvariantCulture>] chooses the culture in which one argument's value is read, and a set of arguments has no single value. Put it on the leaf field whose value should be read that way."
+
+        reject
+            [ "ArgumentNegateWithPrefix" ; "ArgumentNegateWithPrefixAttribute" ]
+            "ArgumentNegateWithPrefix"
+            "[<ArgumentNegateWithPrefix>] gives one boolean argument a --no- spelling, and there is no single argument here to negate. Put it on the leaf field you mean to negate."
+
     let private checkSeparatorAttributesPlacement
         (fieldName : Ident)
         (fieldType : SynType)
@@ -870,6 +910,60 @@ module internal ArgParserGenerator =
         | Accumulation.Optional
         | Accumulation.Choice _
         | Accumulation.List _ -> rejectSeparatorAttributes fieldName fieldType attrs
+
+    /// [<ParseExact>] and [<InvariantCulture>] are read in exactly one place: the TimeSpan arm of
+    /// `createParseFunction`. On any other type they are dropped -- and for [<ParseExact>] that is
+    /// worse than silence, because `helpText` advertises the format unconditionally, so the
+    /// generated --help promises a format the generated parser does not honour.
+    ///
+    /// Checked after the parse function has been built, against the type actually handed to the
+    /// parser rather than the declared field type -- exactly as `checkSeparatorAttributesPlacement`
+    /// is, and for the same reason: `TimeSpan option` and `TimeSpan list` reach the TimeSpan arm
+    /// through the recursion, so their element type is what the attribute really describes.
+    ///
+    /// A map is the one shape where that type is not the whole story: it hands the field's
+    /// attributes to its key parser as well as its value parser, so the attribute is genuinely
+    /// consumed if *either* component is a TimeSpan, while `parseTy` is only the value's.
+    let private checkCultureAttributesPlacement
+        (fieldName : Ident)
+        (fieldType : SynType)
+        (attrs : SynAttribute list)
+        (accumulation : Accumulation<'choice>)
+        (parseTy : SynType)
+        : unit
+        =
+        let isTimeSpan (ty : SynType) : bool =
+            match ty with
+            | TimeSpan -> true
+            | _ -> false
+
+        let consumed =
+            match accumulation with
+            | Accumulation.Map spec -> isTimeSpan spec.KeyType || isTimeSpan parseTy
+            | Accumulation.Required
+            | Accumulation.Optional
+            | Accumulation.Choice _
+            | Accumulation.List _ -> isTimeSpan parseTy
+
+        if not consumed then
+            let reject (names : string list) (display : string) (consequence : string) : unit =
+                let present =
+                    attrs
+                    |> List.exists (fun attr -> names |> List.contains (List.last attr.TypeName.LongIdent).idText)
+
+                if present then
+                    failwith
+                        $"[<%s{display}>] is only honoured on System.TimeSpan fields, but was applied to field '%s{fieldName.idText}' of type %s{describeType fieldType}. %s{consequence} Remove it, or use a System.TimeSpan: the attribute reaches through option, list and map, so `System.TimeSpan option` and `Map<string, System.TimeSpan>` are honoured too."
+
+            reject
+                [ "ParseExact" ; "ParseExactAttribute" ]
+                "ParseExact"
+                "Nothing reads it there, so the value is parsed in the default way -- while the generated help text still advertises the format, promising something the parser does not do."
+
+            reject
+                [ "InvariantCulture" ; "InvariantCultureAttribute" ]
+                "InvariantCulture"
+                "Nothing reads it there, so the value is parsed in whatever culture the default parse uses."
 
     /// What we found in the argument of an `[<ArgumentDefaultValue>]`.
     type private DefaultValueExpr =
@@ -1674,6 +1768,7 @@ module internal ArgParserGenerator =
                     // misplaced one would be told nothing at all.
                     rejectSeparatorAttributes ident fieldType attrs
                     rejectLongFormAttribute ident fieldType attrs
+                    rejectLeafOnlyAttributes ident fieldType attrs
 
                     // This field has a type we need to obtain from parsing another record.
                     let childPrefix =
@@ -1697,6 +1792,7 @@ module internal ArgParserGenerator =
                 | Some union ->
                     rejectSeparatorAttributes ident fieldType attrs
                     rejectLongFormAttribute ident fieldType attrs
+                    rejectLeafOnlyAttributes ident fieldType attrs
 
                     // A discriminated union of alternative argument sets: exactly one case's
                     // arguments must be supplied. (Flag-like and data-free unions are argument
@@ -1728,8 +1824,30 @@ module internal ArgParserGenerator =
                         $"[<ArgumentPrefix>] can only be applied to a field whose type is another [<ArgParser>]-schema record or a discriminated union of alternative argument sets, but was applied to field '%s{ident.idText}' of type %s{describeType fieldType}. It renames every argument contributed by that field's subtree by prepending a namespace (e.g. [<ArgumentPrefix \"foo\">] on a field whose type is a record containing `Blah : string` turns --blah into --foo-blah); a leaf field has no subtree to rename. To change this one argument's name, use [<ArgumentLongForm>] instead."
                 | None -> ()
 
+                // Read before the positional split, because both sides have something to say about
+                // it: the positional branch cannot honour it at all, and previously did not even
+                // look, hardcoding `AcceptsNegation = false` and dropping the attribute in silence.
+                let hasNegateAttr =
+                    attrs
+                    |> List.exists (fun attr ->
+                        match (List.last attr.TypeName.LongIdent).idText with
+                        | "ArgumentNegateWithPrefixAttribute"
+                        | "ArgumentNegateWithPrefix" -> true
+                        | _ -> false
+                    )
+
                 match positionalArgAttr with
                 | Some includeFlagLike ->
+                    // A positional field does have keyed spellings -- `--blah value` and
+                    // `--blah=value` route to the sink, and [<ArgumentLongForm>] can add more --
+                    // but they are value-taking routing keys, not a boolean to invert. So the
+                    // complaint is about what negation *means* here, not about the absence of a
+                    // name, and it holds whatever the field's element type: this is not the same
+                    // check as the boolean-shape one on the non-positional side below.
+                    if hasNegateAttr then
+                        failwith
+                            $"[<ArgumentNegateWithPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. Negation inverts a boolean argument: `--no-foo` means the same as `--foo=false`. A positional field is a sink which accumulates values -- its keyed spellings take a value and add it to the collection, rather than setting anything -- so there is no boolean here for a `--no-` form to invert. Remove the [<ArgumentNegateWithPrefix>], or move it to the named boolean field you mean to negate."
+
                     // Positional fields carrying a default attribute are rejected above, so the
                     // Choice-parsing path only ever reaches this callback with `None`.
                     let getChoice (_ : ArgumentDefaultSpec option) : unit = ()
@@ -1738,6 +1856,7 @@ module internal ArgParserGenerator =
                         createParseFunction<unit> getChoice ambient finalRecord.Name ident attrs fieldType
 
                     checkSeparatorAttributesPlacement ident fieldType attrs accumulation
+                    checkCultureAttributesPlacement ident fieldType attrs accumulation parseTy
 
                     let isBoolLike =
                         match parseTy with
@@ -1802,6 +1921,7 @@ module internal ArgParserGenerator =
                         createParseFunction getChoice ambient finalRecord.Name ident attrs fieldType
 
                     checkSeparatorAttributesPlacement ident fieldType attrs accumulation
+                    checkCultureAttributesPlacement ident fieldType attrs accumulation parseTy
 
                     // A map's `parseTy` describes its *values*, not the field, so the boolean and
                     // enumerated metadata derived from it would misdescribe the argument. In
@@ -1856,17 +1976,6 @@ module internal ArgParserGenerator =
                         | Accumulation.Optional
                         | Accumulation.Choice _
                         | Accumulation.List _ -> None
-
-                    let hasNegateAttr =
-                        attrs
-                        |> List.exists (fun attr ->
-                            match attr.TypeName with
-                            | SynLongIdent.SynLongIdent (ident, _, _) ->
-                                match (List.last ident).idText with
-                                | "ArgumentNegateWithPrefixAttribute"
-                                | "ArgumentNegateWithPrefix" -> true
-                                | _ -> false
-                        )
 
                     let acceptsNegation =
                         if hasNegateAttr then
