@@ -396,15 +396,17 @@ type NonPositionalBoolList =
 /// constructs this type at runtime, and that reconstruction needs the backticks re-added for
 /// exactly the same reason the declaration did, or the generated file does not parse.
 ///
-/// `` ``_`` `` and `` ``|A|_|`` `` are here because the general-purpose backtick-normaliser the
-/// generator uses treats a bare `_` and a bare active-pattern-shaped name as already fine (they are
-/// meaningful bare tokens elsewhere in F#'s grammar -- the wildcard pattern and an active-pattern
-/// reference), but neither is a valid bare record label, so both need forcing into backticks by a
-/// narrower, record-label-specific check.
+/// Every field beyond `` ``back\tab`` `` here is a shape F#'s lexer treats as a meaningful bare
+/// token in some *other* grammar position, so a naive "does this need backticks" check keeps being
+/// wrong about it: `` ``_`` `` is the wildcard pattern, `` ``|A|_|`` `` is an active-pattern name,
+/// `` ``mod`` `` is a word-form operator keyword, and `` ``__LINE__`` `` is a context-sensitive
+/// constant. None of them is a valid bare record label.
 [<ArgParser true>]
 type AwkwardFieldName =
     {
         ``back\tab`` : ChildRecord
         ``_`` : int
         ``|A|_|`` : int
+        ``mod`` : int
+        ``__LINE__`` : int
     }

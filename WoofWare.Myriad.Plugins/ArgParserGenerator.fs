@@ -1418,23 +1418,32 @@ module internal ArgParserGenerator =
                 ))
                 (SynExpr.paren form)
 
-    /// Re-backtick a field name, if it needs backticks to be usable as a bare record-construction
-    /// label. `PrettyNaming.NormalizeIdentifierBackticks` answers the more general question of
-    /// whether text needs backticks to be a valid identifier *at all*, so it deliberately leaves a
-    /// couple of shapes alone: `_` (the wildcard pattern) and an active-pattern name (`|A|_|`,
-    /// `|A|B|`, ...) are both meaningful as bare tokens in other grammar positions, so it treats
-    /// them as already fine. Neither is valid as a bare record label, though (confirmed empirically:
-    /// `type Foo = { _ : int }` and a record label spelled `|A|_|` both fail to parse), so those two
-    /// shapes must be forced into backticks here rather than trusted to the general-purpose check.
-    let private backtickRecordLabel (ident : string) : string =
-        let normalized = PrettyNaming.NormalizeIdentifierBackticks ident
+    /// Whether `ident` is safe to splice in bare, as a record-construction label. F#'s lexer treats
+    /// a number of shapes as meaningful bare tokens in *other* grammar positions but not this one --
+    /// the wildcard pattern `_`, an active-pattern name (`|A|_|`), the word-form operator keywords
+    /// (`mod`, `land`, ...), the dunder constants (`__LINE__`, ...) -- and hand-enumerating them is a
+    /// losing game: two rounds of review each found a shape the previous fix missed. So don't guess;
+    /// ask the actual parser this codebase already depends on elsewhere, with `ident` spliced bare
+    /// into both a field declaration and a record-construction label, which is exactly the two
+    /// positions the real generated file will put it in.
+    let private isValidBareRecordLabel (ident : string) : bool =
+        try
+            Ast.parse $"module M\ntype T = {{ {ident} : int }}\nlet _ = {{ {ident} = 1 }}"
+            |> ignore<ParsedInput>
 
-        if normalized <> ident then
-            normalized
-        elif ident = "_" || (ident.StartsWith '|' && ident.EndsWith '|') then
-            "``" + ident + "``"
+            true
+        with _ ->
+            false
+
+    /// Re-backtick a field name, if it needs backticks to be usable as a bare record-construction
+    /// label -- exactly as its declaration needed them, if it had any (backticking is always a
+    /// legal alternative spelling of any identifier, so this is safe to apply unconditionally to
+    /// whatever `isValidBareRecordLabel` rejects).
+    let private backtickRecordLabel (ident : string) : string =
+        if isValidBareRecordLabel ident then
+            ident
         else
-            normalized
+            "``" + ident + "``"
 
     /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being

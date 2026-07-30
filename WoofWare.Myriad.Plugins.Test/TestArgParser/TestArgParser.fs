@@ -527,15 +527,24 @@ Secondary: Where to fail over to
     /// generated file does not compile at all (so this test's mere presence in a green build
     /// partly stands for the property; the parse asserts the fields are actually populated).
     ///
-    /// `` ``_`` `` and `` ``|A|_|`` `` specifically exercise the two shapes a general-purpose
-    /// backtick-normaliser treats as already fine (the wildcard pattern and an active-pattern name
-    /// are both meaningful bare tokens elsewhere in F#'s grammar), but which are not valid bare
-    /// record labels.
+    /// The remaining fields each exercise a shape F#'s lexer treats as a meaningful bare token in
+    /// some *other* grammar position -- the wildcard pattern, an active-pattern name, a word-form
+    /// operator keyword, and a context-sensitive constant -- none of which is a valid bare record
+    /// label, so a naive "does this need backticks" check keeps being wrong about them.
     [<Test>]
     let ``A field name needing backticks survives re-emission in the constructed record`` () =
         let getEnvVar (_ : string) = failwith "should not call"
 
-        AwkwardFieldName.parse' getEnvVar [ "--thing1=1" ; "--thing2=two" ; "--_=3" ; "--|-a|_|=4" ]
+        AwkwardFieldName.parse'
+            getEnvVar
+            [
+                "--thing1=1"
+                "--thing2=two"
+                "--_=3"
+                "--|-a|_|=4"
+                "--mod=5"
+                "--__-l-i-n-e__=6"
+            ]
         |> shouldEqual
             {
                 AwkwardFieldName.``back\tab`` =
@@ -545,6 +554,8 @@ Secondary: Where to fail over to
                     }
                 AwkwardFieldName.``_`` = 3
                 AwkwardFieldName.``|A|_|`` = 4
+                AwkwardFieldName.``mod`` = 5
+                AwkwardFieldName.``__LINE__`` = 6
             }
 
     [<Test>]
