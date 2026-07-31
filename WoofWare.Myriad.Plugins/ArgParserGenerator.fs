@@ -1669,11 +1669,16 @@ module internal ArgParserGenerator =
         with _ ->
             false
 
-    /// Re-backtick a field name, if it needs backticks to be usable as a bare record-construction
-    /// label -- exactly as its declaration needed them, if it had any (backticking is always a
-    /// legal alternative spelling of any identifier, so this is safe to apply unconditionally to
+    /// Re-backtick an identifier, if it needs backticks to be spliced into the generated file --
+    /// exactly as its declaration needed them, if it had any (backticking is always a legal
+    /// alternative spelling of any identifier, so this is safe to apply unconditionally to
     /// whatever `isValidBareRecordLabel` rejects).
-    let private backtickRecordLabel (ident : string) : string =
+    ///
+    /// Used for record-construction labels, and for the `Default`-prefixed member name a defaulted
+    /// field calls: a field named ``space in name`` wants `Owner.``Defaultspace in name`` ()`, and
+    /// emitting that bare produces a file which does not parse. The record-label probe is the
+    /// right question to ask for both, being the stricter position of the two.
+    let private backtickIdent (ident : string) : string =
         if isValidBareRecordLabel ident then
             ident
         else
@@ -1858,11 +1863,14 @@ module internal ArgParserGenerator =
                     /// The default for a whole group of arguments can only come from a function:
                     /// neither a literal nor an environment variable can construct a record.
                     let structuralDefault () : ContainerKind =
-                        let carries (names : string list) : bool =
+                        let occurrences (names : string list) : int =
                             attrs
-                            |> List.exists (fun attr ->
+                            |> List.filter (fun attr ->
                                 names |> List.contains (List.last attr.TypeName.LongIdent).idText
                             )
+                            |> List.length
+
+                        let carries (names : string list) : bool = occurrences names > 0
 
                         let reject (names : string list) (display : string) (why : string) : unit =
                             if carries names then
@@ -1882,15 +1890,22 @@ module internal ArgParserGenerator =
                             "ArgumentDefaultEnvironmentVariable"
                             "An environment variable is one string, and there is no spelling by which one string becomes a whole group of arguments."
 
-                        if carries [ "ArgumentDefaultFunction" ; "ArgumentDefaultFunctionAttribute" ] then
+                        // As for a defaulted leaf, at most one attribute may say where the
+                        // default comes from. The other two kinds are rejected outright above, so
+                        // the only way to have several here is to repeat this one.
+                        match occurrences [ "ArgumentDefaultFunction" ; "ArgumentDefaultFunctionAttribute" ] with
+                        | 1 ->
                             ArgumentDefaultSpec.FunctionCall (
                                 finalRecord.Name,
                                 Ident.create ("Default" + ident.idText)
                             )
                             |> ContainerKind.Defaulted
-                        else
+                        | 0 ->
                             failwith
                                 $"Field '%s{ident.idText}' has type %s{describeType fieldType}, so it must say where its default comes from when none of the group's arguments are supplied. Add [<ArgumentDefaultFunction>] and a static member `Default%s{ident.idText} ()` returning the group, or give the field the plain type without the Choice."
+                        | _ ->
+                            failwith
+                                $"Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{ident.idText}"
 
                     match fieldType with
                     | OptionType inner -> Some (fun () -> ContainerKind.Optional), inner
@@ -1973,7 +1988,7 @@ module internal ArgParserGenerator =
                         | ContainerKind.Defaulted _, Some payload ->
                             SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") payload
                         | ContainerKind.Defaulted (ArgumentDefaultSpec.FunctionCall (owner, name)), None ->
-                            SynExpr.callMethod name.idText (SynExpr.createIdent' owner)
+                            SynExpr.callMethod (backtickIdent name.idText) (SynExpr.createIdent' owner)
                             |> SynExpr.paren
                             |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2")
                         | ContainerKind.Defaulted spec, None ->
@@ -2253,7 +2268,7 @@ module internal ArgParserGenerator =
                         // (a space, a keyword, ...) must be re-backticked before it is safe to place
                         // in this record-construction expression, exactly as the record's own
                         // declaration required it to be written.
-                        SynLongIdent.create [ Ident.create (backtickRecordLabel ident) ], expr
+                        SynLongIdent.create [ Ident.create (backtickIdent ident) ], expr
                     )
                     |> SynExpr.createRecord None
                 )
@@ -2361,7 +2376,7 @@ module internal ArgParserGenerator =
                 |> SynExpr.paren
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
                 // Display the spelling the user would have to type to supply this value.
-                SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                SynExpr.callMethod (backtickIdent var.idText) (SynExpr.createIdent' owner)
                 |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
@@ -3300,7 +3315,9 @@ module internal ArgParserGenerator =
                         | ArgumentDefaultSpec.FunctionCall (owner, name) ->
                             SynExpr.sequential
                                 [
-                                    storeDefault (SynExpr.callMethod name.idText (SynExpr.createIdent' owner))
+                                    storeDefault (
+                                        SynExpr.callMethod (backtickIdent name.idText) (SynExpr.createIdent' owner)
+                                    )
                                     SynExpr.createIdent "None"
                                 ]
                         | ArgumentDefaultSpec.Literal value ->

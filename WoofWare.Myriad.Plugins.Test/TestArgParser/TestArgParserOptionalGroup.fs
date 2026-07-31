@@ -362,3 +362,42 @@ Child (optional):
   --db-thing1  int32
   Grandchild (optional):
     --db-deep  int32"""
+
+    /// A defaulted field's default comes from `Default` + the field name, so an awkward field name
+    /// makes an awkward member name, which needs backticks where it is called. Three sites emit
+    /// that call -- a leaf's applied default, a group's instantiation, and the help text -- and the
+    /// generated file does not parse if any of them gets it wrong.
+    [<Test>]
+    let ``An awkward field name survives into the default-function call`` () =
+        AwkwardDefaultName.parse' noEnv []
+        |> shouldEqual
+            {
+                ``space in name`` = Choice2Of2 5
+                ``group name`` =
+                    Choice2Of2
+                        {
+                            Thing1 = 1
+                            Thing2 = "defaulted group"
+                        }
+                ``optional group`` = None
+            }
+
+    [<Test>]
+    let ``An awkwardly named group can still be supplied`` () =
+        AwkwardDefaultName.parse' noEnv [ "--grp-thing1=8" ; "--grp-thing2=hi" ; "--opt-thing1=9" ; "--opt-thing2=yo" ]
+        |> shouldEqual
+            {
+                ``space in name`` = Choice2Of2 5
+                ``group name`` =
+                    Choice1Of2
+                        {
+                            Thing1 = 8
+                            Thing2 = "hi"
+                        }
+                ``optional group`` =
+                    Some
+                        {
+                            Thing1 = 9
+                            Thing2 = "yo"
+                        }
+            }

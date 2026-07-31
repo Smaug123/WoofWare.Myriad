@@ -1989,6 +1989,31 @@ type Args =
         |> shouldRejectWith
             "Field 'Child' has type Choice<Child, Child>, so it must say where its default comes from when none of the group's arguments are supplied. Add [<ArgumentDefaultFunction>] and a static member `DefaultChild ()` returning the group, or give the field the plain type without the Choice."
 
+    /// At most one attribute may say where a default comes from, exactly as for a defaulted leaf.
+    /// The other two kinds are refused outright on a group, so repeating this one is the only way
+    /// to have several.
+    [<Test>]
+    let ``Repeated ArgumentDefaultFunction on a defaulted group is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentDefaultFunction>]
+        [<ArgumentDefaultFunction>]
+        Child : Choice<Child, Child>
+    }
+"""
+        |> shouldRejectWith
+            "Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: Child"
+
     [<Test>]
     let ``A Choice wrapping an all-optional record is rejected`` () =
         """namespace TestMe

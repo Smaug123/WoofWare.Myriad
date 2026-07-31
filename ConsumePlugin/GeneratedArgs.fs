@@ -8836,3 +8836,330 @@ module AwkwardFieldNameArgParse =
 
         static member parse (args : string list) : AwkwardFieldName =
             AwkwardFieldName.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args
+namespace ConsumePlugin
+
+open System
+open System.IO
+open WoofWare.Myriad.Plugins
+
+/// Methods to parse arguments for the type AwkwardDefaultName
+[<AutoOpen>]
+module AwkwardDefaultNameArgParse =
+    /// Extension methods for argument parsing
+    type AwkwardDefaultName with
+
+        static member parse'
+            (getEnvironmentVariable : string -> string option)
+            (args : string list)
+            : AwkwardDefaultName
+            =
+            let helpText () =
+                [
+                    (sprintf
+                        "%s  %s%s%s"
+                        (sprintf "--%s" "space in name")
+                        "int32"
+                        (AwkwardDefaultName.``Defaultspace in name``().ToString ()
+                         |> sprintf " (default value: %s)")
+                        "")
+
+                    (sprintf "%s:" "group name (optional; a default is used if omitted)")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "grp-thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "grp-thing2") "string" "" "")
+                    (sprintf "%s:" "optional group (optional)")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "opt-thing1") "int32" "" "")
+                    (sprintf "  %s  %s%s%s" (sprintf "--%s" "opt-thing2") "string" "" "")
+                ]
+                |> String.concat "\n"
+
+            let parser_LeftoverArgs : string ResizeArray = ResizeArray ()
+            let mutable arg_0 : Choice<int, int> option = None
+            let mutable arg_2 : int option = None
+            let mutable arg_3 : string option = None
+            let mutable arg_5 : int option = None
+            let mutable arg_6 : string option = None
+
+            let parser_schema : ArgParserRuntime_BasicNoPositionals.ErasedSchema =
+                {
+                    Leaves =
+                        [
+                            {
+                                Id = 0
+                                Forms = [ "space in name" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.HasDefault
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 1
+                                Forms = [ "grp-thing1" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 2
+                                Forms = [ "grp-thing2" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+
+                            {
+                                Id = 3
+                                Forms = [ "opt-thing1" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                            {
+                                Id = 4
+                                Forms = [ "opt-thing2" ]
+                                AcceptsNegation = false
+                                Arity = ArgParserRuntime_BasicNoPositionals.ErasedArity.One
+                                Repeatable = false
+                                Requirement = ArgParserRuntime_BasicNoPositionals.ErasedRequirement.Required
+                                TypeDescription = ""
+                                Help = None
+                            }
+                        ]
+                    Tree =
+                        (ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                            [
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 0
+
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Sum (
+                                    (1,
+                                     [
+                                         ("supplied",
+                                          ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                              [
+                                                  ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 1
+                                                  ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 2
+                                              ]
+                                          ))
+                                         ("absent", ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (List.empty))
+                                     ])
+                                )
+                                ArgParserRuntime_BasicNoPositionals.ErasedTree.Sum (
+                                    (4,
+                                     [
+                                         ("supplied",
+                                          ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (
+                                              [
+                                                  ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 3
+                                                  ArgParserRuntime_BasicNoPositionals.ErasedTree.Leaf 4
+                                              ]
+                                          ))
+                                         ("absent", ArgParserRuntime_BasicNoPositionals.ErasedTree.Product (List.empty))
+                                     ])
+                                )
+                            ]
+                        ))
+                    Positionals = List.empty
+                }
+
+            let parser_storeOccurrence
+                (occurrence : ArgParserRuntime_BasicNoPositionals.ErasedOccurrence)
+                : string option
+                =
+                match occurrence.LeafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_0 <- Some (Choice1Of2 (value |> (fun x -> System.Int32.Parse x)))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 1 ->
+                    match arg_2 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_2 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 2 ->
+                    match arg_3 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_3 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 3 ->
+                    match arg_5 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_5 <- Some (value |> (fun x -> System.Int32.Parse x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | 4 ->
+                    match arg_6 with
+                    | Some _ -> None
+                    | None ->
+                        match occurrence.Value with
+                        | Some value ->
+                            try
+                                arg_6 <- Some (value |> (fun x -> x))
+                                None
+                            with _ as exc ->
+                                (sprintf "%s (at arg %s)" exc.Message occurrence.Source) |> Some
+                        | None ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: arity-one occurrence with no value"
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown argument id"
+
+            let parser_storePositional (positionalId : int) (value : string) (afterSeparator : bool) : string option =
+                failwith "WoofWare.Myriad internal error in generated parser: no positional sink exists"
+
+            let parser_renderStored (leafId : int) : string =
+                match leafId with
+                | 0 ->
+                    match arg_0 with
+                    | Some (Choice1Of2 x) -> x.ToString ()
+                    | Some (Choice2Of2 x) -> x.ToString ()
+                    | None -> "<no value>"
+                | 1 ->
+                    match arg_2 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 2 ->
+                    match arg_3 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 3 ->
+                    match arg_5 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | 4 ->
+                    match arg_6 with
+                    | Some x -> x.ToString ()
+                    | None -> "<no value>"
+                | _ -> "<no value>"
+
+            let parser_applyDefault (leafId : int) : string option =
+                match leafId with
+                | 0 ->
+                    arg_0 <- Some (Choice2Of2 (AwkwardDefaultName.``Defaultspace in name`` ()))
+                    None
+                | _ -> failwith "WoofWare.Myriad internal error in generated parser: unknown defaulted argument id"
+
+            let parser_callbacks : ArgParserRuntime_BasicNoPositionals.TypedCallbacks =
+                {
+                    StoreOccurrence = parser_storeOccurrence
+                    StorePositional = parser_storePositional
+                    HelpText = helpText
+                    RenderStored = parser_renderStored
+                    ApplyDefault = parser_applyDefault
+                }
+
+            match
+                ArgParserRuntime_BasicNoPositionals.runParse
+                    (ArgParserRuntime_BasicNoPositionals.WellFormedSchema.checkOrFail parser_schema)
+                    parser_callbacks
+                    args
+            with
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Success parser_selection ->
+                {
+                    ``group name`` =
+                        match Map.tryFind 1 parser_selection.Choices with
+                        | Some 0 ->
+                            Choice1Of2 (
+                                {
+                                    Thing1 =
+                                        (match arg_2 with
+                                         | Some x -> x
+                                         | None ->
+                                             failwith
+                                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                                    Thing2 =
+                                        (match arg_3 with
+                                         | Some x -> x
+                                         | None ->
+                                             failwith
+                                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                                }
+                            )
+                        | Some 1 -> Choice2Of2 (AwkwardDefaultName.``Defaultgroup name`` ())
+                        | _ ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"
+                    ``optional group`` =
+                        match Map.tryFind 4 parser_selection.Choices with
+                        | Some 0 ->
+                            Some (
+                                {
+                                    Thing1 =
+                                        (match arg_5 with
+                                         | Some x -> x
+                                         | None ->
+                                             failwith
+                                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                                    Thing2 =
+                                        (match arg_6 with
+                                         | Some x -> x
+                                         | None ->
+                                             failwith
+                                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                                }
+                            )
+                        | Some 1 -> None
+                        | _ ->
+                            failwith
+                                "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"
+                    ``space in name`` =
+                        (match arg_0 with
+                         | Some x -> x
+                         | None ->
+                             failwith
+                                 "WoofWare.Myriad internal error in generated parser: required argument missing after successful parse")
+                }
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.HelpRequested ->
+                helpText () |> failwithf "Help text requested.\n%s"
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Fatal message -> failwith message
+            | ArgParserRuntime_BasicNoPositionals.ParseOutcome.Errors errors ->
+                errors |> String.concat "\n" |> failwithf "Errors during parse!\n%s"
+
+        static member parse (args : string list) : AwkwardDefaultName =
+            AwkwardDefaultName.parse' (System.Environment.GetEnvironmentVariable >> Option.ofObj) args

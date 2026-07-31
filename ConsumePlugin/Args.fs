@@ -471,3 +471,33 @@ type AwkwardFieldName =
         ``__LINE__`` : int
         ``break`` : int
     }
+
+/// A defaulted field's default comes from a static member named `Default` + the field name, so an
+/// awkward field name makes an awkward *member* name, which needs backticks at the call site
+/// exactly as its declaration did. `Default` + `mod` is the perfectly ordinary `Defaultmod`, so
+/// the names here are ones which stay awkward after the prefix is glued on.
+///
+/// Three separate emission sites call that member: a defaulted leaf's `parser_applyDefault`, a
+/// defaulted group's instantiation, and the help text, which renders a leaf's default by calling
+/// the function at generated-program runtime.
+[<ArgParser true>]
+type AwkwardDefaultName =
+    {
+        [<ArgumentDefaultFunction>]
+        ``space in name`` : Choice<int, int>
+
+        [<ArgumentPrefix "grp">]
+        [<ArgumentDefaultFunction>]
+        ``group name`` : Choice<ChildRecord, ChildRecord>
+
+        [<ArgumentPrefix "opt">]
+        ``optional group`` : ChildRecord option
+    }
+
+    static member ``Defaultspace in name`` () = 5
+
+    static member ``Defaultgroup name`` () : ChildRecord =
+        {
+            Thing1 = 1
+            Thing2 = "defaulted group"
+        }

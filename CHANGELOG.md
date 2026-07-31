@@ -13,6 +13,10 @@ The default must come from `[<ArgumentDefaultFunction>]`, since neither a litera
 A group which is itself satisfiable by supplying nothing cannot be wrapped, and is rejected at generation time.
 No command line could distinguish "this group was supplied, and everything in it took its default" from "this group was never mentioned", so there is a real modelling question here, and the generated parser should not answer it by silently preferring one.
 
+Bugfix: `ArgParserGenerator` now backticks the `Default`-prefixed member name a defaulted field calls.
+A field named `` `` `` ``space in name`` `` `` `` takes its default from `` `` `` ``Defaultspace in name`` `` `` ``, which was emitted bare, so the generated file did not parse.
+This affected defaulted leaves (and their help text) as well as the newly-supported defaulted groups.
+
 `ArgParserGenerator` now reports a proper error for a field of type `'a list list` or `'a option list`.
 
 Both shapes were already unsupported, but only the `[<PositionalArgs>]` path said so: on the ordinary path they passed classification and failed much later against an assertion phrased as an internal error ("WoofWare.Myriad invariant violated"), despite being reachable from ordinary source.
