@@ -561,6 +561,32 @@ Secondary: Where to fail over to
                 AwkwardFieldName.``break`` = 7
             }
 
+    /// The same hazard at a second site: `[<ArgumentDefaultFunction>]` makes the generator emit a
+    /// call to `Default` ++ the field's name, so a field whose name needs backticks forces the
+    /// member to be declared with them, and the generator must re-add them to the concatenated name
+    /// it reconstructs. Both the defaulted and the supplied paths are exercised, because the name is
+    /// emitted twice -- once to set the default and once to render it into help text.
+    ///
+    /// `` ``mod`` `` is here as the converse control: it needs backticks on its own, but
+    /// `Defaultmod` does not, so the concatenation *rescues* it and it must be emitted bare.
+    [<Test>]
+    let ``A default-function member name needing backticks survives re-emission`` () =
+        let getEnvVar (_ : string) = failwith "should not call"
+
+        AwkwardDefaultFunctionName.parse' getEnvVar []
+        |> shouldEqual
+            {
+                AwkwardDefaultFunctionName.``space in name`` = Choice2Of2 3
+                AwkwardDefaultFunctionName.``mod`` = Choice2Of2 4
+            }
+
+        AwkwardDefaultFunctionName.parse' getEnvVar [ "--space in name=1" ; "--mod=2" ]
+        |> shouldEqual
+            {
+                AwkwardDefaultFunctionName.``space in name`` = Choice1Of2 1
+                AwkwardDefaultFunctionName.``mod`` = Choice1Of2 2
+            }
+
     [<Test>]
     let ``Positionals are tagged with Choice`` () =
         let getEnvVar (_ : string) = failwith "should not call"

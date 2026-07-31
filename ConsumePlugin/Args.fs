@@ -413,3 +413,23 @@ type AwkwardFieldName =
         ``__LINE__`` : int
         ``break`` : int
     }
+
+/// The same problem at a second site. `[<ArgumentDefaultFunction>]` makes the generator emit a call
+/// to the static member `Default` ++ the field's name, so a field whose name needs backticks forces
+/// the *member* to be declared with them too -- and the generator has to re-add them when it
+/// reconstructs that concatenated name, or the call it emits does not parse.
+///
+/// Kept apart from `AwkwardFieldName` above because the two sites fail independently: that one is
+/// the record-construction expression, this one is a member reference.
+[<ArgParser true>]
+type AwkwardDefaultFunctionName =
+    {
+        [<ArgumentDefaultFunction>]
+        ``space in name`` : Choice<int, int>
+        [<ArgumentDefaultFunction>]
+        ``mod`` : Choice<int, int>
+    }
+
+    static member ``Defaultspace in name`` () : int = 3
+
+    static member ``Defaultmod`` () : int = 4
