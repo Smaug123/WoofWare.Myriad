@@ -1,12 +1,5 @@
 Notable changes are recorded here.
 
-# WoofWare.Myriad.Plugins 11.0.2
-
-`ArgParserGenerator` now backticks the `Default`-prefixed member name it emits for an `[<ArgumentDefaultFunction>]` field, so a field whose name needs backticks no longer generates a file which fails to parse.
-This is the same class of bug as the record-construction fix in 11.0.1, at a different site: the generator concatenates `Default` with the field's name and emits the result as an identifier, both to set the default and to render it into help text.
-
-Note that the concatenation can cut either way, and the fix accounts for both: a field named `` ``mod`` `` needs backticks itself, but the `Defaultmod` member does not and is still emitted bare.
-
 # WoofWare.Myriad.Plugins 11.0.1
 
 Breaking change: `ArgParserGenerator` now rejects, at generation time, several attribute placements which it previously accepted and then silently ignored.
