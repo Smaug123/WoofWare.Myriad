@@ -1789,6 +1789,74 @@ type Args =
         |> shouldRejectWith
             "ArgParser does not support lists of maps at field Blah: a map already accumulates across occurrences."
 
+    /// The list arm used to check only for maps, so these two shapes classified successfully and
+    /// died much later against an assertion phrased as an internal error -- although they are
+    /// reachable from ordinary source. The positional arm has always rejected them properly, so
+    /// these pin the same treatment on both paths.
+    let private nestedList (field : string) (ty : string) : string =
+        $"ArgParser does not support nested lists at field %s{field}: %s{ty}. Each occurrence supplies one element, so there is no way to spell where one inner list ends and the next begins."
+
+    let private listOfOptionals (field : string) (ty : string) : string =
+        $"ArgParser does not support lists of optionals at field %s{field}: %s{ty}. An element is supplied by an occurrence, so an absent element would be an occurrence which is not there."
+
+    [<Test>]
+    let ``A nested list is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : int list list
+    }
+"""
+        |> shouldRejectWith (nestedList "Blah" "int32 list list")
+
+    [<Test>]
+    let ``A list of optionals is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        Blah : int option list
+    }
+"""
+        |> shouldRejectWith (listOfOptionals "Blah" "int32 option list")
+
+    [<Test>]
+    let ``A positional nested list is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        Blah : int list list
+    }
+"""
+        |> shouldRejectWith (nestedList "Blah" "int32 list list")
+
+    [<Test>]
+    let ``A positional list of optionals is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+[<ArgParser>]
+type Args =
+    {
+        [<PositionalArgs>]
+        Blah : int option list
+    }
+"""
+        |> shouldRejectWith (listOfOptionals "Blah" "int32 option list")
+
     [<Test>]
     let ``A map with a non-scalar value type is rejected`` () =
         """namespace TestMe

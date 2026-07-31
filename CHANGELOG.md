@@ -1,5 +1,12 @@
 Notable changes are recorded here.
 
+# Unreleased
+
+`ArgParserGenerator` now reports a proper error for a field of type `'a list list` or `'a option list`.
+
+Both shapes were already unsupported, but only the `[<PositionalArgs>]` path said so: on the ordinary path they passed classification and failed much later against an assertion phrased as an internal error ("WoofWare.Myriad invariant violated"), despite being reachable from ordinary source.
+Both paths now give the same message, which says why the shape has no spelling: each occurrence supplies one element, so nothing marks where one inner list ends and the next begins, and an absent element would be an occurrence which is not there.
+
 # WoofWare.Myriad.Plugins 11.0.1
 
 Breaking change: `ArgParserGenerator` now rejects, at generation time, several attribute placements which it previously accepted and then silently ignored.

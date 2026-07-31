@@ -1247,11 +1247,25 @@ module internal ArgParserGenerator =
             let parseElt, acc, childTy =
                 createParseFunction choice ambient owner fieldName attrs eltTy
 
+            // Every sibling arm rejects the nestings it cannot express, against the accumulation
+            // the recursive call came back with; this one must too. Without these, the illegal
+            // shapes classified successfully here and died much later against an assertion
+            // phrased as an internal error -- which they are not, being reachable from ordinary
+            // source. `Choice` is deliberately absent: the positional path spells its
+            // before/after-`--` tag as `Choice<'a, 'a> list`, and on the non-positional path the
+            // field-level default-attribute checks have already rejected the shape.
             match acc with
             | Accumulation.Map _ ->
                 failwith
                     $"ArgParser does not support lists of maps at field %s{fieldName.idText}: a map already accumulates across occurrences."
-            | _ -> ()
+            | Accumulation.List _ ->
+                failwith
+                    $"ArgParser does not support nested lists at field %s{fieldName.idText}: %s{describeType ty}. Each occurrence supplies one element, so there is no way to spell where one inner list ends and the next begins."
+            | Accumulation.Optional ->
+                failwith
+                    $"ArgParser does not support lists of optionals at field %s{fieldName.idText}: %s{describeType ty}. An element is supplied by an occurrence, so an absent element would be an occurrence which is not there."
+            | Accumulation.Required
+            | Accumulation.Choice _ -> ()
 
             parseElt, Accumulation.List acc, childTy
         | MapType (keyTy, valueTy) ->
@@ -1866,11 +1880,11 @@ module internal ArgParserGenerator =
 
                     let enumCases = identifyAsEnum ambient.EnumDus parseTy
 
+                    // A list whose element is itself a list, an optional or a map is rejected by
+                    // `createParseFunction` above, for reasons which hold whether or not the
+                    // field is positional; only the two shapes a positional field can actually
+                    // take reach here. The `Choice` is the before/after-`--` tag, not a default.
                     match accumulation with
-                    | Accumulation.List (Accumulation.List _) ->
-                        failwith "A list of positional args cannot contain lists."
-                    | Accumulation.List Accumulation.Optional ->
-                        failwith "A list of positional args cannot contain optionals. What would that even mean?"
                     | Accumulation.List (Accumulation.Choice ()) ->
                         {
                             FieldName = ident
@@ -1901,8 +1915,9 @@ module internal ArgParserGenerator =
                             AcceptsNegation = false
                         }
                         |> ParseTree.PositionalLeaf
-                    | Accumulation.List (Accumulation.Map _) ->
-                        failwith "A list of positional args cannot contain maps."
+                    | Accumulation.List Accumulation.Optional
+                    | Accumulation.List (Accumulation.List _)
+                    | Accumulation.List (Accumulation.Map _)
                     | Accumulation.Choice _
                     | Accumulation.Optional
                     | Accumulation.Required
