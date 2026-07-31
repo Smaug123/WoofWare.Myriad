@@ -28,6 +28,84 @@ type internal AdtProduct =
         Generics : SynTyparDecl list
     }
 
+/// A generator which synthesizes an identifier -- rather than reusing one from the user's source --
+/// has to spell it so the generated file reads it back as itself. Fantomas prints an `Ident` exactly
+/// as its `idText` reads, and reproduces backticks only when it can slice the original source text
+/// at the node's real range; a node built here has no such text behind it, so a name which needed
+/// backticks at its declaration loses them, and the generated file does not parse.
+[<RequireQualifiedAccess>]
+module internal BacktickIdent =
+
+    /// F#'s lexer accepts each of these bare in a record-construction label -- so `Ast.parse` below
+    /// would say they're fine -- but the real compiler reserves them "for future use" and emits
+    /// FS0046, a warning by default but an error under `--warnaserror` (which this repo enables).
+    /// Fantomas's own parser doesn't model this distinction, so it can't be asked; this list was
+    /// instead obtained by compiling each candidate word from the F# keyword reference
+    /// (https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/keyword-reference) bare
+    /// in this exact position with the actual compiler (`dotnet fsi`) and keeping the ones that
+    /// warned. That reference is not itself definitive -- three of its listed words (`const`,
+    /// `event`, `external`) no longer trigger the warning at all -- which is exactly why this was
+    /// verified against the compiler rather than transcribed from the page.
+    let private reservedForFutureUse =
+        set
+            [
+                "break"
+                "checked"
+                "component"
+                "constraint"
+                "continue"
+                "include"
+                "mixin"
+                "parallel"
+                "process"
+                "protected"
+                "pure"
+                "sealed"
+                "tailcall"
+                "trait"
+                "virtual"
+            ]
+
+    /// Whether `ident` is safe to splice in bare wherever the generated file wants a single
+    /// identifier. F#'s lexer treats a number of shapes as meaningful bare tokens in *other* grammar
+    /// positions but not as a plain identifier.
+    ///
+    /// The probe deliberately uses the record-label position for every caller, including the ones
+    /// which emit a member name rather than a label. That position is the tightest available: it
+    /// admits exactly one identifier and nothing else, so the parser accepts the probe only if
+    /// `ident` really is one token. A probe in the position a caller actually emits into can be far
+    /// weaker -- `Owner.%s{ident} ()` would happily parse `Owner.Defaultspace name ()` as an
+    /// application of `Owner.Defaultspace` to `name`, and report success for a name which is
+    /// nothing of the sort. Being tighter than a caller needs only means backticking something
+    /// which did not require it, and backticks are a legal alternative spelling of any identifier,
+    /// so that is always safe.
+    ///
+    /// This is still not exhaustive: a name built to smuggle extra syntax into the probe (e.g. one
+    /// containing a block comment, `A (*x*)`) can make the probe parse successfully as a *different*,
+    /// shorter label than `ident`, without the parser or `reservedForFutureUse` ever seeing anything
+    /// wrong. Deliberately left unfixed: such a name is not a real identifier anyone would write, and
+    /// the failure mode if it ever occurred is the same one being fixed here -- generated code that
+    /// doesn't compile -- not silent corruption.
+    let isValidBare (ident : string) : bool =
+        if reservedForFutureUse.Contains ident then
+            false
+        else
+
+        try
+            Ast.parse $"module M\ntype T = {{ %s{ident} : int }}\nlet _ = {{ %s{ident} = 1 }}"
+            |> ignore<ParsedInput>
+
+            true
+        with _ ->
+            false
+
+    /// Re-backtick an identifier we are about to emit, if it needs backticks to be read back as
+    /// itself -- exactly as its declaration needed them, if it had any (backticking is always a
+    /// legal alternative spelling of any identifier, so this is safe to apply unconditionally to
+    /// whatever `isValidBare` rejects).
+    let escape (ident : string) : string =
+        if isValidBare ident then ident else "``" + ident + "``"
+
 [<RequireQualifiedAccess>]
 module internal AstHelper =
 

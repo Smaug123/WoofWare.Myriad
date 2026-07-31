@@ -1512,79 +1512,6 @@ module internal ArgParserGenerator =
                 ))
                 (SynExpr.paren form)
 
-    /// F#'s lexer accepts each of these bare in a record-construction label -- so `Ast.parse` below
-    /// would say they're fine -- but the real compiler reserves them "for future use" and emits
-    /// FS0046, a warning by default but an error under `--warnaserror` (which this repo enables).
-    /// Fantomas's own parser doesn't model this distinction, so it can't be asked; this list was
-    /// instead obtained by compiling each candidate word from the F# keyword reference
-    /// (https://learn.microsoft.com/en-us/dotnet/fsharp/language-reference/keyword-reference) bare
-    /// in this exact position with the actual compiler (`dotnet fsi`) and keeping the ones that
-    /// warned. That reference is not itself definitive -- three of its listed words (`const`,
-    /// `event`, `external`) no longer trigger the warning at all -- which is exactly why this was
-    /// verified against the compiler rather than transcribed from the page.
-    let private reservedForFutureUse =
-        set
-            [
-                "break"
-                "checked"
-                "component"
-                "constraint"
-                "continue"
-                "include"
-                "mixin"
-                "parallel"
-                "process"
-                "protected"
-                "pure"
-                "sealed"
-                "tailcall"
-                "trait"
-                "virtual"
-            ]
-
-    /// Whether `ident` is safe to splice in bare wherever the generated file wants a single
-    /// identifier. F#'s lexer treats a number of shapes as meaningful bare tokens in *other* grammar
-    /// positions but not as a plain identifier.
-    ///
-    /// The probe deliberately uses the record-label position for every caller, including the ones
-    /// which emit a member name rather than a label. That position is the tightest available: it
-    /// admits exactly one identifier and nothing else, so the parser accepts the probe only if
-    /// `ident` really is one token. A probe in the position a caller actually emits into can be far
-    /// weaker -- `Owner.%s{ident} ()` would happily parse `Owner.Defaultspace name ()` as an
-    /// application of `Owner.Defaultspace` to `name`, and report success for a name which is
-    /// nothing of the sort. Being tighter than a caller needs only means backticking something
-    /// which did not require it, and backticks are a legal alternative spelling of any identifier,
-    /// so that is always safe.
-    ///
-    /// This is still not exhaustive: a name built to smuggle extra syntax into the probe (e.g. one
-    /// containing a block comment, `A (*x*)`) can make the probe parse successfully as a *different*,
-    /// shorter label than `ident`, without the parser or `reservedForFutureUse` ever seeing anything
-    /// wrong. Deliberately left unfixed: such a name is not a real record field name anyone would
-    /// write, and the failure mode if it ever occurred is the same one already being fixed here --
-    /// generated code that doesn't compile -- not silent corruption.
-    let private isValidBareIdent (ident : string) : bool =
-        if reservedForFutureUse.Contains ident then
-            false
-        else
-
-        try
-            Ast.parse $"module M\ntype T = {{ %s{ident} : int }}\nlet _ = {{ %s{ident} = 1 }}"
-            |> ignore<ParsedInput>
-
-            true
-        with _ ->
-            false
-
-    /// Re-backtick an identifier we are about to emit, if it needs backticks to be read back as
-    /// itself -- exactly as its declaration needed them, if it had any (backticking is always a
-    /// legal alternative spelling of any identifier, so this is safe to apply unconditionally to
-    /// whatever `isValidBareIdent` rejects).
-    let private backtickIdent (ident : string) : string =
-        if isValidBareIdent ident then
-            ident
-        else
-            "``" + ident + "``"
-
     /// An argument schema must be a finite tree: a record or union which refers to itself, even
     /// indirectly, would expand forever. `ancestors` is the chain of type names currently being
     /// lowered, innermost first; re-entry into any of them is a cycle, which we reject rather
@@ -2030,7 +1957,7 @@ module internal ArgParserGenerator =
                         // (a space, a keyword, ...) must be re-backticked before it is safe to place
                         // in this record-construction expression, exactly as the record's own
                         // declaration required it to be written.
-                        SynLongIdent.create [ Ident.create (backtickIdent ident) ], expr
+                        SynLongIdent.create [ Ident.create (BacktickIdent.escape ident) ], expr
                     )
                     |> SynExpr.createRecord None
                 )
@@ -2138,7 +2065,7 @@ module internal ArgParserGenerator =
                 |> SynExpr.paren
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
                 // Display the spelling the user would have to type to supply this value.
-                SynExpr.callMethod (backtickIdent var.idText) (SynExpr.createIdent' owner)
+                SynExpr.callMethod (BacktickIdent.escape var.idText) (SynExpr.createIdent' owner)
                 |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
@@ -3054,7 +2981,9 @@ module internal ArgParserGenerator =
                             SynExpr.sequential
                                 [
                                     storeDefault (
-                                        SynExpr.callMethod (backtickIdent name.idText) (SynExpr.createIdent' owner)
+                                        SynExpr.callMethod
+                                            (BacktickIdent.escape name.idText)
+                                            (SynExpr.createIdent' owner)
                                     )
                                     SynExpr.createIdent "None"
                                 ]
