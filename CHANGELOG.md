@@ -2,6 +2,14 @@ Notable changes are recorded here.
 
 # Unreleased
 
+`ArgParserGenerator` now supports a field of type `SomeArgs option`, where `SomeArgs` is another argument record or a union of alternative argument sets: a whole group of arguments which need not be supplied.
+
+The group is present exactly when at least one argument beneath it was supplied — the same rule by which a union's case is selected — and its own required arguments are then enforced as usual, so supplying part of a group demands the rest of it rather than quietly treating the group as absent.
+Help text introduces the group under a `Child (optional):` header rather than presenting it as an alternation: the two alternatives it is implemented with are the generator's, not the author's.
+
+A group which is itself satisfiable by supplying nothing cannot be wrapped, and is rejected at generation time.
+No command line could distinguish "this group was supplied, and everything in it took its default" from "this group was never mentioned", so there is a real modelling question here, and the generated parser should not answer it by silently preferring one.
+
 `ArgParserGenerator` now reports a proper error for a field of type `'a list list` or `'a option list`.
 
 Both shapes were already unsupported, but only the `[<PositionalArgs>]` path said so: on the ordinary path they passed classification and failed much later against an assertion phrased as an internal error ("WoofWare.Myriad invariant violated"), despite being reachable from ordinary source.

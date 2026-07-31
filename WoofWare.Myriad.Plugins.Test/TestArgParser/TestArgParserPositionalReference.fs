@@ -948,3 +948,141 @@ module TestArgParserPositionalReference =
 
             exc.Message
             |> shouldEqual "linearity violated: this tree admits an interpretation with 2 positional leaves"
+
+    // ----------------------------------------------------------------------------------------
+    // Optional argument groups.
+    //
+    // A field of type `ChildArgs option` erases to a two-case Sum whose second case is the
+    // *empty* product: "the group's arguments, or nothing at all". That shape is unreachable by
+    // `genTree` -- `chooseCuts` draws distinct cuts strictly inside [1, n-1], so every case it
+    // builds receives at least one named leaf, and the one branch which could yield `Product []`
+    // collapses it away -- so the model has never seen it, even though `RefTree` can express it.
+    // These close that gap.
+
+    /// All named-leaf ids under a tree.
+    let rec private namedIds (tree : RefTree) : Set<int> =
+        match tree with
+        | RefTree.Named leaf -> Set.singleton leaf.Id
+        | RefTree.Positional _ -> Set.empty
+        | RefTree.Product children -> children |> List.map namedIds |> Set.unionMany
+        | RefTree.Sum (_, cases) -> cases |> List.map (snd >> namedIds) |> Set.unionMany
+
+    /// The erasure of `Child : ChildArgs option`, with the outer sum numbered 0.
+    let private container (payload : RefTree) : RefTree =
+        RefTree.Sum (0, [ "supplied", payload ; "absent", RefTree.Product [] ])
+        |> renumberSumsOnly
+
+    /// Payloads which the generator's gate would accept: not satisfiable with no arguments, and
+    /// internally unambiguous.
+    let private genContainerPayload : Gen<RefTree> =
+        gen {
+            let! sumBias = Gen.elements [ 0 ; 40 ; 80 ]
+            let! namedCount = Gen.choose (1, 6)
+            let! budget = Gen.frequency [ (1, Gen.constant true) ; (1, Gen.constant false) ]
+            let! tree = genTreeOver sumBias budget (List.init namedCount id)
+            return renumber tree
+        }
+        |> Gen.filter (fun tree -> not (emptySatisfiable tree) && sumsAreUnambiguous tree)
+
+    [<Test>]
+    let ``A gated optional group is never ambiguous, and absence is available on any input`` () =
+        // The claim the whole design rests on. The "absent" case holds no leaf and no sink, so
+        // nothing can ever witness it; the gate makes the payload never satisfiable by silence.
+        // Together those mean exactly one of the two is selectable, whatever arrives -- so none
+        // of the runtime's three selection errors can arise from a container, and the case names
+        // it invents are unreachable in any message.
+        let mutable absentChosen = 0
+        let mutable suppliedChosen = 0
+
+        let cases =
+            gen {
+                let! payload = genContainerPayload
+                let tree = container payload
+                let! dropPct = Gen.elements [ 0 ; 0 ; 20 ]
+                let! optionalPct = Gen.elements [ 0 ; 50 ; 100 ]
+                let! noisePct = Gen.elements [ 0 ; 10 ; 40 ]
+                let! input = genInput dropPct optionalPct noisePct tree
+                return payload, tree, input
+            }
+
+        let property (payload : RefTree, tree : RefTree, input : RefInput) : unit =
+            let payloadNamed = namedIds payload
+
+            match exhaustiveSelect tree input with
+            | RefOutcome.Ambiguous interps ->
+                failwithf "a gated container was ambiguous over %i interpretations" (List.length interps)
+            | RefOutcome.NoInterpretation ->
+                // Absence is always structurally available, so the only way to fail is for the
+                // input to demand the payload and the payload to reject it: either a named leaf
+                // beneath it was observed, or a positional event needs a sink to route to.
+                let touched = Set.intersect payloadNamed input.ObservedNamed
+
+                if Set.isEmpty touched && List.isEmpty input.PositionalEvents then
+                    failwith "an untouched container failed to fall back to absence"
+            | RefOutcome.Unique interp ->
+                match Map.tryFind 0 interp.Choices with
+                | Some 1 ->
+                    absentChosen <- absentChosen + 1
+                    // Absence was chosen, so nothing beneath the group can have been supplied.
+                    Set.intersect payloadNamed input.ObservedNamed |> shouldEqual Set.empty
+                    interp.Named |> shouldEqual Set.empty
+                | Some 0 ->
+                    suppliedChosen <- suppliedChosen + 1
+                    // The payload was chosen, so its own requirements were met in full.
+                    Set.isSubset interp.RequiredNamed input.ObservedNamed |> shouldEqual true
+                | other -> failwithf "a container selected something other than its two cases: %A" other
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 3000
+        Check.One (config, Prop.forAll (Arb.fromGen cases) property)
+
+        // The law is only interesting if both alternatives actually occur.
+        absentChosen |> shouldBeGreaterThan 100
+        suppliedChosen |> shouldBeGreaterThan 100
+
+    [<Test>]
+    let ``An empty command line always chooses absence`` () =
+        let property (payload : RefTree) : unit =
+            let tree = container payload
+
+            match
+                exhaustiveSelect
+                    tree
+                    {
+                        ObservedNamed = Set.empty
+                        PositionalEvents = []
+                    }
+            with
+            | RefOutcome.Unique interp -> Map.tryFind 0 interp.Choices |> shouldEqual (Some 1)
+            | other -> failwithf "an empty command line did not select absence: %A" other
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 1000
+        Check.One (config, Prop.forAll (Arb.fromGen genContainerPayload) property)
+
+    [<Test>]
+    let ``Without the gate, an empty command line cannot choose`` () =
+        // Why the gate exists, stated as a property rather than as prose: the moment the payload
+        // is satisfiable by silence, both alternatives accept the empty command line and the
+        // model reports the ambiguity the generator refuses to emit.
+        let genEmptySatisfiablePayload =
+            gen {
+                let! sumBias = Gen.elements [ 0 ; 40 ]
+                let! namedCount = Gen.choose (1, 5)
+                let! tree = genTreeOver sumBias false (List.init namedCount id)
+                return renumber tree
+            }
+            |> Gen.filter emptySatisfiable
+
+        let property (payload : RefTree) : unit =
+            match
+                exhaustiveSelect
+                    (container payload)
+                    {
+                        ObservedNamed = Set.empty
+                        PositionalEvents = []
+                    }
+            with
+            | RefOutcome.Ambiguous interps -> List.length interps |> shouldBeGreaterThan 1
+            | other -> failwithf "an ungated container was not ambiguous on the empty command line: %A" other
+
+        let config = Config.QuickThrowOnFailure.WithMaxTest 500
+        Check.One (config, Prop.forAll (Arb.fromGen genEmptySatisfiablePayload) property)

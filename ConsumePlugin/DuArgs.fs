@@ -44,6 +44,30 @@ type WithModeArgs =
         Mode : Mode
     }
 
+type CompressArgs =
+    {
+        Level : int
+    }
+
+type EncryptArgs =
+    {
+        Recipient : string
+    }
+
+/// Every case demands an argument, so no command line satisfies this union by saying nothing --
+/// which is what lets an absent group be told apart from a present one.
+type Transform =
+    | Compress of CompressArgs
+    | Encrypt of EncryptArgs
+
+/// A union of alternative argument sets which need not be chosen among at all.
+[<ArgParser>]
+type WithOptionalTransformArgs =
+    {
+        Verbose : bool
+        Transform : Transform option
+    }
+
 type DefaultedArgs =
     {
         [<ArgumentDefaultFunction>]

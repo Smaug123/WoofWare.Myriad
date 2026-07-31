@@ -1857,6 +1857,107 @@ type Args =
 """
         |> shouldRejectWith (listOfOptionals "Blah" "int32 option list")
 
+    /// An optional argument group is present exactly when something beneath it was supplied. A
+    /// group which is itself satisfiable by supplying nothing therefore cannot be told apart from
+    /// its own absence, so it may not be wrapped. These pin the message, which must name the
+    /// field and the types rather than the two case names the generator invented.
+    [<Test>]
+    let ``An option wrapping an all-optional record is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Verbose : bool option
+        Colour : string option
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        Child : Child option
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Child' has type Child option, but Child is satisfiable with no arguments at all: every one of its fields ('Verbose', 'Colour') is optional, has a default, or is a [<PositionalArgs>] sink, which accepts zero tokens. There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in an option. Make one of Child's arguments mandatory, or give the field the plain type Child."
+
+    /// A positional sink accepts zero tokens, so a record which is nothing but a sink is
+    /// satisfiable by an empty command line just as an all-optional record is. This is the case
+    /// an author is most likely to misjudge as "requires something", so the message names it.
+    [<Test>]
+    let ``An option wrapping a record of only positional args is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        [<PositionalArgs>]
+        Rest : string list
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        Child : Child option
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Child' has type Child option, but Child is satisfiable with no arguments at all: every one of its fields ('Rest') is optional, has a default, or is a [<PositionalArgs>] sink, which accepts zero tokens. There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in an option. Make one of Child's arguments mandatory, or give the field the plain type Child."
+
+    [<Test>]
+    let ``An option wrapping a union with an empty-satisfiable case is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type AutoArgs =
+    {
+        Quiet : bool option
+    }
+
+type ManualArgs =
+    {
+        Level : int
+    }
+
+type Mode =
+    | Auto of AutoArgs
+    | Manual of ManualArgs
+
+[<ArgParser>]
+type Args =
+    {
+        Mode : Mode option
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Mode' has type Mode option, but Mode is satisfiable with no arguments at all: one of its cases can be selected by an empty command line, so an empty command line already means that case rather than meaning nothing at all. There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in an option. Make one of Mode's arguments mandatory, or give the field the plain type Mode."
+
+    /// The attribute checks which guard a structural field were previously unreachable for a
+    /// wrapped one, because the field failed to classify at all before they ran.
+    [<Test>]
+    let ``ArgumentLongForm on an optional group is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentLongForm "child">]
+        Child : Child option
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Child' has an [<ArgumentLongForm>], but its type Child option is an argument record or a discriminated union of alternative argument sets, so it contributes a whole set of arguments rather than one. [<ArgumentLongForm>] renames a single argument, and there is none here to rename: the names come from the fields of Child option itself. Put the attribute on the field you mean to rename."
+
     [<Test>]
     let ``A map with a non-scalar value type is rejected`` () =
         """namespace TestMe

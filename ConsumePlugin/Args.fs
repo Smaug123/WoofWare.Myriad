@@ -188,6 +188,26 @@ type ParentRecordWithEscapedHelp =
         Child : ChildRecord
     }
 
+/// A whole group of arguments may be omitted. Supplying none of `ChildRecord`'s arguments makes
+/// the field `None`; supplying any of them makes it `Some`, and `ChildRecord`'s own required
+/// arguments are then enforced as usual.
+[<ArgParser true>]
+type ParentRecordOptionalChild =
+    {
+        Child : ChildRecord option
+        AndAnother : bool
+    }
+
+/// An optional group whose header carries help text, and which contains a positional sink. The
+/// sink accepts zero tokens, but `Thing1` is required, so the group as a whole is not satisfiable
+/// by an empty command line and can therefore be told apart from its own absence.
+[<ArgParser true>]
+type ParentRecordOptionalChildPos =
+    {
+        [<ArgumentHelpText "Settings for the child thing">]
+        Child : ChildRecordWithPositional option
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {
