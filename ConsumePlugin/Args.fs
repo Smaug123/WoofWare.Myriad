@@ -226,6 +226,26 @@ type ParentRecordDefaultedChild =
             Thing2 = "from the default"
         }
 
+type GrandchildRecord =
+    {
+        Deep : int
+    }
+
+/// An optional group may contain one, and may be namespaced like any other structural field.
+/// The inner group's absence does not make the outer group absent: `Thing1` is what decides that.
+type ChildWithOptionalGrandchild =
+    {
+        Thing1 : int
+        Grandchild : GrandchildRecord option
+    }
+
+[<ArgParser true>]
+type ParentRecordNestedOptional =
+    {
+        [<ArgumentPrefix "db">]
+        Child : ChildWithOptionalGrandchild option
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {

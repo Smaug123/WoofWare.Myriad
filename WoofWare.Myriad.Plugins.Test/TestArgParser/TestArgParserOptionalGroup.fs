@@ -290,3 +290,75 @@ Child (optional; a default is used if omitted):
                             }
                     )
             }
+
+    // Optional groups compose: one may contain another, and [<ArgumentPrefix>] namespaces the
+    // whole subtree through the container exactly as it does for a bare structural field.
+
+    [<Test>]
+    let ``A nested optional group can be absent while its parent is present`` () =
+        ParentRecordNestedOptional.parse' noEnv [ "--db-thing1=1" ]
+        |> shouldEqual
+            {
+                Child =
+                    Some
+                        {
+                            Thing1 = 1
+                            Grandchild = None
+                        }
+            }
+
+    [<Test>]
+    let ``A nested optional group can be present`` () =
+        ParentRecordNestedOptional.parse' noEnv [ "--db-thing1=1" ; "--db-deep=2" ]
+        |> shouldEqual
+            {
+                Child =
+                    Some
+                        {
+                            Thing1 = 1
+                            Grandchild =
+                                Some
+                                    {
+                                        Deep = 2
+                                    }
+                        }
+            }
+
+    [<Test>]
+    let ``Both nested groups can be absent at once`` () =
+        ParentRecordNestedOptional.parse' noEnv []
+        |> shouldEqual
+            {
+                Child = None
+            }
+
+    /// Touching only the inner group still commits to the outer one, whose own required argument
+    /// is then demanded: the inner group is reachable only through the outer.
+    [<Test>]
+    let ``Touching only the inner group commits to the outer one`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordNestedOptional.parse' noEnv [ "--db-deep=2" ]
+                |> ignore<ParentRecordNestedOptional>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Required argument '--db-thing1' received no value"""
+
+    [<Test>]
+    let ``A prefix namespaces the whole subtree through the container`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordNestedOptional.parse' noEnv [ "--help" ]
+                |> ignore<ParentRecordNestedOptional>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+Child (optional):
+  --db-thing1  int32
+  Grandchild (optional):
+    --db-deep  int32"""
