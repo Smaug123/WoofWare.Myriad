@@ -208,6 +208,24 @@ type ParentRecordOptionalChildPos =
         Child : ChildRecordWithPositional option
     }
 
+/// A group of arguments which need not be supplied, but which stands for a value rather than for
+/// nothing when it is omitted. As for a defaulted leaf, the Choice reports which happened.
+[<ArgParser true>]
+type ParentRecordDefaultedChild =
+    {
+        [<ArgumentDefaultFunction>]
+        Child : Choice<ChildRecord, ChildRecord>
+        AndAnother : bool
+    }
+
+    /// The default-function convention resolves against the record which declares the field,
+    /// exactly as it does for a leaf.
+    static member DefaultChild () : ChildRecord =
+        {
+            Thing1 = 42
+            Thing2 = "from the default"
+        }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {

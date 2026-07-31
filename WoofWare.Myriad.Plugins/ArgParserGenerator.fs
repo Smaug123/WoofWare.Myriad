@@ -238,6 +238,10 @@ type private GroupHeader =
 type private ContainerKind =
     /// `Child : ChildArgs option`. The field is `None`.
     | Optional
+    /// `Child : Choice<ChildArgs, ChildArgs>`. The field is `Choice2Of2` of the default, as for a
+    /// defaulted leaf, so a successful parse still reports whether the group was supplied.
+    /// The spec is always a `FunctionCall`: nothing else can construct a record.
+    | Defaulted of ArgumentDefaultSpec
 
 /// The parse tree mirroring the schema's shape: named-argument leaves, positional-stream
 /// leaves, products (records) and exclusive sums (unions of alternative argument sets).
@@ -1845,9 +1849,52 @@ module internal ArgParserGenerator =
                 // describe a distinction no command line can draw, and a type whose core is not
                 // structural is left entirely alone: it goes to the leaf machinery with its
                 // wrapper intact, exactly as before, and is accepted or refused there.
+                //
+                // The kind is deferred, because deciding it can fail: a `Choice` must say where
+                // its default comes from, and that is a complaint to make only once we know the
+                // core really is a group of arguments. `Choice<int, int>` peels here too, and
+                // must reach the leaf machinery with its own diagnostics intact.
                 let containerLayer, coreType =
+                    /// The default for a whole group of arguments can only come from a function:
+                    /// neither a literal nor an environment variable can construct a record.
+                    let structuralDefault () : ContainerKind =
+                        let carries (names : string list) : bool =
+                            attrs
+                            |> List.exists (fun attr ->
+                                names |> List.contains (List.last attr.TypeName.LongIdent).idText
+                            )
+
+                        let reject (names : string list) (display : string) (why : string) : unit =
+                            if carries names then
+                                failwith
+                                    $"Field '%s{ident.idText}' has a [<%s{display}>], but its type %s{describeType fieldType} wraps an argument record or a union of alternative argument sets, so what it defaults to is a whole group of arguments. %s{why} Use [<ArgumentDefaultFunction>] instead, and write a static member which returns the group."
+
+                        reject
+                            [ "ArgumentDefaultValue" ; "ArgumentDefaultValueAttribute" ]
+                            "ArgumentDefaultValue"
+                            "An attribute argument is a compile-time constant, and there is no constant which is a record."
+
+                        reject
+                            [
+                                "ArgumentDefaultEnvironmentVariable"
+                                "ArgumentDefaultEnvironmentVariableAttribute"
+                            ]
+                            "ArgumentDefaultEnvironmentVariable"
+                            "An environment variable is one string, and there is no spelling by which one string becomes a whole group of arguments."
+
+                        if carries [ "ArgumentDefaultFunction" ; "ArgumentDefaultFunctionAttribute" ] then
+                            ArgumentDefaultSpec.FunctionCall (
+                                finalRecord.Name,
+                                Ident.create ("Default" + ident.idText)
+                            )
+                            |> ContainerKind.Defaulted
+                        else
+                            failwith
+                                $"Field '%s{ident.idText}' has type %s{describeType fieldType}, so it must say where its default comes from when none of the group's arguments are supplied. Add [<ArgumentDefaultFunction>] and a static member `Default%s{ident.idText} ()` returning the group, or give the field the plain type without the Choice."
+
                     match fieldType with
-                    | OptionType inner -> Some ContainerKind.Optional, inner
+                    | OptionType inner -> Some (fun () -> ContainerKind.Optional), inner
+                    | ChoiceType [ elt1 ; elt2 ] when SynType.provablyEqual elt1 elt2 -> Some structuralDefault, elt1
                     | _ -> None, fieldType
 
                 let ambientRecordMatch =
@@ -1894,6 +1941,10 @@ module internal ArgParserGenerator =
                     | None -> build header counter
                     | Some kind ->
 
+                    // Now that the core is known to be a group of arguments, it is safe to
+                    // insist on knowing what its absence means.
+                    let kind = kind ()
+
                     // The sum id is drawn before the payload's own ids, as a union's is.
                     let sumId = counter
                     let payload, counter = build None (counter + 1)
@@ -1906,14 +1957,29 @@ module internal ArgParserGenerator =
                     // ambiguity check, this would surface as a complaint about two case names
                     // the author never wrote.
                     if ParseTree.emptySatisfiable payload then
+                        let wrapper =
+                            match kind with
+                            | ContainerKind.Optional -> "an option"
+                            | ContainerKind.Defaulted _ -> "a Choice"
+
                         failwith
-                            $"Field '%s{ident.idText}' has type %s{describeType fieldType}, but %s{coreName} is satisfiable with no arguments at all: %s{describeWhyEmpty ()} There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in an option. Make one of %s{coreName}'s arguments mandatory, or give the field the plain type %s{coreName}."
+                            $"Field '%s{ident.idText}' has type %s{describeType fieldType}, but %s{coreName} is satisfiable with no arguments at all: %s{describeWhyEmpty ()} There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in %s{wrapper}. Make one of %s{coreName}'s arguments mandatory, or give the field the plain type %s{coreName}."
 
                     let assemble (payload : SynExpr option) : SynExpr =
                         match kind, payload with
                         | ContainerKind.Optional, Some payload ->
                             SynExpr.applyFunction (SynExpr.createIdent "Some") payload
                         | ContainerKind.Optional, None -> SynExpr.createIdent "None"
+                        | ContainerKind.Defaulted _, Some payload ->
+                            SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") payload
+                        | ContainerKind.Defaulted (ArgumentDefaultSpec.FunctionCall (owner, name)), None ->
+                            SynExpr.callMethod name.idText (SynExpr.createIdent' owner)
+                            |> SynExpr.paren
+                            |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2")
+                        | ContainerKind.Defaulted spec, None ->
+                            // `structuralDefault` admits nothing else.
+                            failwith
+                                $"WoofWare.Myriad internal error: a defaulted argument group was given a default of an unsupported kind (%O{spec})"
 
                     ParseTree.Container (sumId, header, kind, payload, assemble), counter
 
@@ -2438,9 +2504,13 @@ module internal ArgParserGenerator =
                 // it need not be supplied. It is deliberately not presented as an alternation:
                 // the two cases it erases to are ours, not the author's, and a reader shown
                 // "exactly one of" would go looking for a choice they never wrote.
+                // A defaulted group's value cannot be spelled the way a defaulted leaf's can:
+                // there is no single token which supplies a whole group, so `renderLeafValue`
+                // has nothing to render. Say that a default exists, and leave it at that.
                 let annotation =
                     match kind with
                     | ContainerKind.Optional -> " (optional)"
+                    | ContainerKind.Defaulted _ -> " (optional; a default is used if omitted)"
 
                 // A container is always reached through a field, so it always has a header to
                 // hang the annotation on; `toParseSpec` is the only thing which builds one.

@@ -68,6 +68,21 @@ type WithOptionalTransformArgs =
         Transform : Transform option
     }
 
+/// Not choosing among the alternatives means taking a particular one, rather than taking none.
+[<ArgParser>]
+type WithDefaultedTransformArgs =
+    {
+        Verbose : bool
+        [<ArgumentDefaultFunction>]
+        Transform : Choice<Transform, Transform>
+    }
+
+    static member DefaultTransform () =
+        Transform.Compress
+            {
+                Level = 6
+            }
+
 type DefaultedArgs =
     {
         [<ArgumentDefaultFunction>]

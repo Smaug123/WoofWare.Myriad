@@ -1935,6 +1935,81 @@ type Args =
         |> shouldRejectWith
             "Field 'Mode' has type Mode option, but Mode is satisfiable with no arguments at all: one of its cases can be selected by an empty command line, so an empty command line already means that case rather than meaning nothing at all. There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in an option. Make one of Mode's arguments mandatory, or give the field the plain type Mode."
 
+    /// A whole group of arguments can only be defaulted by a function: neither a literal nor an
+    /// environment variable can construct a record.
+    let private structuralDefaultSource (attribute : string) : string =
+        $"""namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {{
+        Thing : int
+    }}
+
+[<ArgParser>]
+type Args =
+    {{
+        [<{attribute}>]
+        Child : Choice<Child, Child>
+    }}
+"""
+
+    [<Test>]
+    let ``ArgumentDefaultValue on a defaulted group is rejected`` () =
+        structuralDefaultSource "ArgumentDefaultValue 3"
+        |> shouldRejectWith
+            "Field 'Child' has a [<ArgumentDefaultValue>], but its type Choice<Child, Child> wraps an argument record or a union of alternative argument sets, so what it defaults to is a whole group of arguments. An attribute argument is a compile-time constant, and there is no constant which is a record. Use [<ArgumentDefaultFunction>] instead, and write a static member which returns the group."
+
+    [<Test>]
+    let ``ArgumentDefaultEnvironmentVariable on a defaulted group is rejected`` () =
+        structuralDefaultSource "ArgumentDefaultEnvironmentVariable \"CHILD\""
+        |> shouldRejectWith
+            "Field 'Child' has a [<ArgumentDefaultEnvironmentVariable>], but its type Choice<Child, Child> wraps an argument record or a union of alternative argument sets, so what it defaults to is a whole group of arguments. An environment variable is one string, and there is no spelling by which one string becomes a whole group of arguments. Use [<ArgumentDefaultFunction>] instead, and write a static member which returns the group."
+
+    /// A Choice says the group need not be supplied, so something must say what its absence
+    /// means; there is no sensible fallback to invent.
+    [<Test>]
+    let ``A Choice-wrapped group with no default attribute is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Thing : int
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        Child : Choice<Child, Child>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Child' has type Choice<Child, Child>, so it must say where its default comes from when none of the group's arguments are supplied. Add [<ArgumentDefaultFunction>] and a static member `DefaultChild ()` returning the group, or give the field the plain type without the Choice."
+
+    [<Test>]
+    let ``A Choice wrapping an all-optional record is rejected`` () =
+        """namespace TestMe
+
+open WoofWare.Myriad.Plugins
+
+type Child =
+    {
+        Verbose : bool option
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        [<ArgumentDefaultFunction>]
+        Child : Choice<Child, Child>
+    }
+"""
+        |> shouldRejectWith
+            "Field 'Child' has type Choice<Child, Child>, but Child is satisfiable with no arguments at all: every one of its fields ('Verbose') is optional, has a default, or is a [<PositionalArgs>] sink, which accepts zero tokens. There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in a Choice. Make one of Child's arguments mandatory, or give the field the plain type Child."
+
     /// The attribute checks which guard a structural field were previously unreachable for a
     /// wrapped one, because the field failed to classify at all before they ran.
     [<Test>]

@@ -7,6 +7,9 @@ Notable changes are recorded here.
 The group is present exactly when at least one argument beneath it was supplied — the same rule by which a union's case is selected — and its own required arguments are then enforced as usual, so supplying part of a group demands the rest of it rather than quietly treating the group as absent.
 Help text introduces the group under a `Child (optional):` header rather than presenting it as an alternation: the two alternatives it is implemented with are the generator's, not the author's.
 
+`Choice<SomeArgs, SomeArgs>` works the same way, and says that omitting the group means a particular value rather than no value: `Choice2Of2` carries the default and `Choice1Of2` what was supplied, exactly as for a defaulted leaf.
+The default must come from `[<ArgumentDefaultFunction>]`, since neither a literal nor an environment variable can construct a record; and it is all-or-nothing, so supplying part of a group still demands the rest rather than filling the gaps from the default.
+
 A group which is itself satisfiable by supplying nothing cannot be wrapped, and is rejected at generation time.
 No command line could distinguish "this group was supplied, and everything in it took its default" from "this group was never mentioned", so there is a real modelling question here, and the generated parser should not answer it by silently preferring one.
 

@@ -196,3 +196,97 @@ Transform (optional):
     --level  int32
   Encrypt:
     --recipient  string"""
+
+    // A defaulted group. Omitting it means a particular value rather than no value, and the
+    // Choice reports which happened -- exactly as it does for a defaulted leaf.
+
+    [<Test>]
+    let ``An unmentioned defaulted group takes its default`` () =
+        ParentRecordDefaultedChild.parse' noEnv [ "--and-another=true" ]
+        |> shouldEqual
+            {
+                Child =
+                    Choice2Of2
+                        {
+                            Thing1 = 42
+                            Thing2 = "from the default"
+                        }
+                AndAnother = true
+            }
+
+    [<Test>]
+    let ``Supplying a defaulted group's arguments overrides the default wholesale`` () =
+        ParentRecordDefaultedChild.parse' noEnv [ "--and-another=true" ; "--thing1=3" ; "--thing2=hi" ]
+        |> shouldEqual
+            {
+                Child =
+                    Choice1Of2
+                        {
+                            Thing1 = 3
+                            Thing2 = "hi"
+                        }
+                AndAnother = true
+            }
+
+    /// The default is all-or-nothing: it is not merged field-by-field with what was supplied, so
+    /// touching the group still demands the whole of it.
+    [<Test>]
+    let ``Supplying part of a defaulted group demands the rest rather than defaulting it`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordDefaultedChild.parse' noEnv [ "--and-another=true" ; "--thing1=3" ]
+                |> ignore<ParentRecordDefaultedChild>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Errors during parse!
+Required argument '--thing2' received no value"""
+
+    /// There is no single token which supplies a whole group, so there is nothing to render the
+    /// default as; the help says only that one exists.
+    [<Test>]
+    let ``A defaulted group says a default exists without spelling it`` () =
+        let exc =
+            Assert.Throws<exn> (fun () ->
+                ParentRecordDefaultedChild.parse' noEnv [ "--help" ]
+                |> ignore<ParentRecordDefaultedChild>
+            )
+
+        exc.Message
+        |> shouldEqual
+            """Help text requested.
+Child (optional; a default is used if omitted):
+  --thing1  int32
+  --thing2  string
+--and-another  bool"""
+
+    [<Test>]
+    let ``An unmentioned defaulted union group takes its default`` () =
+        WithDefaultedTransformArgs.parse' noEnv [ "--verbose=false" ]
+        |> shouldEqual
+            {
+                Verbose = false
+                Transform =
+                    Choice2Of2 (
+                        Transform.Compress
+                            {
+                                Level = 6
+                            }
+                    )
+            }
+
+    [<Test>]
+    let ``Selecting a case of a defaulted union group overrides the default`` () =
+        WithDefaultedTransformArgs.parse' noEnv [ "--verbose=false" ; "--recipient=me" ]
+        |> shouldEqual
+            {
+                Verbose = false
+                Transform =
+                    Choice1Of2 (
+                        Transform.Encrypt
+                            {
+                                Recipient = "me"
+                            }
+                    )
+            }
