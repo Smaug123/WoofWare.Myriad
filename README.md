@@ -282,6 +282,54 @@ field which negates with `[<ArgumentNegateWithPrefix>]` negates outside the pref
 `--no-src-host`. The prefix is used exactly as you write it: omit the leading `--` and the trailing
 `-`, and note that it is not case-normalised.
 
+### Optional and defaulted argument groups
+
+A field whose type is another argument record, or a union of alternative argument sets, may be
+wrapped in `option` or in `Choice<'a, 'a>`. The whole group of arguments then need not be supplied.
+
+```fsharp
+type Notify =
+    {
+        Email : string
+        Subject : string option
+    }
+
+[<ArgParser>]
+type Args =
+    {
+        Verbose : bool
+        Notify : Notify option
+    }
+```
+
+```
+./my-app --verbose=true                                  // Notify = None
+./my-app --verbose=true --email=a@example.com            // Notify = Some { Email = ...; Subject = None }
+```
+
+The group is present exactly when at least one argument beneath it was supplied — the same rule
+which chooses a union's case. Once it is present, its own required arguments are enforced as usual,
+so `--subject=hi` alone is an error demanding `--email`, rather than a quietly absent group.
+
+`Choice<Notify, Notify>` behaves the same way, but says that omitting the group means a particular
+value rather than no value: you get `Choice1Of2` of what the user supplied, or `Choice2Of2` of your
+default. The default must come from `[<ArgumentDefaultFunction>]` — an attribute argument is a
+compile-time constant and there is no constant which is a record, and an environment variable is one
+string with no spelling that turns it into a group. It is also all-or-nothing: supplying part of the
+group demands the rest of it rather than filling the gaps from the default.
+
+These compose as you would expect: an optional group may contain another, and `[<ArgumentPrefix>]`
+namespaces the whole subtree through the wrapper.
+
+**One restriction.** The group must not itself be satisfiable by supplying nothing — every field
+optional or defaulted, or a union with a case which an empty command line already selects. Nothing
+the user could type would distinguish "the group was supplied, and everything in it took its
+default" from "the group was never mentioned", so generation fails rather than silently preferring
+one reading. Make one of the group's arguments mandatory, or drop the wrapper.
+
+`SomeArgs list` — a *repeated* group — is not supported. A flat command line gives no way to say
+where one repetition ends and the next begins.
+
 ### Positional arguments
 
 You can collect leftover args as positional args, with `[<PositionalArgs>]`; this respects a trailing `--` so that you can specify positional args which look like flags.

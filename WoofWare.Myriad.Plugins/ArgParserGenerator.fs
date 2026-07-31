@@ -233,6 +233,16 @@ type private GroupHeader =
         Help : SynExpr option
     }
 
+/// What a `Container` does when none of the arguments beneath it were supplied.
+[<RequireQualifiedAccess>]
+type private ContainerKind =
+    /// `Child : ChildArgs option`. The field is `None`.
+    | Optional
+    /// `Child : Choice<ChildArgs, ChildArgs>`. The field is `Choice2Of2` of the default, as for a
+    /// defaulted leaf, so a successful parse still reports whether the group was supplied.
+    /// The spec is always a `FunctionCall`: nothing else can construct a record.
+    | Defaulted of ArgumentDefaultSpec
+
 /// The parse tree mirroring the schema's shape: named-argument leaves, positional-stream
 /// leaves, products (records) and exclusive sums (unions of alternative argument sets).
 /// Build Branch nodes only through ParseTree.branch, which enforces the positional-capacity
@@ -268,6 +278,23 @@ type private ParseTree =
         header : GroupHeader option *
         cases : (Ident * SynExpr option * ParseTree) list *
         assemble : (Ident -> SynExpr -> SynExpr)
+    /// A whole argument group which need not be supplied: `Child : ChildArgs option`, and in
+    /// time the defaulted forms. `payload` is the tree the bare type would have produced.
+    ///
+    /// This erases to a two-case `Sum` whose second case is the empty product, so the runtime
+    /// needs to know nothing about it: a case is selected by whether any leaf beneath it was
+    /// supplied, which is exactly "was this group mentioned at all". It is a node of its own
+    /// rather than a `Sum` because it is not an alternation the user wrote, and help text must
+    /// not present it as one.
+    ///
+    /// `assemble` receives the instantiated payload when the group was supplied, and `None`
+    /// when it was not.
+    | Container of
+        sumId : int *
+        header : GroupHeader option *
+        kind : ContainerKind *
+        payload : ParseTree *
+        assemble : (SynExpr option -> SynExpr)
 
 [<RequireQualifiedAccess>]
 module private ParseTree =
@@ -279,6 +306,7 @@ module private ParseTree =
         | ParseTree.PositionalLeaf _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.exists (fun (_, child) -> containsPositional child)
         | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, _, case) -> containsPositional case)
+        | ParseTree.Container (_, _, _, payload, _) -> containsPositional payload
 
     /// The `Ident` here is the field name. Moves the positional-claiming field (at most one
     /// is permitted) after its siblings.
@@ -317,6 +345,9 @@ module private ParseTree =
                     let caseNonPos, casePos = go case
                     nonPos @ caseNonPos, pos @ casePos
                 )
+            // A container introduces no argument of its own: it only says whether the group
+            // beneath it had to be supplied.
+            | ParseTree.Container (_, _, _, payload, _) -> go payload
 
         let nonPos, pos = go tree
 
@@ -468,6 +499,11 @@ module private ParseTree =
         | ParseTree.NonPositionalLeaf _
         | ParseTree.PositionalLeaf _ -> false
         | ParseTree.Sum _ -> true
+        // A container is a two-way runtime branch which erases to a Sum, so every rule which
+        // exists because case selection can be perturbed applies to it too -- in particular the
+        // one forbidding a positional sink which collects unrecognised flag-like tokens, since a
+        // typo'd argument swallowed by such a sink would silently make the group absent.
+        | ParseTree.Container _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.exists (fun (_, child) -> containsSum child)
 
     /// Can this tree be satisfied by supplying no arguments at all? (Defaulted and optional
@@ -486,6 +522,8 @@ module private ParseTree =
         | ParseTree.PositionalLeaf _ -> true
         | ParseTree.Branch (_, fields, _) -> fields |> List.forall (fun (_, child) -> emptySatisfiable child)
         | ParseTree.Sum (_, _, cases, _) -> cases |> List.exists (fun (_, _, case) -> emptySatisfiable case)
+        // Absence is always available: that is the whole point of the node.
+        | ParseTree.Container _ -> true
 
     /// For every union node in the tree, at most one case may be satisfiable with no arguments:
     /// were two cases so satisfiable, an empty command line could not choose between them.
@@ -494,6 +532,11 @@ module private ParseTree =
         | ParseTree.NonPositionalLeaf _
         | ParseTree.PositionalLeaf _ -> ()
         | ParseTree.Branch (_, fields, _) -> fields |> List.iter (fun (_, child) -> checkSumAmbiguity child)
+        // The container's own two cases cannot be ambiguous: `toParseSpec` refuses to build one
+        // whose payload is satisfiable with no arguments, which is what would make the empty
+        // command line fit both. That check lives there because it can name the field and the
+        // types involved, which is what makes its message intelligible.
+        | ParseTree.Container (_, _, _, payload, _) -> checkSumAmbiguity payload
         | ParseTree.Sum (_, _, cases, _) ->
             cases |> List.iter (fun (_, _, case) -> checkSumAmbiguity case)
 
@@ -546,6 +589,28 @@ module private ParseTree =
 
                     SynExpr.tuple [ SynExpr.CreateConst caseName.idText ; payloadExpr ]
                 )
+
+            SynExpr.applyFunction
+                (rt [ "ErasedTree" ; "Sum" ])
+                (SynExpr.paren (SynExpr.tuple [ SynExpr.CreateConst sumId ; listOf caseExprs ]))
+        | ParseTree.Container (sumId, _, _, payload, _) ->
+            // A two-case Sum: the group's own arguments, or nothing at all. The payload is
+            // erased first so that its leaf ids stay in the same walk order `accumulators` uses,
+            // and it is case 0 so that `instantiate` can read the selection the same way.
+            //
+            // The empty product can never be "touched" (it has no leaf and no sink to receive an
+            // occurrence) and is always satisfiable by an empty command line, while the payload
+            // is never so satisfiable -- `toParseSpec` refuses to build a container otherwise.
+            // So exactly one case is always selectable, and none of the runtime's three
+            // selection errors can arise here; the case names below are for its diagnostics
+            // only, and are unreachable.
+            let payloadExpr = toErasedTreeExpr rt listOf counter posCounter payload
+
+            let caseExprs =
+                [
+                    SynExpr.tuple [ SynExpr.CreateConst "supplied" ; payloadExpr ]
+                    SynExpr.tuple [ SynExpr.CreateConst "absent" ; product [] ]
+                ]
 
             SynExpr.applyFunction
                 (rt [ "ErasedTree" ; "Sum" ])
@@ -614,6 +679,32 @@ module private ParseTree =
                             "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"))
 
             SynExpr.createMatch scrutinee (clauses @ [ fallthrough ])
+        | ParseTree.Container (sumId, _, _, payload, assemble) ->
+            // Case 0 is the payload and case 1 the empty product, as `toErasedTreeExpr` laid
+            // them out. The payload is instantiated only on the branch which selected it: the
+            // slots beneath an unselected case are legitimately unpopulated.
+            let scrutinee =
+                SynExpr.createLongIdent [ "Map" ; "tryFind" ]
+                |> SynExpr.applyTo (SynExpr.CreateConst sumId)
+                |> SynExpr.applyTo (SynExpr.dotGet "Choices" (SynExpr.createIdent "parser_selection"))
+
+            let clauses =
+                [
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.createConst (SynConst.Int32 0) ])
+                        (assemble (Some (SynExpr.paren (instantiate payload))))
+                    SynMatchClause.create
+                        (SynPat.nameWithArgs "Some" [ SynPat.createConst (SynConst.Int32 1) ])
+                        (assemble None)
+                    SynMatchClause.create
+                        SynPat.anon
+                        (SynExpr.applyFunction
+                            (SynExpr.createIdent "failwith")
+                            (SynExpr.CreateConst
+                                "WoofWare.Myriad internal error in generated parser: no case selected despite a successful parse"))
+                ]
+
+            SynExpr.createMatch scrutinee clauses
         | ParseTree.Branch (_, fields, assemble) ->
             fields
             |> List.map (fun (fieldName, contents) ->
@@ -1247,11 +1338,25 @@ module internal ArgParserGenerator =
             let parseElt, acc, childTy =
                 createParseFunction choice ambient owner fieldName attrs eltTy
 
+            // Every sibling arm rejects the nestings it cannot express, against the accumulation
+            // the recursive call came back with; this one must too. Without these, the illegal
+            // shapes classified successfully here and died much later against an assertion
+            // phrased as an internal error -- which they are not, being reachable from ordinary
+            // source. `Choice` is deliberately absent: the positional path spells its
+            // before/after-`--` tag as `Choice<'a, 'a> list`, and on the non-positional path the
+            // field-level default-attribute checks have already rejected the shape.
             match acc with
             | Accumulation.Map _ ->
                 failwith
                     $"ArgParser does not support lists of maps at field %s{fieldName.idText}: a map already accumulates across occurrences."
-            | _ -> ()
+            | Accumulation.List _ ->
+                failwith
+                    $"ArgParser does not support nested lists at field %s{fieldName.idText}: %s{describeType ty}. Each occurrence supplies one element, so there is no way to spell where one inner list ends and the next begins."
+            | Accumulation.Optional ->
+                failwith
+                    $"ArgParser does not support lists of optionals at field %s{fieldName.idText}: %s{describeType ty}. An element is supplied by an occurrence, so an absent element would be an occurrence which is not there."
+            | Accumulation.Required
+            | Accumulation.Choice _ -> ()
 
             parseElt, Accumulation.List acc, childTy
         | MapType (keyTy, valueTy) ->
@@ -1564,11 +1669,16 @@ module internal ArgParserGenerator =
         with _ ->
             false
 
-    /// Re-backtick a field name, if it needs backticks to be usable as a bare record-construction
-    /// label -- exactly as its declaration needed them, if it had any (backticking is always a
-    /// legal alternative spelling of any identifier, so this is safe to apply unconditionally to
+    /// Re-backtick an identifier, if it needs backticks to be spliced into the generated file --
+    /// exactly as its declaration needed them, if it had any (backticking is always a legal
+    /// alternative spelling of any identifier, so this is safe to apply unconditionally to
     /// whatever `isValidBareRecordLabel` rejects).
-    let private backtickRecordLabel (ident : string) : string =
+    ///
+    /// Used for record-construction labels, and for the `Default`-prefixed member name a defaulted
+    /// field calls: a field named ``space in name`` wants `Owner.``Defaultspace in name`` ()`, and
+    /// emitting that bare produces a file which does not parse. The record-label probe is the
+    /// right question to ask for both, being the stricter position of the two.
+    let private backtickIdent (ident : string) : string =
         if isValidBareRecordLabel ident then
             ident
         else
@@ -1735,13 +1845,80 @@ module internal ArgParserGenerator =
                         $"[<ArgumentPrefix>] was applied to field '%s{ident.idText}', which carries [<PositionalArgs>]. A positional-args field has no subtree of nested arguments to namespace. If you want positional args nested under a prefix, move the [<PositionalArgs>] field into a sub-record and put the [<ArgumentPrefix>] on the record-typed field which holds it."
                 | _ -> ()
 
+                // A structural type may be wrapped in a container which says the whole group of
+                // arguments need not be supplied. Peel that layer off before asking whether what
+                // remains is a record or a union of alternative argument sets, so that the
+                // question is asked of the type which actually carries the arguments.
+                //
+                // Exactly one layer is peeled. Two of them (`ChildArgs option option`) would
+                // describe a distinction no command line can draw, and a type whose core is not
+                // structural is left entirely alone: it goes to the leaf machinery with its
+                // wrapper intact, exactly as before, and is accepted or refused there.
+                //
+                // The kind is deferred, because deciding it can fail: a `Choice` must say where
+                // its default comes from, and that is a complaint to make only once we know the
+                // core really is a group of arguments. `Choice<int, int>` peels here too, and
+                // must reach the leaf machinery with its own diagnostics intact.
+                let containerLayer, coreType =
+                    /// The default for a whole group of arguments can only come from a function:
+                    /// neither a literal nor an environment variable can construct a record.
+                    let structuralDefault () : ContainerKind =
+                        let occurrences (names : string list) : int =
+                            attrs
+                            |> List.filter (fun attr ->
+                                names |> List.contains (List.last attr.TypeName.LongIdent).idText
+                            )
+                            |> List.length
+
+                        let carries (names : string list) : bool = occurrences names > 0
+
+                        let reject (names : string list) (display : string) (why : string) : unit =
+                            if carries names then
+                                failwith
+                                    $"Field '%s{ident.idText}' has a [<%s{display}>], but its type %s{describeType fieldType} wraps an argument record or a union of alternative argument sets, so what it defaults to is a whole group of arguments. %s{why} Use [<ArgumentDefaultFunction>] instead, and write a static member which returns the group."
+
+                        reject
+                            [ "ArgumentDefaultValue" ; "ArgumentDefaultValueAttribute" ]
+                            "ArgumentDefaultValue"
+                            "An attribute argument is a compile-time constant, and there is no constant which is a record."
+
+                        reject
+                            [
+                                "ArgumentDefaultEnvironmentVariable"
+                                "ArgumentDefaultEnvironmentVariableAttribute"
+                            ]
+                            "ArgumentDefaultEnvironmentVariable"
+                            "An environment variable is one string, and there is no spelling by which one string becomes a whole group of arguments."
+
+                        // As for a defaulted leaf, at most one attribute may say where the
+                        // default comes from. The other two kinds are rejected outright above, so
+                        // the only way to have several here is to repeat this one.
+                        match occurrences [ "ArgumentDefaultFunction" ; "ArgumentDefaultFunctionAttribute" ] with
+                        | 1 ->
+                            ArgumentDefaultSpec.FunctionCall (
+                                finalRecord.Name,
+                                Ident.create ("Default" + ident.idText)
+                            )
+                            |> ContainerKind.Defaulted
+                        | 0 ->
+                            failwith
+                                $"Field '%s{ident.idText}' has type %s{describeType fieldType}, so it must say where its default comes from when none of the group's arguments are supplied. Add [<ArgumentDefaultFunction>] and a static member `Default%s{ident.idText} ()` returning the group, or give the field the plain type without the Choice."
+                        | _ ->
+                            failwith
+                                $"Expected Choice to be annotated with at most one ArgumentDefaultFunction or similar, but it was annotated with multiple. Field: %s{ident.idText}"
+
+                    match fieldType with
+                    | OptionType inner -> Some (fun () -> ContainerKind.Optional), inner
+                    | ChoiceType [ elt1 ; elt2 ] when SynType.provablyEqual elt1 elt2 -> Some structuralDefault, elt1
+                    | _ -> None, fieldType
+
                 let ambientRecordMatch =
-                    match localTypeName fieldType with
+                    match localTypeName coreType with
                     | Some target -> ambient.Records |> List.tryFind (fun r -> r.Name.idText = target)
                     | None -> None
 
                 let ambientUnionMatch =
-                    match localTypeName fieldType with
+                    match localTypeName coreType with
                     | Some target -> ambient.StructuralUnions |> List.tryFind (fun u -> u.Name.idText = target)
                     | None -> None
 
@@ -1761,6 +1938,66 @@ module internal ArgParserGenerator =
                             |> Option.orElseWith (fun () -> helpTextAttribute $"type %s{typeName}" typeAttrs)
                     }
 
+                /// Build the tree for the field's structural core, and wrap it in a `Container`
+                /// if the field's declared type wrapped that core in one. `build` is given the
+                /// counter to start from and the header the group should be introduced by; when
+                /// there is a container the header moves onto it, so that the group is announced
+                /// once, by the node which knows it is optional.
+                let withContainer
+                    (coreName : string)
+                    (coreAttrs : SynAttribute list)
+                    (describeWhyEmpty : unit -> string)
+                    (build : GroupHeader option -> int -> ParseTree * int)
+                    : ParseTree * int
+                    =
+                    let header = Some (groupHeader coreName coreAttrs)
+
+                    match containerLayer with
+                    | None -> build header counter
+                    | Some kind ->
+
+                    // Now that the core is known to be a group of arguments, it is safe to
+                    // insist on knowing what its absence means.
+                    let kind = kind ()
+
+                    // The sum id is drawn before the payload's own ids, as a union's is.
+                    let sumId = counter
+                    let payload, counter = build None (counter + 1)
+
+                    // The container erases to "the group's arguments, or nothing at all", and
+                    // the runtime picks between those by whether anything beneath was supplied.
+                    // If the group can also be satisfied by supplying nothing, the two are
+                    // indistinguishable and no command line could ever mean the first. Refuse
+                    // here, where the field and the types can be named: left to the generic
+                    // ambiguity check, this would surface as a complaint about two case names
+                    // the author never wrote.
+                    if ParseTree.emptySatisfiable payload then
+                        let wrapper =
+                            match kind with
+                            | ContainerKind.Optional -> "an option"
+                            | ContainerKind.Defaulted _ -> "a Choice"
+
+                        failwith
+                            $"Field '%s{ident.idText}' has type %s{describeType fieldType}, but %s{coreName} is satisfiable with no arguments at all: %s{describeWhyEmpty ()} There is then no way to tell 'this group was supplied, and everything in it took its default' from 'this group was never mentioned', so it cannot be wrapped in %s{wrapper}. Make one of %s{coreName}'s arguments mandatory, or give the field the plain type %s{coreName}."
+
+                    let assemble (payload : SynExpr option) : SynExpr =
+                        match kind, payload with
+                        | ContainerKind.Optional, Some payload ->
+                            SynExpr.applyFunction (SynExpr.createIdent "Some") payload
+                        | ContainerKind.Optional, None -> SynExpr.createIdent "None"
+                        | ContainerKind.Defaulted _, Some payload ->
+                            SynExpr.applyFunction (SynExpr.createIdent "Choice1Of2") payload
+                        | ContainerKind.Defaulted (ArgumentDefaultSpec.FunctionCall (owner, name)), None ->
+                            SynExpr.callMethod (backtickIdent name.idText) (SynExpr.createIdent' owner)
+                            |> SynExpr.paren
+                            |> SynExpr.applyFunction (SynExpr.createIdent "Choice2Of2")
+                        | ContainerKind.Defaulted spec, None ->
+                            // `structuralDefault` admits nothing else.
+                            failwith
+                                $"WoofWare.Myriad internal error: a defaulted argument group was given a default of an unsupported kind (%O{spec})"
+
+                    ParseTree.Container (sumId, header, kind, payload, assemble), counter
+
                 match ambientRecordMatch with
                 | Some childRecord ->
                     // The structural branches are taken before any leaf machinery runs, so they
@@ -1776,14 +2013,24 @@ module internal ArgParserGenerator =
                         | None -> prefix
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
+                    let describeWhyEmpty () : string =
+                        let fields =
+                            childRecord.Fields
+                            |> List.choose (fun (SynField.SynField (idOpt = idOpt)) ->
+                                idOpt |> Option.map (fun i -> $"'%s{i.idText}'")
+                            )
+                            |> String.concat ", "
+
+                        $"every one of its fields (%s{fields}) is optional, has a default, or is a [<PositionalArgs>] sink, which accepts zero tokens."
+
                     let spec, counter =
-                        toParseSpec
-                            ancestors
-                            (Some (groupHeader childRecord.Name.idText childRecord.Attributes))
-                            childPrefix
-                            counter
-                            ambient
-                            childRecord
+                        withContainer
+                            childRecord.Name.idText
+                            childRecord.Attributes
+                            describeWhyEmpty
+                            (fun header counter ->
+                                toParseSpec ancestors header childPrefix counter ambient childRecord
+                            )
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1802,14 +2049,15 @@ module internal ArgParserGenerator =
                         | None -> prefix
                         | Some attrExpr -> extendPrefix ident prefix attrExpr
 
+                    let describeWhyEmpty () : string =
+                        $"one of its cases can be selected by an empty command line, so an empty command line already means that case rather than meaning nothing at all."
+
                     let spec, counter =
-                        unionToParseSpec
-                            ancestors
-                            (Some (groupHeader union.Name.idText union.Attributes))
-                            childPrefix
-                            counter
-                            ambient
-                            union
+                        withContainer
+                            union.Name.idText
+                            union.Attributes
+                            describeWhyEmpty
+                            (fun header counter -> unionToParseSpec ancestors header childPrefix counter ambient union)
 
                     counter, (ident, spec) :: acc
                 | None ->
@@ -1866,11 +2114,11 @@ module internal ArgParserGenerator =
 
                     let enumCases = identifyAsEnum ambient.EnumDus parseTy
 
+                    // A list whose element is itself a list, an optional or a map is rejected by
+                    // `createParseFunction` above, for reasons which hold whether or not the
+                    // field is positional; only the two shapes a positional field can actually
+                    // take reach here. The `Choice` is the before/after-`--` tag, not a default.
                     match accumulation with
-                    | Accumulation.List (Accumulation.List _) ->
-                        failwith "A list of positional args cannot contain lists."
-                    | Accumulation.List Accumulation.Optional ->
-                        failwith "A list of positional args cannot contain optionals. What would that even mean?"
                     | Accumulation.List (Accumulation.Choice ()) ->
                         {
                             FieldName = ident
@@ -1901,8 +2149,9 @@ module internal ArgParserGenerator =
                             AcceptsNegation = false
                         }
                         |> ParseTree.PositionalLeaf
-                    | Accumulation.List (Accumulation.Map _) ->
-                        failwith "A list of positional args cannot contain maps."
+                    | Accumulation.List Accumulation.Optional
+                    | Accumulation.List (Accumulation.List _)
+                    | Accumulation.List (Accumulation.Map _)
                     | Accumulation.Choice _
                     | Accumulation.Optional
                     | Accumulation.Required
@@ -2019,7 +2268,7 @@ module internal ArgParserGenerator =
                         // (a space, a keyword, ...) must be re-backticked before it is safe to place
                         // in this record-construction expression, exactly as the record's own
                         // declaration required it to be written.
-                        SynLongIdent.create [ Ident.create (backtickRecordLabel ident) ], expr
+                        SynLongIdent.create [ Ident.create (backtickIdent ident) ], expr
                     )
                     |> SynExpr.createRecord None
                 )
@@ -2127,7 +2376,7 @@ module internal ArgParserGenerator =
                 |> SynExpr.paren
             | Accumulation.Choice (ArgumentDefaultSpec.FunctionCall (owner, var)) ->
                 // Display the spelling the user would have to type to supply this value.
-                SynExpr.callMethod var.idText (SynExpr.createIdent' owner)
+                SynExpr.callMethod (backtickIdent var.idText) (SynExpr.createIdent' owner)
                 |> renderLeafValue flagCases arg.EnumCases
                 |> SynExpr.pipeThroughFunction (
                     SynExpr.applyFunction (SynExpr.createIdent "sprintf") (SynExpr.CreateConst " (default value: %s)")
@@ -2209,7 +2458,10 @@ module internal ArgParserGenerator =
         /// `child: Database settings`. The help text is a SynExpr rather than a literal (it may be
         /// any expression the author wrote in the attribute), so the description has to be
         /// assembled by the generated program rather than spliced here.
-        let groupLine (depth : int) (header : GroupHeader) : SynExpr =
+        /// `annotation` is appended to the label, e.g. " (optional)" for a group which need not
+        /// be supplied at all. It goes on the label rather than after the help text so that it
+        /// stays adjacent to what it qualifies however long the help runs.
+        let groupLineAnnotated (depth : int) (annotation : string) (header : GroupHeader) : SynExpr =
             let indent = String.replicate depth "  "
 
             // The label is a field name, which may be a backticked identifier and so may contain
@@ -2219,7 +2471,7 @@ module internal ArgParserGenerator =
             let label =
                 SynExpr.Const (
                     SynConst.String (
-                        ArgFormEmission.escapeStringConstant (indent + header.Label),
+                        ArgFormEmission.escapeStringConstant (indent + header.Label + annotation),
                         SynStringKind.Regular,
                         range0
                     ),
@@ -2238,6 +2490,8 @@ module internal ArgParserGenerator =
                 |> SynExpr.applyTo label
                 |> SynExpr.applyTo (SynExpr.paren help)
                 |> SynExpr.paren
+
+        let groupLine (depth : int) (header : GroupHeader) : SynExpr = groupLineAnnotated depth "" header
 
         // Walk the tree so that a union's alternatives, and a nested record's arguments, are
         // *grouped* in the help rather than flattened into one undifferentiated list: the user
@@ -2260,6 +2514,25 @@ module internal ArgParserGenerator =
                 match header with
                 | None -> sumHelp depth cases
                 | Some header -> groupLine depth header :: sumHelp (depth + 1) cases
+            | ParseTree.Container (_, header, kind, payload, _) ->
+                // The group reads as it would if the field were declared bare, with a note that
+                // it need not be supplied. It is deliberately not presented as an alternation:
+                // the two cases it erases to are ours, not the author's, and a reader shown
+                // "exactly one of" would go looking for a choice they never wrote.
+                // A defaulted group's value cannot be spelled the way a defaulted leaf's can:
+                // there is no single token which supplies a whole group, so `renderLeafValue`
+                // has nothing to render. Say that a default exists, and leave it at that.
+                let annotation =
+                    match kind with
+                    | ContainerKind.Optional -> " (optional)"
+                    | ContainerKind.Defaulted _ -> " (optional; a default is used if omitted)"
+
+                // A container is always reached through a field, so it always has a header to
+                // hang the annotation on; `toParseSpec` is the only thing which builds one.
+                match header with
+                | Some header -> groupLineAnnotated depth annotation header :: fieldHelp (depth + 1) payload
+                | None ->
+                    failwith "WoofWare.Myriad internal error: an optional argument group had no header to describe it"
 
         and sumHelp (depth : int) (cases : (Ident * SynExpr option * ParseTree) list) : SynExpr list =
             let indent = String.replicate depth "  "
@@ -3042,7 +3315,9 @@ module internal ArgParserGenerator =
                         | ArgumentDefaultSpec.FunctionCall (owner, name) ->
                             SynExpr.sequential
                                 [
-                                    storeDefault (SynExpr.callMethod name.idText (SynExpr.createIdent' owner))
+                                    storeDefault (
+                                        SynExpr.callMethod (backtickIdent name.idText) (SynExpr.createIdent' owner)
+                                    )
                                     SynExpr.createIdent "None"
                                 ]
                         | ArgumentDefaultSpec.Literal value ->

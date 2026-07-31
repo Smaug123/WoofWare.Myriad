@@ -188,6 +188,64 @@ type ParentRecordWithEscapedHelp =
         Child : ChildRecord
     }
 
+/// A whole group of arguments may be omitted. Supplying none of `ChildRecord`'s arguments makes
+/// the field `None`; supplying any of them makes it `Some`, and `ChildRecord`'s own required
+/// arguments are then enforced as usual.
+[<ArgParser true>]
+type ParentRecordOptionalChild =
+    {
+        Child : ChildRecord option
+        AndAnother : bool
+    }
+
+/// An optional group whose header carries help text, and which contains a positional sink. The
+/// sink accepts zero tokens, but `Thing1` is required, so the group as a whole is not satisfiable
+/// by an empty command line and can therefore be told apart from its own absence.
+[<ArgParser true>]
+type ParentRecordOptionalChildPos =
+    {
+        [<ArgumentHelpText "Settings for the child thing">]
+        Child : ChildRecordWithPositional option
+    }
+
+/// A group of arguments which need not be supplied, but which stands for a value rather than for
+/// nothing when it is omitted. As for a defaulted leaf, the Choice reports which happened.
+[<ArgParser true>]
+type ParentRecordDefaultedChild =
+    {
+        [<ArgumentDefaultFunction>]
+        Child : Choice<ChildRecord, ChildRecord>
+        AndAnother : bool
+    }
+
+    /// The default-function convention resolves against the record which declares the field,
+    /// exactly as it does for a leaf.
+    static member DefaultChild () : ChildRecord =
+        {
+            Thing1 = 42
+            Thing2 = "from the default"
+        }
+
+type GrandchildRecord =
+    {
+        Deep : int
+    }
+
+/// An optional group may contain one, and may be namespaced like any other structural field.
+/// The inner group's absence does not make the outer group absent: `Thing1` is what decides that.
+type ChildWithOptionalGrandchild =
+    {
+        Thing1 : int
+        Grandchild : GrandchildRecord option
+    }
+
+[<ArgParser true>]
+type ParentRecordNestedOptional =
+    {
+        [<ArgumentPrefix "db">]
+        Child : ChildWithOptionalGrandchild option
+    }
+
 [<ArgParser true>]
 type ChoicePositionals =
     {
@@ -413,3 +471,33 @@ type AwkwardFieldName =
         ``__LINE__`` : int
         ``break`` : int
     }
+
+/// A defaulted field's default comes from a static member named `Default` + the field name, so an
+/// awkward field name makes an awkward *member* name, which needs backticks at the call site
+/// exactly as its declaration did. `Default` + `mod` is the perfectly ordinary `Defaultmod`, so
+/// the names here are ones which stay awkward after the prefix is glued on.
+///
+/// Three separate emission sites call that member: a defaulted leaf's `parser_applyDefault`, a
+/// defaulted group's instantiation, and the help text, which renders a leaf's default by calling
+/// the function at generated-program runtime.
+[<ArgParser true>]
+type AwkwardDefaultName =
+    {
+        [<ArgumentDefaultFunction>]
+        ``space in name`` : Choice<int, int>
+
+        [<ArgumentPrefix "grp">]
+        [<ArgumentDefaultFunction>]
+        ``group name`` : Choice<ChildRecord, ChildRecord>
+
+        [<ArgumentPrefix "opt">]
+        ``optional group`` : ChildRecord option
+    }
+
+    static member ``Defaultspace in name`` () = 5
+
+    static member ``Defaultgroup name`` () : ChildRecord =
+        {
+            Thing1 = 1
+            Thing2 = "defaulted group"
+        }
