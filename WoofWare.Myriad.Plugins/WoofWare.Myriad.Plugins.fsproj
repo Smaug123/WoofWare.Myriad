@@ -128,11 +128,9 @@ else
     into lib/ as well. Consumers reference this package with PrivateAssets="all", so the extra
     assemblies do not propagate to them.
 
-    Take the closure from the reference resolution rather than by listing $(OutputPath): a
-    wildcard in an ItemGroup is expanded when the project is evaluated, which is before the build
-    that populates that directory. Packing a tree whose bin/ was empty therefore used to produce a
-    package containing only this assembly, whose plugin throws ReflectionTypeLoadException in the
-    consumer's build. CI happened to build before packing, so released packages were unaffected.
+    The closure comes from reference resolution, which the build produces, so it is complete
+    whether or not the output directory was already populated when pack ran.
+    scripts/check-cold-pack-loads.sh holds the packaging to that.
   -->
   <Target Name="_PackPluginDependencies" DependsOnTargets="ResolveReferences">
     <ItemGroup>

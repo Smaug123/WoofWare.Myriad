@@ -1,15 +1,13 @@
 #!/bin/sh
 
 # The plugin's dependency closure must reach the package by a route that does not depend on the
-# build directory already being populated. It used not to: the closure was gathered by a wildcard
-# over $(OutputPath), which MSBuild expands when the project is evaluated, before the build that
-# fills that directory. A package built that way carries only the plugin itself and fails to load.
+# build directory already being populated.
 #
-# Checking the nupkg that CI publishes cannot catch a regression to that, because CI builds before
-# it packs, so $(OutputPath) is populated by then and even the wildcard would find everything. So
-# pack again into an output directory that is guaranteed empty, and check that package instead.
-# Relocating $(OutputPath) rather than reordering the CI steps keeps this honest no matter what
-# else the job has done first.
+# The nupkg CI publishes cannot demonstrate that, because CI builds before it packs, so
+# $(OutputPath) is full by the time pack evaluates the project. Pack again into an output
+# directory that is guaranteed empty, and run the loader check on that package. Relocating
+# $(OutputPath) rather than relying on where this sits among the CI steps keeps the check honest
+# whatever else the job has done first.
 
 set -eu
 
