@@ -4,7 +4,11 @@
 [![GitHub Actions status](https://github.com/Smaug123/WoofWare.Myriad/actions/workflows/ci.yaml/badge.svg)](https://github.com/Smaug123/WoofWare.Myriad/actions?query=branch%3Amain)
 [![License file](https://img.shields.io/github/license/Smaug123/WoofWare.Myriad)](./LICENSE)
 
-![Project logo: the face of a cartoon Shiba Inu, staring with powerful cyborg eyes directly at the viewer, with a background of stylised plugs.](./WoofWare.Myriad.Plugins/logo.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="logos/dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="logos/light.svg">
+  <img alt="Project logo: the face of a cartoon Shiba Inu, drawn in outline as a set of flat faceted panels, as though stamped out of a template." src="logos/light.svg" width="300">
+</picture>
 
 Some helpers in [Myriad](https://github.com/MoiraeSoftware/myriad/) which might be useful.
 

@@ -6,7 +6,7 @@
   "pathFilters": [
     ":/README.md",
     ":/LICENSE",
-    ":/WoofWare.Myriad.Plugins/logo.png",
+    ":/logos/light.png",
     ":/Directory.Build.props",
     ":/global.json",
     "./",
