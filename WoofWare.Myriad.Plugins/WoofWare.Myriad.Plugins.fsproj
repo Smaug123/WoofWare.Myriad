@@ -15,7 +15,7 @@
     <WarnOn>FS3559</WarnOn>
     <PackageId>WoofWare.Myriad.Plugins</PackageId>
     <PackageIcon>light.png</PackageIcon>
-    <NoWarn>NU5118</NoWarn>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_PackPluginDependencies</TargetsForTfmSpecificContentInPackage>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -61,9 +61,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WoofWare.Myriad.Plugins.Attributes\WoofWare.Myriad.Plugins.Attributes.fsproj"/>
-    <!-- NuGet is such a clown package manager! Get the DLLs into the Nupkg artefact, I have no idea why this is needed,
-         but without this line, we don't get any dependency at all packaged into the resulting artefact. -->
-    <None Include="$(OutputPath)\*.dll" Pack="true" PackagePath="lib\$(TargetFramework)"/>
   </ItemGroup>
 
   <!--
@@ -117,6 +114,34 @@ else
     <WriteReadmeWithoutLogo Source="$(MSBuildProjectDirectory)/../README.md" Destination="$(_NuGetReadme)" />
     <ItemGroup>
       <None Include="$(_NuGetReadme)" Pack="true" PackagePath="\" />
+    </ItemGroup>
+  </Target>
+
+
+  <!--
+    Myriad does not load this package as a library; it loads it as a plugin. A consumer points
+    MyriadSdkGenerator at lib/net6.0/WoofWare.Myriad.Plugins.dll inside the restored package, and
+    the Myriad tool loads that file by path, resolving its references by probing the directory it
+    sits in. That tool knows nothing of this package's NuGet dependency graph, so the dependencies
+    the nuspec declares are no help: they restore into their own package folders, which the loader
+    never looks in. The plugin is loadable only if its closure sits beside it, so pack the closure
+    into lib/ as well. Consumers reference this package with PrivateAssets="all", so the extra
+    assemblies do not propagate to them.
+
+    Take the closure from the reference resolution rather than by listing $(OutputPath): a
+    wildcard in an ItemGroup is expanded when the project is evaluated, which is before the build
+    that populates that directory. Packing a tree whose bin/ was empty therefore used to produce a
+    package containing only this assembly, whose plugin throws ReflectionTypeLoadException in the
+    consumer's build. CI happened to build before packing, so released packages were unaffected.
+  -->
+  <Target Name="_PackPluginDependencies" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <!-- Only what the loader probes for, i.e. what sits directly beside the plugin: a
+           DestinationSubDirectory means a satellite assembly, which would collide with its
+           siblings once flattened into one directory, and which the loader does not need. -->
+      <TfmSpecificPackageFile Include="@(ReferenceCopyLocalPaths)"
+                              Condition="'%(ReferenceCopyLocalPaths.Extension)' == '.dll' and '%(ReferenceCopyLocalPaths.DestinationSubDirectory)' == ''"
+                              PackagePath="lib/$(TargetFramework)" />
     </ItemGroup>
   </Target>
 

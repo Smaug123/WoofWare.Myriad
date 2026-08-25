@@ -66,6 +66,7 @@
           pkgs.alejandra
           pkgs.lychee
           pkgs.shellcheck
+          pkgs.unzip
           pkgs.xmlstarlet
         ];
       };
