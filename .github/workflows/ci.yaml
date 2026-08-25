@@ -171,6 +171,11 @@ jobs:
       # package has to carry the plugin's dependency closure. Nothing else here would notice if it
       # stopped doing so; the consumer's build would be the first to find out.
       run: nix develop --command ./scripts/check-packed-plugin-loads.sh WoofWare.Myriad.Plugins/bin/Release/WoofWare.Myriad.Plugins.*.nupkg
+    - name: Check the plugin also packs from a clean output directory
+      # The step above cannot catch a return to gathering the closure with a wildcard over
+      # $(OutputPath), because the Build step above has already filled that directory. This one
+      # packs into an empty one, which is the condition that used to produce a broken package.
+      run: nix develop --command ./scripts/check-cold-pack-loads.sh
     - name: Upload NuGet artifact (plugin)
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
