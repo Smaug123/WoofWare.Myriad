@@ -10,6 +10,7 @@
     ":^/WoofWare.Myriad.Plugins.Attributes/Test",
     ":/global.json",
     ":/README.md",
+    ":/logos/light.png",
     ":/Directory.Build.props"
   ]
 }
