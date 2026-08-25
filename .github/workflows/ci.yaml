@@ -166,6 +166,16 @@ jobs:
       run: nix develop --command dotnet build --no-restore --configuration Release
     - name: Pack
       run: nix develop --command dotnet pack --configuration Release
+    - name: Check the packed plugin loads
+      # Myriad resolves the plugin's references by probing the directory the plugin sits in, so the
+      # package has to carry the plugin's dependency closure. Nothing else here would notice if it
+      # stopped doing so; the consumer's build would be the first to find out.
+      run: nix develop --command ./scripts/check-packed-plugin-loads.sh WoofWare.Myriad.Plugins/bin/Release/WoofWare.Myriad.Plugins.*.nupkg
+    - name: Check the plugin also packs from a clean output directory
+      # The step above runs with $(OutputPath) already filled by Build, so it cannot show that the
+      # closure reaches the package without help from the build directory. This one packs into an
+      # empty output directory, where that is the only way it can get there.
+      run: nix develop --command ./scripts/check-cold-pack-loads.sh
     - name: Upload NuGet artifact (plugin)
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
