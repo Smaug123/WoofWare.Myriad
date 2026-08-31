@@ -1,8 +1,8 @@
 [
   {
     "pname": "ApiSurface",
-    "version": "5.0.8",
-    "hash": "sha256-Mkdw+KlAl5zyMIks2wyPKHFrCBa8xJNohqF0JKDriPw="
+    "version": "5.0.10",
+    "hash": "sha256-G5lCY/Fr3CFUGbEHHgaerwnKMsK7X63+Zpm6xMD0G4o="
   },
   {
     "pname": "fantomas",
